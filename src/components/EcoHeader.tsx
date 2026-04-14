@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export default function EcoHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isHome = location.pathname === '/';
+  void location.pathname;
 
   return (
     <motion.div

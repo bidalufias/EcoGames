@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Fade } from '@mui/material';
-import { fetchLeaderboard, LeaderboardEntry, supabase } from '../lib/supabase';
+import { fetchLeaderboard, supabase } from '../lib/supabase';
+import type { LeaderboardEntry } from '../lib/supabase';
 
 interface LeaderboardPanelProps {
   gameId: string;
