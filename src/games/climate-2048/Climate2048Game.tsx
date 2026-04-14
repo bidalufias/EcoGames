@@ -9,7 +9,11 @@ type Direction = 'up' | 'down' | 'left' | 'right';
 type Screen = 'intro' | 'playing' | 'gameover';
 
 function createEmpty(): Grid {
-  return Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
+  return Array.from({ length: GRID_SIZE }, () => Array<null>(GRID_SIZE).fill(null));
+}
+
+function cloneGrid(grid: Grid): Grid {
+  return grid.map(row => [...row]);
 }
 
 function addRandom(grid: Grid): Grid {
@@ -19,74 +23,86 @@ function addRandom(grid: Grid): Grid {
       if (!grid[r][c]) empty.push([r, c]);
   if (empty.length === 0) return grid;
   const [r, c] = empty[Math.floor(Math.random() * empty.length)];
-  const next = grid.map(row => [...row]);
+  const next = cloneGrid(grid);
   next[r][c] = Math.random() < 0.9 ? 2 : 4;
   return next;
 }
 
-function rotateGrid(grid: Grid): Grid {
-  const n = grid.length;
-  const rotated: Grid = createEmpty();
-  for (let r = 0; r < n; r++)
-    for (let c = 0; c < n; c++)
-      rotated[c][n - 1 - r] = grid[r][c];
-  return rotated;
+function slideRow(row: (number | null)[]): { result: (number | null)[]; score: number; moved: boolean } {
+  // Filter out nulls
+  const tiles = row.filter((v): v is number => v !== null);
+  let score = 0;
+  const merged: number[] = [];
+  let i = 0;
+  while (i < tiles.length) {
+    if (i + 1 < tiles.length && tiles[i] === tiles[i + 1]) {
+      merged.push(tiles[i] * 2);
+      score += tiles[i] * 2;
+      i += 2;
+    } else {
+      merged.push(tiles[i]);
+      i++;
+    }
+  }
+  // Pad with nulls
+  const result: (number | null)[] = Array(GRID_SIZE).fill(null);
+  for (let j = 0; j < merged.length; j++) result[j] = merged[j];
+
+  const moved = row.some((v, idx) => v !== result[idx]);
+  return { result, score, moved };
 }
 
-function slideLeft(grid: Grid): { grid: Grid; score: number; moved: boolean } {
-  let score = 0;
-  let moved = false;
-  const result: Grid = createEmpty();
+function moveGrid(grid: Grid, direction: Direction): { grid: Grid; score: number; moved: boolean } {
+  let totalScore = 0;
+  let anyMoved = false;
+  const newGrid = createEmpty();
 
-  for (let r = 0; r < GRID_SIZE; r++) {
-    const row = grid[r].filter(v => v !== null) as number[];
-    const merged: number[] = [];
-    let i = 0;
-    while (i < row.length) {
-      if (i + 1 < row.length && row[i] === row[i + 1]) {
-        merged.push(row[i] * 2);
-        score += row[i] * 2;
-        i += 2;
-      } else {
-        merged.push(row[i]);
-        i++;
-      }
+  for (let i = 0; i < GRID_SIZE; i++) {
+    let line: (number | null)[];
+
+    // Extract line based on direction
+    switch (direction) {
+      case 'left':
+        line = grid[i].slice();
+        break;
+      case 'right':
+        line = grid[i].slice().reverse();
+        break;
+      case 'up':
+        line = Array.from({ length: GRID_SIZE }, (_, c) => grid[c][i]);
+        break;
+      case 'down':
+        line = Array.from({ length: GRID_SIZE }, (_, c) => grid[GRID_SIZE - 1 - c][i]);
+        break;
     }
-    for (let c = 0; c < merged.length; c++) {
-      result[r][c] = merged[c];
-      if (c < (grid[r].filter(v => v !== null) as number[]).length) {
-        if (result[r][c] !== grid[r].filter(v => v !== null)[c]) moved = true;
-      }
+
+    const { result, score, moved } = slideRow(line);
+    totalScore += score;
+    if (moved) anyMoved = true;
+
+    // Put back
+    switch (direction) {
+      case 'left':
+        for (let j = 0; j < GRID_SIZE; j++) newGrid[i][j] = result[j];
+        break;
+      case 'right':
+        for (let j = 0; j < GRID_SIZE; j++) newGrid[i][GRID_SIZE - 1 - j] = result[j];
+        break;
+      case 'up':
+        for (let j = 0; j < GRID_SIZE; j++) newGrid[j][i] = result[j];
+        break;
+      case 'down':
+        for (let j = 0; j < GRID_SIZE; j++) newGrid[GRID_SIZE - 1 - j][i] = result[j];
+        break;
     }
-    // Check if anything moved
-    const origNonZero = grid[r].filter(v => v !== null);
-    if (origNonZero.length !== merged.length) moved = true;
-    for (let c = 0; c < Math.min(origNonZero.length, merged.length); c++) {
-      if (origNonZero[c] !== merged[c]) moved = true;
-    }
-    if (merged.length !== origNonZero.length) moved = true;
   }
 
-  return { grid: result, score, moved };
-}
-
-function move(grid: Grid, direction: Direction): { grid: Grid; score: number; moved: boolean } {
-  let rotated = grid;
-  const rotations = { left: 0, up: 1, right: 2, down: 3 }[direction];
-  for (let i = 0; i < rotations; i++) rotated = rotateGrid(rotated);
-
-  const result = slideLeft(rotated);
-
-  let final = result.grid;
-  for (let i = 0; i < (4 - rotations) % 4; i++) final = rotateGrid(final);
-
-  return { grid: final, score: result.score, moved: result.moved };
+  return { grid: newGrid, score: totalScore, moved: anyMoved };
 }
 
 function canMove(grid: Grid): boolean {
   for (const dir of ['left', 'up', 'right', 'down'] as Direction[]) {
-    const { moved } = move(grid, dir);
-    if (moved) return true;
+    if (moveGrid(grid, dir).moved) return true;
   }
   return false;
 }
@@ -99,12 +115,6 @@ function hasWon(grid: Grid): boolean {
 }
 
 let tileId = 0;
-function gridToTiles(grid: Grid) {
-  return grid.flatMap((row, r) =>
-    row.map((value, c) => value ? { id: tileId++, value, row: r, col: c, merged: false } : null)
-      .filter(Boolean) as { id: number; value: number; row: number; col: number; merged: boolean }[]
-  );
-}
 
 export default function Climate2048Game() {
   const [screen, setScreen] = useState<Screen>('intro');
@@ -121,18 +131,18 @@ export default function Climate2048Game() {
     setScore(0);
     setBestTile(2);
     setWon(false);
+    tileId = 0;
     setScreen('playing');
   }, []);
 
   const handleMove = useCallback((direction: Direction) => {
-    const result = move(grid, direction);
+    const result = moveGrid(grid, direction);
     if (!result.moved) return;
 
     const newGrid = addRandom(result.grid);
     setGrid(newGrid);
     setScore(s => s + result.score);
 
-    // Track best tile
     let max = 2;
     for (const row of newGrid)
       for (const val of row)
@@ -143,7 +153,6 @@ export default function Climate2048Game() {
     if (!canMove(newGrid)) setTimeout(() => setScreen('gameover'), 500);
   }, [grid, won]);
 
-  // Keyboard
   useEffect(() => {
     if (screen !== 'playing') return;
     const handler = (e: KeyboardEvent) => {
@@ -158,7 +167,6 @@ export default function Climate2048Game() {
     return () => window.removeEventListener('keydown', handler);
   }, [screen, handleMove]);
 
-  // Touch / swipe
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -167,18 +175,14 @@ export default function Climate2048Game() {
     if (!touchStart.current) return;
     const dx = e.changedTouches[0].clientX - touchStart.current.x;
     const dy = e.changedTouches[0].clientY - touchStart.current.y;
-    const absDx = Math.abs(dx);
-    const absDy = Math.abs(dy);
-    if (Math.max(absDx, absDy) < 30) return;
-    if (absDx > absDy) {
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
+    if (Math.abs(dx) > Math.abs(dy)) {
       handleMove(dx > 0 ? 'right' : 'left');
     } else {
       handleMove(dy > 0 ? 'down' : 'up');
     }
     touchStart.current = null;
   }, [handleMove]);
-
-  const tiles = gridToTiles(grid);
 
   // --- Intro ---
   if (screen === 'intro') {
@@ -257,6 +261,11 @@ export default function Climate2048Game() {
   }
 
   // --- Playing ---
+  const tiles = grid.flatMap((row, r) =>
+    row.map((value, c) => value ? { id: tileId++, value, row: r, col: c } : null)
+      .filter(Boolean) as { id: number; value: number; row: number; col: number }[]
+  );
+
   return (
     <Box
       onTouchStart={handleTouchStart}
@@ -267,7 +276,6 @@ export default function Climate2048Game() {
         py: 3, px: 2, touchAction: 'none', userSelect: 'none',
       }}
     >
-      {/* HUD */}
       <Box sx={{ display: 'flex', gap: 4, mb: 3 }}>
         <Box sx={{ textAlign: 'center' }}>
           <Typography sx={{ fontSize: 12, color: '#8892B0' }}>SCORE</Typography>
@@ -281,39 +289,32 @@ export default function Climate2048Game() {
         </Box>
       </Box>
 
-      {/* Win banner */}
       {won && (
         <Box sx={{ mb: 2, px: 3, py: 1, borderRadius: 2, background: 'rgba(20,204,102,0.15)', border: '1px solid rgba(20,204,102,0.3)' }}>
           <Typography sx={{ color: '#14CC66', fontWeight: 700 }}>🎉 Smart City achieved! Keep going to Net Zero!</Typography>
         </Box>
       )}
 
-      {/* Grid */}
       <Box sx={{
         position: 'relative', width: GRID_SIZE * 90 + 16, height: GRID_SIZE * 90 + 16,
         background: 'rgba(17,34,64,0.5)', borderRadius: 3, p: 1,
         border: '1px solid rgba(255,255,255,0.05)',
       }}>
-        {/* Empty cells */}
         {Array.from({ length: GRID_SIZE }).map((_, r) =>
           Array.from({ length: GRID_SIZE }).map((_, c) => (
             <Box key={`empty-${r}-${c}`} sx={{
-              position: 'absolute',
-              left: c * 90 + 8, top: r * 90 + 8,
-              width: 82, height: 82, borderRadius: 2,
-              background: 'rgba(255,255,255,0.03)',
+              position: 'absolute', left: c * 90 + 8, top: r * 90 + 8,
+              width: 82, height: 82, borderRadius: 2, background: 'rgba(255,255,255,0.03)',
             }} />
           ))
         )}
 
-        {/* Tiles */}
         {tiles.map(tile => {
           const tech = getTechForValue(tile.value);
           return (
-            <motion.div key={tile.id} layout transition={{ duration: 0.15 }}>
+            <motion.div key={`${tile.row}-${tile.col}`} layout transition={{ duration: 0.15 }}>
               <Box sx={{
-                position: 'absolute',
-                left: tile.col * 90 + 8, top: tile.row * 90 + 8,
+                position: 'absolute', left: tile.col * 90 + 8, top: tile.row * 90 + 8,
                 width: 82, height: 82, borderRadius: 2,
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 background: `linear-gradient(135deg, ${tech.color}33, ${tech.color}11)`,
