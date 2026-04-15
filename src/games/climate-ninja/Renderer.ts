@@ -1,6 +1,6 @@
 import type { GameObject, Particle, BladePoint, ScorePopup, ZoneConfig, PlayerState, FactPopup } from './types';
 
-export const PLAYER_COLORS = ['#0D9B4A', '#1B8EBF', '#FF9800', '#E91E63'];
+export const PLAYER_COLORS = ['#8BC53F', '#007DC4', '#FF9800', '#E91E63'];
 
 let _shakeStrength = 0;
 let _shakeFrames = 0;
@@ -83,8 +83,8 @@ function drawAurora(ctx: CanvasRenderingContext2D, width: number, height: number
   }
   ctx.closePath();
   const auroraGrad = ctx.createLinearGradient(0, height * 0.1, 0, height * 0.4);
-  auroraGrad.addColorStop(0, '#0D9B4A');
-  auroraGrad.addColorStop(0.5, '#1B8EBF');
+  auroraGrad.addColorStop(0, '#8BC53F');
+  auroraGrad.addColorStop(0.5, '#007DC4');
   auroraGrad.addColorStop(1, 'transparent');
   ctx.fillStyle = auroraGrad;
   ctx.fill();
@@ -103,7 +103,7 @@ function drawAurora(ctx: CanvasRenderingContext2D, width: number, height: number
   }
   ctx.closePath();
   const blueGrad = ctx.createLinearGradient(0, height * 0.15, 0, height * 0.4);
-  blueGrad.addColorStop(0, '#1B8EBF');
+  blueGrad.addColorStop(0, '#007DC4');
   blueGrad.addColorStop(0.5, '#23B5E8');
   blueGrad.addColorStop(1, 'transparent');
   ctx.fillStyle = blueGrad;
@@ -196,7 +196,7 @@ export function drawObject(ctx: CanvasRenderingContext2D, obj: GameObject, now: 
     ctx.restore();
   } else if (isCleanTech) {
     // Green shield aura for clean tech
-    ctx.shadowColor = '#0D9B4A';
+    ctx.shadowColor = '#8BC53F';
     ctx.shadowBlur = 22;
     // Draw green shield circle
     ctx.beginPath();
@@ -261,7 +261,7 @@ export function drawParticles(ctx: CanvasRenderingContext2D, particles: Particle
 export function drawBlade(
   ctx: CanvasRenderingContext2D,
   points: BladePoint[],
-  playerColor = '#14CC66',
+  playerColor = '#8BC53F',
 ): void {
   if (points.length < 2) return;
   const now = performance.now();
@@ -347,7 +347,7 @@ export function drawFactPopup(ctx: CanvasRenderingContext2D, popup: FactPopup, w
   ctx.fill();
   ctx.stroke();
 
-  ctx.fillStyle = '#14CC66';
+  ctx.fillStyle = '#8BC53F';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(popup.text, width / 2, y + boxH / 2);
@@ -361,7 +361,7 @@ export function drawComboIndicator(ctx: CanvasRenderingContext2D, combo: number,
   ctx.font = 'bold 32px Inter, Roboto, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  const color = combo >= 5 ? '#FFD700' : combo >= 3 ? '#14CC66' : '#0D9B4A';
+  const color = combo >= 5 ? '#FFD700' : combo >= 3 ? '#8BC53F' : '#8BC53F';
   ctx.fillStyle = color;
   ctx.shadowColor = color;
   ctx.shadowBlur = 20;
@@ -373,10 +373,10 @@ export function drawCarbonSpikeOverlay(ctx: CanvasRenderingContext2D, zone: Zone
   ctx.save();
   const alpha = 0.06 + Math.sin(now * 0.008) * 0.04;
   ctx.globalAlpha = alpha;
-  ctx.fillStyle = '#0D9B4A';
+  ctx.fillStyle = '#8BC53F';
   ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
   ctx.globalAlpha = 0.5 + Math.sin(now * 0.01) * 0.2;
-  ctx.strokeStyle = '#14CC66';
+  ctx.strokeStyle = '#8BC53F';
   ctx.lineWidth = 3;
   ctx.strokeRect(zone.x + 2, zone.y + 2, zone.width - 4, zone.height - 4);
   ctx.restore();

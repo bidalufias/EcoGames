@@ -9,7 +9,7 @@ const games = [
     id: 'climate-ninja',
     title: 'Climate Ninja',
     description: 'Slice through greenhouse gases! Learn the 7 GHGs threatening our planet.',
-    icon: '🥷',
+    icon: '⚔️',
     color: '#8BC53F',
     available: true,
     tags: ['Touch', 'Action'],

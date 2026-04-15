@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { GameEngine } from '../GameEngine';
-import type { GameMode, PlayerState } from '../types';
+import type { GameMode, PlayerState, ZoneConfig } from '../types';
 
 interface Props {
   mode: GameMode;
@@ -12,21 +12,19 @@ interface Props {
   onComboUpdate: (playerIndex: number, combo: number) => void;
   onPowerupUpdate: (playerIndex: number, powerups: string[]) => void;
   onFrenzy: (playerIndex: number, active: boolean) => void;
+  onZonesUpdate: (zones: ZoneConfig[]) => void;
   gameKey: number;
 }
 
-const CANVAS_W = 1280;
-const CANVAS_H = 720;
-
 export default function GameCanvas({
   mode, playerNames, speedMult, onGameOver, onScoreUpdate, onLivesUpdate,
-  onComboUpdate, onPowerupUpdate, onFrenzy, gameKey,
+  onComboUpdate, onPowerupUpdate, onFrenzy, onZonesUpdate, gameKey,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const callbacksRef = useRef({ onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy });
-  callbacksRef.current = { onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy };
+  const callbacksRef = useRef({ onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy, onZonesUpdate });
+  callbacksRef.current = { onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy, onZonesUpdate };
 
   const initEngine = useCallback(() => {
     const canvas = canvasRef.current;
@@ -37,8 +35,9 @@ export default function GameCanvas({
       engineRef.current = null;
     }
 
-    canvas.width = CANVAS_W;
-    canvas.height = CANVAS_H;
+    // Fullscreen canvas
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const engine = new GameEngine(
       canvas, mode, playerNames, speedMult,
@@ -53,6 +52,9 @@ export default function GameCanvas({
     );
     engineRef.current = engine;
     engine.start();
+
+    // Send initial zones
+    callbacksRef.current.onZonesUpdate(engine.getZones());
   }, [mode, playerNames, speedMult]);
 
   useEffect(() => {
@@ -60,17 +62,18 @@ export default function GameCanvas({
     return () => { engineRef.current?.stop(); };
   }, [initEngine, gameKey]);
 
-  // Resize observer
+  // Resize handler — fullscreen
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const ro = new ResizeObserver(() => {
-      if (engineRef.current) {
-        engineRef.current.resize(CANVAS_W, CANVAS_H);
-      }
-    });
-    ro.observe(container);
-    return () => ro.disconnect();
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas || !engineRef.current) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      engineRef.current.resize(canvas.width, canvas.height);
+      callbacksRef.current.onZonesUpdate(engineRef.current.getZones());
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Mouse handlers
@@ -109,7 +112,7 @@ export default function GameCanvas({
     <div ref={containerRef} style={{
       width: '100%', height: '100%', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
-      background: '#FAFBFC', touchAction: 'none',
+      touchAction: 'none',
     }}>
       <canvas
         ref={canvasRef}
@@ -121,9 +124,8 @@ export default function GameCanvas({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          maxWidth: '100%', maxHeight: '100%',
+          width: '100%', height: '100%',
           objectFit: 'contain', touchAction: 'none',
-          borderRadius: 8,
         }}
       />
     </div>
