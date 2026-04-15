@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import { motion } from 'framer-motion';
+import { MGTC_GREEN, MGTC_BLUE } from '../theme/ecoTheme';
 
 interface EcoButtonProps {
   children: React.ReactNode;
@@ -31,9 +32,9 @@ export default function EcoButton({
   const getStyles = (): object => {
     if (disabled) {
       return {
-        background: 'rgba(136, 146, 176, 0.2)',
-        color: 'rgba(136, 146, 176, 0.5)',
-        border: '1px solid rgba(136, 146, 176, 0.1)',
+        background: '#E8EDF2',
+        color: '#A0AABB',
+        border: '1px solid #D0D8E2',
         cursor: 'not-allowed',
       };
     }
@@ -41,36 +42,36 @@ export default function EcoButton({
     switch (variant) {
       case 'primary':
         return {
-          background: 'linear-gradient(135deg, #0D9B4A 0%, #1B8EBF 100%)',
+          background: `linear-gradient(135deg, ${MGTC_GREEN} 0%, ${MGTC_BLUE} 100%)`,
           color: '#fff',
-          border: '1px solid rgba(13, 155, 74, 0.3)',
-          boxShadow: '0 4px 20px rgba(13, 155, 74, 0.3)',
+          border: 'none',
+          boxShadow: `0 4px 16px rgba(139, 197, 63, 0.25)`,
           '&:hover': {
-            background: 'linear-gradient(135deg, #14CC66 0%, #23B5E8 100%)',
-            boxShadow: '0 6px 30px rgba(13, 155, 74, 0.5)',
+            background: `linear-gradient(135deg, #A8D86E 0%, #3DA1E0 100%)`,
+            boxShadow: `0 6px 24px rgba(139, 197, 63, 0.35)`,
             transform: 'translateY(-1px)',
           },
         };
       case 'secondary':
         return {
-          background: 'transparent',
-          color: '#0D9B4A',
-          border: '1px solid rgba(13, 155, 74, 0.5)',
+          background: '#fff',
+          color: MGTC_GREEN,
+          border: `1px solid ${MGTC_GREEN}50`,
           '&:hover': {
-            background: 'rgba(13, 155, 74, 0.1)',
-            borderColor: '#0D9B4A',
-            boxShadow: '0 0 20px rgba(13, 155, 74, 0.2)',
+            background: `${MGTC_GREEN}10`,
+            borderColor: MGTC_GREEN,
+            boxShadow: `0 0 16px ${MGTC_GREEN}15`,
             transform: 'translateY(-1px)',
           },
         };
       case 'ghost':
         return {
           background: 'transparent',
-          color: '#E6F1FF',
+          color: '#5A6A7E',
           border: '1px solid transparent',
           '&:hover': {
-            background: 'rgba(255, 255, 255, 0.05)',
-            color: '#14CC66',
+            background: '#F0F3F7',
+            color: MGTC_GREEN,
           },
         };
       default:

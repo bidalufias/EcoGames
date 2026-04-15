@@ -12,12 +12,12 @@ export default function PauseMenu({ onResume, onQuit }: Props) {
     <Box sx={{
       position: 'fixed', inset: 0, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(10,22,40,0.85)', backdropFilter: 'blur(8px)',
+      background: 'rgba(250,251,252,0.92)', backdropFilter: 'blur(8px)',
     }}>
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
         <Box sx={{
           p: 5, borderRadius: 3, textAlign: 'center',
-          background: 'rgba(17,34,64,0.9)', backdropFilter: 'blur(16px)',
+          background: '#FFFFFF', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(13,155,74,0.2)',
         }}>
           <Typography variant="h4" sx={{ fontWeight: 800, mb: 4 }}>

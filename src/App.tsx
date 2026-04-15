@@ -14,48 +14,44 @@ const EcoMemoryGame = lazy(() => import('./games/eco-memory/EcoMemoryGame'));
 const GreenDefenceGame = lazy(() => import('./games/green-defence/GreenDefenceGame'));
 const Climate2048Game = lazy(() => import('./games/climate-2048/Climate2048Game'));
 
+const loadingStyle = { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A6A7E' } as const;
+
 function App() {
   return (
     <ThemeProvider theme={ecoTheme}>
       <CssBaseline />
-      <Box
-        sx={{
-          minHeight: '100vh',
-          background: 'linear-gradient(180deg, #0A1628 0%, #0D1B30 50%, #0A1628 100%)',
-          backgroundAttachment: 'fixed',
-        }}
-      >
+      <Box sx={{ minHeight: '100vh', background: '#FAFBFC' }}>
         <BrowserRouter>
           <EcoHeader />
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/games/climate-ninja" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Climate Ninja...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Climate Ninja...</Box>}>
                 <ClimateNinjaGame />
               </Suspense>
             } />
             <Route path="/games/carbon-crush" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Carbon Crush...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Carbon Crush...</Box>}>
                 <CarbonCrushGame />
               </Suspense>
             } />
             <Route path="/games/recycle-rush" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Recycle Rush...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Recycle Rush...</Box>}>
                 <RecycleRushGame />
               </Suspense>
             } />
             <Route path="/games/eco-memory" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Eco Memory...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Eco Memory...</Box>}>
                 <EcoMemoryGame />
               </Suspense>
             } />
             <Route path="/games/green-defence" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Green Defence...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Green Defence...</Box>}>
                 <GreenDefenceGame />
               </Suspense>
             } />
             <Route path="/games/climate-2048" element={
-              <Suspense fallback={<Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8892B0' }}>Loading Climate 2048...</Box>}>
+              <Suspense fallback={<Box sx={loadingStyle}>Loading Climate 2048...</Box>}>
                 <Climate2048Game />
               </Suspense>
             } />

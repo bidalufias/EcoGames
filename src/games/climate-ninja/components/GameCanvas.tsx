@@ -109,7 +109,7 @@ export default function GameCanvas({
     <div ref={containerRef} style={{
       width: '100%', height: '100%', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
-      background: '#0A1628', touchAction: 'none',
+      background: '#FAFBFC', touchAction: 'none',
     }}>
       <canvas
         ref={canvasRef}

@@ -22,7 +22,7 @@ export default function NameEntryScreen({ playerCount, onSubmit }: Props) {
 
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>
@@ -37,7 +37,7 @@ export default function NameEntryScreen({ playerCount, onSubmit }: Props) {
           <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.15 }}>
             <Box sx={{
               p: 3, borderRadius: 3, minWidth: 220, textAlign: 'center',
-              background: 'rgba(17,34,64,0.7)', backdropFilter: 'blur(16px)',
+              background: '#FFFFFF', backdropFilter: 'blur(16px)',
               border: `1px solid ${PLAYER_COLORS[i]}44`,
               ...(playerCount === 2 && i === 1 ? { transform: 'rotate(180deg)' } : {}),
             }}>
@@ -52,7 +52,7 @@ export default function NameEntryScreen({ playerCount, onSubmit }: Props) {
                 placeholder={`Player ${i + 1}`}
                 maxLength={20}
                 style={{
-                  textAlign: 'center', color: '#E6F1FF', background: 'transparent',
+                  textAlign: 'center', color: '#1A2332', background: 'transparent',
                   border: 'none', borderBottom: `2px solid ${PLAYER_COLORS[i]}66`,
                   fontSize: 18, padding: '8px 12px', outline: 'none', fontFamily: 'inherit',
                   ...(playerCount === 2 && i === 1 ? { transform: 'rotate(180deg)' } : {}),

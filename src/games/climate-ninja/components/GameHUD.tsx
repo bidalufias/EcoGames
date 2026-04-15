@@ -17,7 +17,7 @@ export default function GameHUD({ players, zones, combos, powerups, frenzy }: Pr
         if (!player.isAlive) return null;
         const zone = zones[i];
         if (!zone) return null;
-        const color = PLAYER_COLORS[i] || '#0D9B4A';
+        const color = PLAYER_COLORS[i] || '#8BC53F';
         const combo = combos[i] ?? 0;
         const pu = powerups[i] ?? [];
         const isFrenzy = frenzy[i] ?? false;
@@ -34,7 +34,7 @@ export default function GameHUD({ players, zones, combos, powerups, frenzy }: Pr
           }}>
             {/* Score + Combo */}
             <Box sx={{
-              background: 'rgba(10,22,40,0.75)', backdropFilter: 'blur(8px)',
+              background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)',
               borderRadius: 2, px: 2, py: 1,
               border: `1px solid ${color}44`,
             }}>
@@ -50,9 +50,9 @@ export default function GameHUD({ players, zones, combos, powerups, frenzy }: Pr
 
             {/* Lives */}
             <Box sx={{
-              background: 'rgba(10,22,40,0.75)', backdropFilter: 'blur(8px)',
+              background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)',
               borderRadius: 2, px: 1.5, py: 0.8,
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: '1px solid #E8EDF2',
               display: 'flex', gap: 0.5,
             }}>
               {Array.from({ length: player.lives }).map((_, li) => (

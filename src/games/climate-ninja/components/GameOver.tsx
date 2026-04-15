@@ -17,7 +17,7 @@ export default function GameOver({ players, playerNames, onPlayAgain, onViewLead
 
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>
@@ -34,30 +34,30 @@ export default function GameOver({ players, playerNames, onPlayAgain, onViewLead
 
       <Box sx={{
         width: '100%', maxWidth: 500, borderRadius: 3, overflow: 'hidden',
-        background: 'rgba(17,34,64,0.7)', backdropFilter: 'blur(16px)',
+        background: '#FFFFFF', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(13,155,74,0.15)',
       }}>
-        <Box sx={{ display: 'flex', p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <Typography sx={{ flex: 1, fontWeight: 700, color: '#8892B0' }}>Player</Typography>
-          <Typography sx={{ width: 80, textAlign: 'center', fontWeight: 700, color: '#8892B0' }}>Score</Typography>
-          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#8892B0' }}>Sliced</Typography>
-          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#8892B0' }}>Combo</Typography>
+        <Box sx={{ display: 'flex', p: 2, borderBottom: '1px solid #E8EDF2' }}>
+          <Typography sx={{ flex: 1, fontWeight: 700, color: '#5A6A7E' }}>Player</Typography>
+          <Typography sx={{ width: 80, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Score</Typography>
+          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Sliced</Typography>
+          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Combo</Typography>
         </Box>
         {sorted.map((p, idx) => (
           <Box key={p.id} sx={{
             display: 'flex', p: 2, alignItems: 'center',
             background: p === winner ? 'rgba(13,155,74,0.1)' : 'transparent',
           }}>
-            <Typography sx={{ flex: 1, fontWeight: 700, color: PLAYER_COLORS[p.id] || '#E6F1FF' }}>
+            <Typography sx={{ flex: 1, fontWeight: 700, color: PLAYER_COLORS[p.id] || '#1A2332' }}>
               {idx === 0 ? '🏆 ' : ''}{playerNames[p.id] || `Player ${p.id + 1}`}
             </Typography>
             <Typography sx={{ width: 80, textAlign: 'center', fontWeight: 700 }}>
               {p.score.toLocaleString()}
             </Typography>
-            <Typography sx={{ width: 60, textAlign: 'center', color: '#8892B0' }}>
+            <Typography sx={{ width: 60, textAlign: 'center', color: '#5A6A7E' }}>
               {p.itemsSliced}
             </Typography>
-            <Typography sx={{ width: 60, textAlign: 'center', color: '#8892B0' }}>
+            <Typography sx={{ width: 60, textAlign: 'center', color: '#5A6A7E' }}>
               {p.maxCombo}x
             </Typography>
           </Box>

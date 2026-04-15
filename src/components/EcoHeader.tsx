@@ -1,11 +1,10 @@
 import { Box, Typography } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { MGTC_GREEN, MGTC_BLUE } from '../theme/ecoTheme';
 
 export default function EcoHeader() {
   const navigate = useNavigate();
-  const location = useLocation();
-  void location.pathname;
 
   return (
     <motion.div
@@ -14,6 +13,7 @@ export default function EcoHeader() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       <Box
+        onClick={() => navigate('/')}
         sx={{
           position: 'fixed',
           top: 0,
@@ -25,48 +25,33 @@ export default function EcoHeader() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'rgba(10, 22, 40, 0.8)',
+          background: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(13, 155, 74, 0.1)',
+          borderBottom: '1px solid #E8EDF2',
+          cursor: 'pointer',
         }}
       >
-        <Box
-          onClick={() => navigate('/')}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            cursor: 'pointer',
-            '&:hover': { '& .logo-text': { color: '#14CC66' } },
-            transition: 'color 0.3s',
-          }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            component="img"
+            src="/mgtc-logo.png"
+            alt="MGTC"
+            sx={{ height: 32, width: 'auto' }}
+          />
           <Typography
-            className="logo-text"
             sx={{
-              fontSize: { xs: '1.2rem', sm: '1.5rem' },
+              fontSize: { xs: '1.1rem', sm: '1.3rem' },
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #0D9B4A, #1B8EBF)',
+              background: `linear-gradient(135deg, ${MGTC_GREEN}, ${MGTC_BLUE})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '-0.02em',
             }}
           >
-            🌱 EcoGames
+            EcoGames
           </Typography>
         </Box>
-
-        <Typography
-          sx={{
-            fontSize: { xs: '0.75rem', sm: '0.85rem' },
-            color: 'text.secondary',
-            fontWeight: 500,
-            opacity: 0.7,
-          }}
-        >
-          by MGTC
-        </Typography>
       </Box>
     </motion.div>
   );

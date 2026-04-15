@@ -19,19 +19,19 @@ const speeds = [0.5, 0.75, 1, 1.25, 1.5];
 export default function StartScreen({ onSelectMode }: Props) {
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Typography variant="h4" align="center" sx={{
-          background: 'linear-gradient(135deg, #0D9B4A, #1B8EBF)',
+          background: 'linear-gradient(135deg, #8BC53F, #007DC4)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           fontWeight: 800, mb: 1,
         }}>
           🥷 Climate Ninja
         </Typography>
-        <Typography align="center" sx={{ color: '#8892B0', mb: 4 }}>
+        <Typography align="center" sx={{ color: '#5A6A7E', mb: 4 }}>
           Slice through greenhouse gases!
         </Typography>
       </motion.div>
@@ -43,24 +43,24 @@ export default function StartScreen({ onSelectMode }: Props) {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               <Box onClick={() => onSelectMode(m.mode, 1)} sx={{
                 p: 3, borderRadius: 3, cursor: 'pointer', textAlign: 'center',
-                background: 'rgba(17,34,64,0.7)', backdropFilter: 'blur(16px)',
+                background: '#FFFFFF', backdropFilter: 'blur(16px)',
                 border: '1px solid rgba(13,155,74,0.15)',
                 transition: 'all 0.3s',
                 '&:hover': {
-                  borderColor: '#0D9B4A', boxShadow: '0 0 30px rgba(13,155,74,0.2)',
+                  borderColor: '#8BC53F', boxShadow: '0 0 30px rgba(13,155,74,0.2)',
                   transform: 'scale(1.02)',
                 },
               }}>
                 <Typography sx={{ fontSize: 48, mb: 1 }}>{m.icon}</Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>{m.title}</Typography>
-                <Typography variant="body2" sx={{ color: '#8892B0' }}>{m.desc}</Typography>
+                <Typography variant="body2" sx={{ color: '#5A6A7E' }}>{m.desc}</Typography>
               </Box>
             </motion.div>
           </Grid>
         ))}
       </Grid>
 
-      <Typography variant="body2" sx={{ color: '#8892B0', mb: 1 }}>Speed (quick select)</Typography>
+      <Typography variant="body2" sx={{ color: '#5A6A7E', mb: 1 }}>Speed (quick select)</Typography>
       <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
         {speeds.map(s => (
           <EcoButton key={s} variant="secondary" size="small" onClick={() => onSelectMode('1p', s)}>

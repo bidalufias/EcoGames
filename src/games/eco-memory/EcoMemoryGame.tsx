@@ -43,7 +43,6 @@ export default function EcoMemoryGame() {
       const [first, second] = newFlipped.map(fid => cards.find(c => c.id === fid)!);
 
       if (first.pairId === second.pairId) {
-        // Match!
         setMatches(m => m + 1);
         setFact(`💡 ${first.fact}`);
         setTimeout(() => {
@@ -53,7 +52,6 @@ export default function EcoMemoryGame() {
           setTimeout(() => setFact(''), 3000);
         }, 500);
       } else {
-        // No match
         setTimeout(() => {
           setCards(prev => prev.map(c => newFlipped.includes(c.id) ? { ...c, flipped: false } : c));
           setFlipped([]);
@@ -63,7 +61,6 @@ export default function EcoMemoryGame() {
     }
   }, [cards, flipped, locked]);
 
-  // Check win
   if (screen === 'playing' && matches === totalPairs) {
     setTimeout(() => setScreen('gameover'), 500);
   }
@@ -72,34 +69,34 @@ export default function EcoMemoryGame() {
   if (screen === 'intro') {
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        px: 3, py: 4,
+        px: 3, py: 4, overflow: 'hidden',
       }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Typography variant="h3" sx={{
-            background: 'linear-gradient(135deg, #9B59B6, #1B8EBF)',
+            background: 'linear-gradient(135deg, #9B59B6, #007DC4)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, mb: 2,
           }} align="center">
             🧠 Eco Memory
           </Typography>
-          <Typography variant="h6" sx={{ color: '#8892B0', mb: 4 }} align="center">
+          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 4 }} align="center">
             Match greenhouse gases to their sources and effects!
           </Typography>
         </motion.div>
 
         <Box sx={{ maxWidth: 600, mb: 3 }}>
-          <Typography sx={{ mb: 2 }} align="center">Match each gas to its source:</Typography>
+          <Typography sx={{ mb: 2, color: '#1A2332' }} align="center">Match each gas to its source:</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
             {GHG_PAIRS.map(p => (
-              <Box key={p.label} sx={{ px: 1.5, py: 0.5, borderRadius: 2, background: `${p.color}15`, border: `1px solid ${p.color}33`, fontSize: 14 }}>
+              <Box key={p.label} sx={{ px: 1.5, py: 0.5, borderRadius: 2, background: `${p.color}10`, border: `1px solid ${p.color}25`, fontSize: 14 }}>
                 {p.emoji} {p.label} ↔ {p.source}
               </Box>
             ))}
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#8892B0', mb: 3, maxWidth: 450, textAlign: 'center' }}>
+        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 450, textAlign: 'center' }}>
           Flip cards to find matching pairs. Each match reveals a climate fact!
           Try to match all {totalPairs} pairs in as few moves as possible.
         </Typography>
@@ -114,13 +111,14 @@ export default function EcoMemoryGame() {
     const rating = moves <= totalPairs + 2 ? '🏆 Perfect!' : moves <= totalPairs * 2 ? '⭐ Great!' : moves <= totalPairs * 3 ? '👍 Good!' : '🌱 Keep Learning!';
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', px: 3,
+        overflow: 'hidden',
       }}>
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
           <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }} align="center">All Matched! 🎉</Typography>
           <Typography variant="h5" sx={{ color: '#9B59B6', mb: 1 }} align="center">{rating}</Typography>
-          <Typography sx={{ color: '#8892B0', mb: 3 }} align="center">
+          <Typography sx={{ color: '#5A6A7E', mb: 3 }} align="center">
             Completed in {moves} moves ({totalPairs} pairs)
           </Typography>
         </motion.div>
@@ -135,8 +133,9 @@ export default function EcoMemoryGame() {
   // --- Playing ---
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 3, px: 2,
+      height: '100vh', bgcolor: '#F0F3F7', color: '#1A2332',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2,
+      overflow: 'hidden',
     }}>
       {/* HUD */}
       <Box sx={{ display: 'flex', gap: 4, mb: 3 }}>
@@ -164,14 +163,14 @@ export default function EcoMemoryGame() {
                   aspectRatio: '1', borderRadius: 2, cursor: 'pointer',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   background: card.matched
-                    ? `${card.color}20`
+                    ? `${card.color}15`
                     : card.flipped
-                      ? `linear-gradient(135deg, ${card.color}33, ${card.color}11)`
-                      : 'rgba(17,34,64,0.8)',
-                  border: `1px solid ${card.matched ? card.color : card.flipped ? `${card.color}88` : 'rgba(255,255,255,0.08)'}`,
-                  backdropFilter: 'blur(8px)',
+                      ? '#FFFFFF'
+                      : '#FFFFFF',
+                  border: `2px solid ${card.matched ? card.color : card.flipped ? card.color : '#E8EDF2'}`,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                   transition: 'all 0.3s',
-                  '&:hover': !card.flipped && !card.matched ? { borderColor: `${card.color}44`, transform: 'scale(1.05)' } : {},
+                  '&:hover': !card.flipped && !card.matched ? { borderColor: `${card.color}55`, transform: 'scale(1.05)' } : {},
                   opacity: card.matched ? 0.6 : 1,
                   p: 1,
                 }}
@@ -197,8 +196,8 @@ export default function EcoMemoryGame() {
         {fact && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
-            <Box sx={{ px: 3, py: 1.5, borderRadius: 2, background: 'rgba(155,89,182,0.15)', backdropFilter: 'blur(16px)', border: '1px solid rgba(155,89,182,0.3)', maxWidth: 400, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: 13, color: '#BB86FC' }}>{fact}</Typography>
+            <Box sx={{ px: 3, py: 1.5, borderRadius: 2, background: '#9B59B612', border: '1px solid #9B59B625', maxWidth: 400, textAlign: 'center' }}>
+              <Typography sx={{ fontSize: 13, color: '#9B59B6' }}>{fact}</Typography>
             </Box>
           </motion.div>
         )}

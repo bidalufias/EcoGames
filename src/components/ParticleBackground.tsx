@@ -32,14 +32,14 @@ export default function ParticleBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Create particles
-    const count = Math.min(60, Math.floor(window.innerWidth * window.innerHeight / 20000));
+    // Create particles — MGTC brand colors, light mode
+    const count = Math.min(40, Math.floor(window.innerWidth * window.innerHeight / 30000));
     const colors = [
-      'rgba(13, 155, 74,',  // green
-      'rgba(20, 204, 102,', // light green
-      'rgba(27, 142, 191,', // blue
-      'rgba(35, 181, 232,', // light blue
-      'rgba(13, 155, 74,',  // green
+      'rgba(139, 197, 63,',   // MGTC green
+      'rgba(168, 216, 110,',  // light green
+      'rgba(0, 125, 196,',    // MGTC blue
+      'rgba(61, 161, 224,',   // light blue
+      'rgba(139, 197, 63,',   // MGTC green
     ];
 
     const particles: Particle[] = [];
@@ -48,14 +48,14 @@ export default function ParticleBackground() {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3 - 0.1,
-        radius: isLeaf ? 3 + Math.random() * 4 : 2 + Math.random() * 6,
-        opacity: 0.1 + Math.random() * 0.3,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2 - 0.05,
+        radius: isLeaf ? 2 + Math.random() * 3 : 1.5 + Math.random() * 4,
+        opacity: 0.06 + Math.random() * 0.12,
         color: colors[Math.floor(Math.random() * colors.length)],
         type: isLeaf ? 'leaf' : 'orb',
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.01,
+        rotationSpeed: (Math.random() - 0.5) * 0.008,
         pulsePhase: Math.random() * Math.PI * 2,
       });
     }
@@ -87,7 +87,6 @@ export default function ParticleBackground() {
         ctx.globalAlpha = p.opacity * pulse;
 
         if (p.type === 'orb') {
-          // Glowing orb
           const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 3);
           gradient.addColorStop(0, p.color + (p.opacity * 0.8).toFixed(2) + ')');
           gradient.addColorStop(0.4, p.color + (p.opacity * 0.3).toFixed(2) + ')');
@@ -97,7 +96,6 @@ export default function ParticleBackground() {
           ctx.arc(0, 0, r * 3, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          // Leaf shape
           ctx.fillStyle = p.color + (p.opacity * 0.6).toFixed(2) + ')';
           ctx.beginPath();
           ctx.moveTo(0, -r);
@@ -109,16 +107,16 @@ export default function ParticleBackground() {
         ctx.restore();
       }
 
-      // Draw subtle connection lines between nearby particles
+      // Subtle connection lines
       ctx.globalAlpha = 1;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
-            const opacity = (1 - dist / 150) * 0.06;
-            ctx.strokeStyle = `rgba(13, 155, 74, ${opacity})`;
+          if (dist < 120) {
+            const opacity = (1 - dist / 120) * 0.04;
+            ctx.strokeStyle = `rgba(139, 197, 63, ${opacity})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);

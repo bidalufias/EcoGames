@@ -7,8 +7,8 @@ import EcoButton from '../../components/EcoButton';
 interface FallingItem {
   id: number;
   waste: typeof WASTE_ITEMS[number];
-  col: number;  // 0-4
-  row: number;  // 0 = top, increases downward
+  col: number;
+  row: number;
   speed: number;
 }
 
@@ -29,7 +29,6 @@ export default function RecycleRushGame() {
   const gameRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef({ score, lives, level, streak, sorted, mistakes, items, selectedBin, nextId });
 
-  // Keep ref in sync
   stateRef.current = { score, lives, level, streak, sorted, mistakes, items, selectedBin, nextId };
 
   const spawnItem = useCallback(() => {
@@ -38,8 +37,7 @@ export default function RecycleRushGame() {
     const waste = randomWaste(s.level);
     const col = Math.floor(Math.random() * PLAYFIELD_W);
     const item: FallingItem = {
-      id: s.nextId,
-      waste, col, row: 0, speed: lvl.speed,
+      id: s.nextId, waste, col, row: 0, speed: lvl.speed,
     };
     setNextId(n => n + 1);
     setItems(prev => [...prev, item]);
@@ -51,11 +49,9 @@ export default function RecycleRushGame() {
       setScore(s => s + 10 + (stateRef.current.streak * 2));
       setStreak(s => s + 1);
       setSorted(s => s + 1);
-      // Level up every 10 sorted
       if ((stateRef.current.sorted + 1) % 10 === 0) {
         setLevel(l => Math.min(l + 1, 4));
       }
-      // Fact every 5 streak
       if ((stateRef.current.streak + 1) % 5 === 0) {
         setFact(`💡 ${item.waste.fact}`);
         setTimeout(() => setFact(''), 3000);
@@ -65,7 +61,6 @@ export default function RecycleRushGame() {
       setStreak(0);
       setMistakes(m => m + 1);
     }
-    // Remove item
     setItems(prev => prev.filter(i => i.id !== item.id));
     setSelectedBin(null);
   }, []);
@@ -76,19 +71,13 @@ export default function RecycleRushGame() {
     setScreen('playing');
   }, []);
 
-  // Game loop
   useEffect(() => {
     if (screen !== 'playing') return;
-
     const diff = DIFFICULTY_LEVELS[Math.min(level, 4)];
     let spawnTimer = 0;
-
     const interval = setInterval(() => {
-      // Move items down
       setItems(prev => {
         const updated = prev.map(item => ({ ...item, row: item.row + item.speed * 0.05 }));
-
-        // Check for items that reached the bottom (row >= 10)
         const missed = updated.filter(i => i.row >= 10);
         if (missed.length > 0) {
           setLives(l => Math.max(0, l - missed.length));
@@ -96,19 +85,15 @@ export default function RecycleRushGame() {
         }
         return updated.filter(i => i.row < 10);
       });
-
-      // Spawn
       spawnTimer++;
       if (spawnTimer >= diff.spawnRate / 16) {
         spawnTimer = 0;
         spawnItem();
       }
     }, 16);
-
     return () => clearInterval(interval);
   }, [screen, level, spawnItem]);
 
-  // Check game over
   useEffect(() => {
     if (screen === 'playing' && lives <= 0) {
       setTimeout(() => setScreen('gameover'), 500);
@@ -116,47 +101,40 @@ export default function RecycleRushGame() {
   }, [lives, screen]);
 
   const handleItemClick = useCallback((item: FallingItem) => {
-    if (selectedBin) {
-      checkAnswer(item, selectedBin);
-    } else {
-      // Select item first, then show bin selection
-      setSelectedBin(null);
-      // Highlight item and show bins
-    }
+    if (selectedBin) { checkAnswer(item, selectedBin); }
   }, [selectedBin, checkAnswer]);
 
   const handleBinClick = useCallback((binId: string) => {
     setSelectedBin(binId);
-    // If only one item visible, auto-select it
   }, []);
 
   // --- Intro ---
   if (screen === 'intro') {
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        px: 3, py: 4, overflowY: 'auto',
+        px: 3, py: 4, overflow: 'hidden',
       }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Typography variant="h3" sx={{
-            background: 'linear-gradient(135deg, #FFB800, #0D9B4A)',
+            background: 'linear-gradient(135deg, #FF8C42, #8BC53F)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, mb: 2,
           }} align="center">
             📦 Recycle Rush
           </Typography>
-          <Typography variant="h6" sx={{ color: '#8892B0', mb: 4 }} align="center">
+          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 4 }} align="center">
             Sort waste at lightning speed. Learn what goes where!
           </Typography>
         </motion.div>
 
         <Box sx={{ maxWidth: 600, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>🎯 The Bins:</Typography>
+          <Typography variant="h6" sx={{ mb: 2, color: '#1A2332' }}>🎯 The Bins:</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center' }}>
             {BINS.map(bin => (
               <Box key={bin.id} sx={{
                 px: 2, py: 1, borderRadius: 2,
-                background: `${bin.color}15`, border: `1px solid ${bin.color}44`,
+                background: `${bin.color}10`, border: `1px solid ${bin.color}30`,
                 textAlign: 'center',
               }}>
                 <Typography sx={{ fontSize: 28 }}>{bin.emoji}</Typography>
@@ -166,7 +144,7 @@ export default function RecycleRushGame() {
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#8892B0', mb: 3, maxWidth: 500, textAlign: 'center' }}>
+        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 500, textAlign: 'center' }}>
           Select a bin, then tap falling waste to sort it! Wrong bin = lost life.
           Sort 10 items to level up. Speed increases each level!
         </Typography>
@@ -180,16 +158,16 @@ export default function RecycleRushGame() {
   if (screen === 'gameover') {
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        px: 3,
+        px: 3, overflow: 'hidden',
       }}>
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
           <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }} align="center">Time's Up!</Typography>
-          <Typography variant="h5" sx={{ color: '#FFB800', mb: 1 }} align="center">
+          <Typography variant="h5" sx={{ color: '#FF8C42', mb: 1 }} align="center">
             Score: {score.toLocaleString()}
           </Typography>
-          <Typography sx={{ color: '#8892B0', mb: 3 }} align="center">
+          <Typography sx={{ color: '#5A6A7E', mb: 3 }} align="center">
             Sorted: {sorted} | Mistakes: {mistakes} | Level: {level + 1}
           </Typography>
         </motion.div>
@@ -204,30 +182,30 @@ export default function RecycleRushGame() {
   // --- Playing ---
   return (
     <Box ref={gameRef} sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2, px: 2,
-      touchAction: 'none', userSelect: 'none',
+      height: '100vh', bgcolor: '#F0F3F7', color: '#1A2332',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2,
+      touchAction: 'none', userSelect: 'none', overflow: 'hidden',
     }}>
       {/* HUD */}
       <Box sx={{ display: 'flex', gap: 3, mb: 1, alignItems: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
           <Typography sx={{ fontSize: 11, color: '#8892B0' }}>SCORE</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#FFB800' }}>{score}</Typography>
+          <Typography sx={{ fontWeight: 800, color: '#FF8C42' }}>{score}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           <Typography sx={{ fontSize: 11, color: '#8892B0' }}>LIVES</Typography>
-          <Typography sx={{ fontWeight: 800, color: lives <= 2 ? '#FF4757' : '#E6F1FF' }}>
+          <Typography sx={{ fontWeight: 800, color: lives <= 2 ? '#E74C3C' : '#1A2332' }}>
             {'🌍'.repeat(Math.max(0, lives))}
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           <Typography sx={{ fontSize: 11, color: '#8892B0' }}>LEVEL</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#0D9B4A' }}>{level + 1}</Typography>
+          <Typography sx={{ fontWeight: 800, color: '#8BC53F' }}>{level + 1}</Typography>
         </Box>
         {streak >= 3 && (
           <Box sx={{ textAlign: 'center' }}>
-            <Typography sx={{ fontSize: 11, color: '#FFD700' }}>🔥 STREAK</Typography>
-            <Typography sx={{ fontWeight: 800, color: '#FFD700' }}>{streak}</Typography>
+            <Typography sx={{ fontSize: 11, color: '#FF8C42' }}>🔥 STREAK</Typography>
+            <Typography sx={{ fontWeight: 800, color: '#FF8C42' }}>{streak}</Typography>
           </Box>
         )}
       </Box>
@@ -240,8 +218,8 @@ export default function RecycleRushGame() {
             onClick={() => handleBinClick(bin.id)}
             sx={{
               px: 1.5, py: 0.8, borderRadius: 2, cursor: 'pointer',
-              background: selectedBin === bin.id ? `${bin.color}30` : `${bin.color}10`,
-              border: `2px solid ${selectedBin === bin.id ? bin.color : `${bin.color}33`}`,
+              background: selectedBin === bin.id ? `${bin.color}20` : '#FFFFFF',
+              border: `2px solid ${selectedBin === bin.id ? bin.color : '#E8EDF2'}`,
               transition: 'all 0.15s',
               '&:hover': { borderColor: bin.color },
             }}
@@ -254,8 +232,9 @@ export default function RecycleRushGame() {
       {/* Playfield */}
       <Box sx={{
         position: 'relative', width: PLAYFIELD_W * 65, height: 500,
-        background: 'rgba(17,34,64,0.4)', borderRadius: 2,
-        border: '1px solid rgba(255,255,255,0.05)',
+        background: '#FFFFFF', borderRadius: 2,
+        border: '1px solid #E8EDF2',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         overflow: 'hidden',
       }}>
         <AnimatePresence>
@@ -277,10 +256,10 @@ export default function RecycleRushGame() {
                   width: '100%', height: '100%', borderRadius: 2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 32, cursor: selectedBin ? 'pointer' : 'default',
-                  background: selectedBin ? 'rgba(255,255,255,0.05)' : 'transparent',
-                  border: selectedBin ? '1px solid rgba(255,255,255,0.15)' : 'none',
+                  background: selectedBin ? '#F8F9FB' : 'transparent',
+                  border: selectedBin ? '1px solid #E8EDF2' : 'none',
                   transition: 'all 0.15s',
-                  '&:hover': selectedBin ? { background: 'rgba(255,255,255,0.1)', transform: 'scale(1.1)' } : {},
+                  '&:hover': selectedBin ? { background: '#F0F3F7', transform: 'scale(1.1)' } : {},
                 }}
                 title={item.waste.name}
               >
@@ -298,10 +277,10 @@ export default function RecycleRushGame() {
             style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
             <Box sx={{
               px: 3, py: 1.5, borderRadius: 2,
-              background: 'rgba(255,184,0,0.15)', backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255,184,0,0.3)', maxWidth: 400, textAlign: 'center',
+              background: '#FF8C4215', border: '1px solid #FF8C4230',
+              maxWidth: 400, textAlign: 'center',
             }}>
-              <Typography sx={{ fontSize: 13, color: '#FFB800' }}>{fact}</Typography>
+              <Typography sx={{ fontSize: 13, color: '#FF8C42' }}>{fact}</Typography>
             </Box>
           </motion.div>
         )}

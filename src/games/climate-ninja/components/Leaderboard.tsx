@@ -31,7 +31,7 @@ export default function Leaderboard({ scores, onBack }: Props) {
 
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>
@@ -39,16 +39,16 @@ export default function Leaderboard({ scores, onBack }: Props) {
 
       <Box sx={{
         width: '100%', maxWidth: 500, borderRadius: 3, overflow: 'hidden',
-        background: 'rgba(17,34,64,0.7)', backdropFilter: 'blur(16px)',
+        background: '#FFFFFF', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(13,155,74,0.15)',
       }}>
         {loading ? (
           <Box sx={{ p: 4, textAlign: 'center' }}>
-            <Typography sx={{ color: '#8892B0' }}>Loading...</Typography>
+            <Typography sx={{ color: '#5A6A7E' }}>Loading...</Typography>
           </Box>
         ) : entries.length === 0 ? (
           <Box sx={{ p: 4, textAlign: 'center' }}>
-            <Typography sx={{ color: '#8892B0' }}>No scores yet. Be the first!</Typography>
+            <Typography sx={{ color: '#5A6A7E' }}>No scores yet. Be the first!</Typography>
           </Box>
         ) : (
           entries.slice(0, 10).map((entry, i) => (
@@ -57,11 +57,11 @@ export default function Leaderboard({ scores, onBack }: Props) {
               borderBottom: '1px solid rgba(255,255,255,0.05)',
               background: i === 0 ? 'rgba(255,215,0,0.05)' : 'transparent',
             }}>
-              <Typography sx={{ width: 40, fontWeight: 700, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : '#8892B0' }}>
+              <Typography sx={{ width: 40, fontWeight: 700, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : '#5A6A7E' }}>
                 {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
               </Typography>
               <Typography sx={{ flex: 1, fontWeight: 600 }}>{entry.player_name}</Typography>
-              <Typography sx={{ fontWeight: 700, color: '#0D9B4A' }}>{entry.score.toLocaleString()}</Typography>
+              <Typography sx={{ fontWeight: 700, color: '#8BC53F' }}>{entry.score.toLocaleString()}</Typography>
             </Box>
           ))
         )}

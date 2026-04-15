@@ -21,7 +21,7 @@ export default function CountdownOverlay({ onComplete }: Props) {
     <Box sx={{
       position: 'fixed', inset: 0, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(10,22,40,0.85)',
+      background: 'rgba(250,251,252,0.92)',
     }}>
       <AnimatePresence mode="wait">
         {step < steps.length && (
@@ -33,7 +33,7 @@ export default function CountdownOverlay({ onComplete }: Props) {
           >
             <Typography sx={{
               fontSize: 120, fontWeight: 800,
-              color: step === 3 ? '#0D9B4A' : '#E6F1FF',
+              color: step === 3 ? '#8BC53F' : '#1A2332',
               textShadow: step === 3 ? '0 0 40px rgba(13,155,74,0.5)' : 'none',
             }}>
               {steps[step]}

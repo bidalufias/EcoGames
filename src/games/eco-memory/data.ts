@@ -24,9 +24,10 @@ export const GHG_PAIRS = [
 export function createCards(): Card[] {
   let id = 0;
   const cards: Card[] = [];
-  for (const pair of GHG_PAIRS) {
-    cards.push({ id: id++, pairId: pair.label.charCodeAt(0), emoji: pair.emoji, label: pair.label, color: pair.color, fact: pair.fact, flipped: false, matched: false });
-    cards.push({ id: id++, pairId: pair.label.charCodeAt(0), emoji: pair.source, label: pair.source, color: pair.color, fact: pair.fact, flipped: false, matched: false });
+  for (let i = 0; i < GHG_PAIRS.length; i++) {
+    const pair = GHG_PAIRS[i];
+    cards.push({ id: id++, pairId: i, emoji: pair.emoji, label: pair.label, color: pair.color, fact: pair.fact, flipped: false, matched: false });
+    cards.push({ id: id++, pairId: i, emoji: pair.source, label: pair.source, color: pair.color, fact: pair.fact, flipped: false, matched: false });
   }
   // Shuffle
   for (let i = cards.length - 1; i > 0; i--) {

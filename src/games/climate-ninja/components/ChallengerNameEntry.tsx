@@ -14,7 +14,7 @@ export default function ChallengerNameEntry({ championName, streak, onSubmit }: 
 
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#0A1628', color: '#E6F1FF',
+      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3,
     }}>
@@ -31,7 +31,7 @@ export default function ChallengerNameEntry({ championName, streak, onSubmit }: 
 
       <Box sx={{
         p: 3, borderRadius: 3, minWidth: 280, textAlign: 'center',
-        background: 'rgba(17,34,64,0.7)', backdropFilter: 'blur(16px)',
+        background: '#FFFFFF', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(27,142,191,0.3)',
       }}>
         <input
@@ -40,8 +40,8 @@ export default function ChallengerNameEntry({ championName, streak, onSubmit }: 
           placeholder="Your name"
           maxLength={20}
           style={{
-            textAlign: 'center', color: '#E6F1FF', background: 'transparent',
-            border: 'none', borderBottom: '2px solid #1B8EBF66',
+            textAlign: 'center', color: '#1A2332', background: 'transparent',
+            border: 'none', borderBottom: '2px solid #007DC466',
             fontSize: 20, padding: '8px 12px', outline: 'none', width: '100%',
             fontFamily: 'inherit',
           }}
