@@ -20,18 +20,32 @@ export default function BackToHome() {
     <Box
       onClick={() => navigate('/')}
       sx={{
-        position: 'fixed', top: 10, left: 10, zIndex: 1001,
-        px: 2, py: 0.8, borderRadius: 2,
-        background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)',
+        position: 'fixed',
+        top: { xs: 16, md: 24 },
+        left: { xs: 16, md: 32 },
+        zIndex: 10001,
+        px: 2,
+        py: 0.8,
+        borderRadius: '10px',
+        background: 'rgba(255,255,255,0.9)',
+        backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid #E8EDF2', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 0.75,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        '&:hover': { background: 'rgba(255,255,255,0.96)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
+        border: '1px solid rgba(0,0,0,0.06)',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.75,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        '&:hover': {
+          background: 'rgba(255,255,255,0.98)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        },
         transition: 'all 0.2s',
       }}
     >
-      <Typography sx={{ fontSize: 15, color: '#5A6A7E', fontWeight: 600 }}>← {title}</Typography>
+      <Typography sx={{ fontSize: 14, color: '#64748B', fontWeight: 600, letterSpacing: '-0.01em' }}>
+        ← {title}
+      </Typography>
     </Box>
   );
 }

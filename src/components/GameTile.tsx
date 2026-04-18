@@ -1,7 +1,6 @@
 import { Box, Typography, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import EcoCard from './EcoCard';
 
 interface GameTileProps {
   id: string;
@@ -19,41 +18,66 @@ export default function GameTile({ id, title, description, icon, color, availabl
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: 'easeOut' }}
+      transition={{ duration: 0.4, delay: index * 0.07, ease: 'easeOut' }}
       style={{ height: '100%' }}
     >
-      <EcoCard hoverable onClick={available ? () => navigate(`/games/${id}`) : undefined}>
+      <Box
+        onClick={available ? () => navigate(`/games/${id}`) : undefined}
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#FFFFFF',
+          border: '1px solid #F1F5F9',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          cursor: available ? 'pointer' : 'default',
+          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          '&:hover': available ? {
+            boxShadow: `0 8px 30px ${color}18, 0 2px 8px rgba(0,0,0,0.06)`,
+            transform: 'translateY(-2px)',
+            borderColor: `${color}40`,
+          } : {},
+        }}
+      >
         {/* Color accent top bar */}
         <Box
           sx={{
-            height: 4,
-            background: `linear-gradient(90deg, ${color}, ${color}88)`,
+            height: 3,
+            background: color,
           }}
         />
 
-        <Box sx={{ p: { xs: 2.5, md: 3 }, textAlign: 'center' }}>
-          {/* Icon */}
-          <Typography
+        <Box sx={{ p: { xs: 2.5, md: 3 }, flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* Icon circle */}
+          <Box
             sx={{
-              fontSize: { xs: '48px', md: '56px' },
-              lineHeight: 1,
-              mb: 1,
-              filter: `drop-shadow(0 2px 8px ${color}30)`,
+              width: { xs: 52, md: 60 },
+              height: { xs: 52, md: 60 },
+              borderRadius: '14px',
+              background: `${color}10`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
             }}
           >
-            {icon}
-          </Typography>
+            <Typography sx={{ fontSize: { xs: '28px', md: '32px' }, lineHeight: 1 }}>
+              {icon}
+            </Typography>
+          </Box>
 
           {/* Title */}
           <Typography
-            variant="h5"
             sx={{
               fontWeight: 700,
-              mb: 0.75,
-              color: '#1A2332',
-              fontSize: { xs: '1.1rem', md: '1.25rem' },
+              mb: 0.5,
+              color: '#0F172A',
+              fontSize: { xs: '1.05rem', md: '1.15rem' },
+              letterSpacing: '-0.01em',
             }}
           >
             {title}
@@ -61,32 +85,31 @@ export default function GameTile({ id, title, description, icon, color, availabl
 
           {/* Description */}
           <Typography
-            variant="body2"
             sx={{
-              color: '#5A6A7E',
+              color: '#64748B',
               mb: 2,
-              lineHeight: 1.5,
-              fontSize: { xs: '0.85rem', md: '0.9rem' },
-              minHeight: 40,
+              lineHeight: 1.55,
+              fontSize: { xs: '0.82rem', md: '0.88rem' },
+              flex: 1,
             }}
           >
             {description}
           </Typography>
 
           {/* Tags */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
             {tags.map((tag) => (
               <Chip
                 key={tag}
                 label={tag}
                 size="small"
                 sx={{
-                  background: `${color}12`,
-                  color: color,
-                  border: `1px solid ${color}25`,
+                  background: '#F8FAFC',
+                  color: '#64748B',
+                  border: '1px solid #E2E8F0',
                   fontWeight: 500,
                   fontSize: '0.7rem',
-                  height: 24,
+                  height: 22,
                   '& .MuiChip-label': { px: 1 },
                 }}
               />
@@ -96,21 +119,23 @@ export default function GameTile({ id, title, description, icon, color, availabl
           {/* Play CTA */}
           <Box
             sx={{
-              mt: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 0.5,
               py: 1,
-              px: 3,
               borderRadius: '10px',
-              background: available ? `linear-gradient(135deg, ${color}15, ${color}08)` : 'transparent',
-              color: available ? color : '#A0AABB',
+              background: available ? color : '#F1F5F9',
+              color: available ? '#FFFFFF' : '#94A3B8',
               fontWeight: 600,
-              fontSize: '0.95rem',
-              border: available ? `1px solid ${color}25` : '1px solid #D0D8E2',
+              fontSize: '0.85rem',
+              transition: 'all 0.2s',
             }}
           >
-            {available ? '▶ Play Now' : 'Coming Soon'}
+            {available ? 'Play Now' : 'Coming Soon'}
           </Box>
         </Box>
-      </EcoCard>
+      </Box>
     </motion.div>
   );
 }
