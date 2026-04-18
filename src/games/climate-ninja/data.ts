@@ -1,4 +1,4 @@
-import type { GreenhouseGas, CleanTechItem, GameObjectDef, PowerupType } from './types';
+import type { GreenhouseGas, CleanTechItem, GameObjectDef, PowerupType, WaveConfig } from './types';
 
 export const GREENHOUSE_GASES: GreenhouseGas[] = [
   {
@@ -6,42 +6,49 @@ export const GREENHOUSE_GASES: GreenhouseGas[] = [
     source: 'Fossil fuel combustion, deforestation, cement production',
     fact: 'CO₂ accounts for ~76% of all greenhouse gas emissions globally',
     points: 15,
+    behavior: 'split_on_miss',
   },
   {
     id: 'ch4', name: 'Methane', formula: 'CH₄', emoji: '🐄', color: '#8B4513',
     source: 'Livestock (cattle), rice paddies, landfills, natural gas leaks',
     fact: 'CH₄ is 80x more potent than CO₂ at trapping heat over 20 years',
     points: 20,
+    behavior: 'fog_on_miss',
   },
   {
     id: 'n2o', name: 'Nitrous Oxide', formula: 'N₂O', emoji: '🧪', color: '#9B59B6',
     source: 'Agricultural fertilizers, industrial processes, burning biomass',
     fact: 'N₂O has 265x the warming potential of CO₂ over 100 years',
     points: 25,
+    behavior: 'none',
   },
   {
     id: 'hfcs', name: 'Hydrofluorocarbons', formula: 'HFCs', emoji: '❄️', color: '#3498DB',
     source: 'Refrigerators, air conditioning, foam blowing agents',
     fact: 'Some HFCs are thousands of times more potent than CO₂',
     points: 25,
+    behavior: 'none',
   },
   {
     id: 'pfcs', name: 'Perfluorocarbons', formula: 'PFCs', emoji: '💻', color: '#2C3E50',
     source: 'Electronics manufacturing, aluminum production',
     fact: 'PFCs can remain in the atmosphere for up to 50,000 years',
     points: 30,
+    behavior: 'none',
   },
   {
     id: 'sf6', name: 'Sulfur Hexafluoride', formula: 'SF₆', emoji: '⚡', color: '#F39C12',
     source: 'Electrical power grid insulation, magnesium production',
     fact: 'SF₆ is the most potent GHG — 23,500x more warming than CO₂',
     points: 35,
+    behavior: 'heavy',
   },
   {
     id: 'nf3', name: 'Nitrogen Trifluoride', formula: 'NF₃', emoji: '🖥️', color: '#1ABC9C',
     source: 'LCD and LED display manufacturing, semiconductor production',
     fact: 'NF₃ is 17,200x more potent than CO₂ and used in making your screens',
     points: 40,
+    behavior: 'blink',
   },
 ];
 
@@ -83,6 +90,14 @@ export function pickRandomGHG(): GreenhouseGas {
   return WEIGHTED_GHG_LIST[Math.floor(Math.random() * WEIGHTED_GHG_LIST.length)];
 }
 
+/** Pick a GHG focused on a specific subset (for wave system) */
+export function pickFocusedGHG(focusIds: string[]): GreenhouseGas {
+  if (focusIds.length === 0) return pickRandomGHG();
+  const filtered = GREENHOUSE_GASES.filter(g => focusIds.includes(g.id));
+  if (filtered.length === 0) return pickRandomGHG();
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
+
 export function pickRandomCleanTech(): CleanTechItem {
   return CLEAN_TECH[Math.floor(Math.random() * CLEAN_TECH.length)];
 }
@@ -99,6 +114,7 @@ export function gasToGameObject(gas: GreenhouseGas): GameObjectDef {
     points: gas.points,
     formula: gas.formula,
     fact: gas.fact,
+    behavior: gas.behavior,
   };
 }
 
@@ -111,7 +127,7 @@ export function cleanTechToGameObject(item: CleanTechItem): GameObjectDef {
     color: '#27ae60',
     splatColor: '#2ecc71',
     size: 56,
-    points: 0,
+    points: 50, // Points for catching (letting land safely)
     fact: item.fact,
   };
 }
@@ -154,23 +170,33 @@ export function pickRandomPowerup(): GameObjectDef {
   return POWERUP_DEFS[type];
 }
 
-export function pickRandomObject(score: number, isFrenzy = false): GameObjectDef {
+export function pickRandomObject(
+  score: number,
+  isFrenzy = false,
+  cleantechOverride?: number,
+  powerupOverride?: number,
+  focusGases?: string[],
+): GameObjectDef {
   const rand = Math.random();
 
   // Powerup chance
-  if (!isFrenzy && rand < 0.06) {
+  const powerupChance = powerupOverride ?? 0.06;
+  if (!isFrenzy && rand < powerupChance) {
     return pickRandomPowerup();
   }
 
-  // Clean tech (avoid) chance — increases with difficulty
+  // Clean tech (avoid/catch) chance
   const difficultyLevel = Math.floor(score / 50);
-  const protectedChance = isFrenzy ? 0 : Math.min(0.05 + difficultyLevel * 0.02, 0.18);
+  const protectedChance = cleantechOverride ?? (isFrenzy ? 0 : Math.min(0.05 + difficultyLevel * 0.02, 0.18));
 
-  if (!isFrenzy && rand - 0.06 < protectedChance) {
+  if (!isFrenzy && (rand - powerupChance) < protectedChance) {
     return cleanTechToGameObject(pickRandomCleanTech());
   }
 
-  // GHG (slash target)
+  // GHG (slash target) — use focused pick if wave has focus
+  if (focusGases && focusGases.length > 0) {
+    return gasToGameObject(pickFocusedGHG(focusGases));
+  }
   return gasToGameObject(pickRandomGHG());
 }
 
@@ -203,6 +229,17 @@ export const DIFFICULTY_TABLE = {
   powerupChance: 0.06,
 };
 
+// Critical slice — minimum blade velocity (px/frame) for critical
+export const CRITICAL_VELOCITY_THRESHOLD = 18;
+export const CRITICAL_BONUS_MULT = 1.5;
+export const CRITICAL_FREEZE_FRAMES = 4;
+
+// Combo milestones
+export const COMBO_MILESTONES = [10, 20, 30, 50];
+
+// Clean tech catch bonus
+export const CLEAN_TECH_CATCH_POINTS = 50;
+
 // Game constants
 export const MAX_LIVES = 5;
 export const COMBO_RESET_FRAMES = 30;
@@ -211,3 +248,103 @@ export const CARBON_SPIKE_COMBO_THRESHOLD = 5;
 export const FACT_POPUP_INTERVAL = 500;
 
 export const GAME_ID = 'climate-ninja';
+
+// ─── Wave System ────────────────────────────────────────────────────────────
+
+export const WAVES: WaveConfig[] = [
+  {
+    name: 'Carbon Dawn',
+    duration: 540, // 9 seconds
+    spawnInterval: 100,
+    spawnMult: 1,
+    cleantechChance: 0.03,
+    powerupChance: 0.08,
+    announcement: 'Wave 1 — Carbon Dawn',
+    announcementEmoji: '🌅',
+    focusGases: ['co2'],
+  },
+  {
+    name: 'Methane Surge',
+    duration: 540,
+    spawnInterval: 80,
+    spawnMult: 1.2,
+    cleantechChance: 0.05,
+    powerupChance: 0.07,
+    announcement: 'Wave 2 — Methane Surge',
+    announcementEmoji: '🐄',
+    focusGases: ['co2', 'ch4'],
+  },
+  {
+    name: 'Industrial Cloud',
+    duration: 600,
+    spawnInterval: 70,
+    spawnMult: 1.3,
+    cleantechChance: 0.06,
+    powerupChance: 0.07,
+    announcement: 'Wave 3 — Industrial Cloud',
+    announcementEmoji: '🏭',
+    focusGases: ['n2o', 'hfcs'],
+  },
+  {
+    name: 'Toxic Legacy',
+    duration: 600,
+    spawnInterval: 65,
+    spawnMult: 1.4,
+    cleantechChance: 0.08,
+    powerupChance: 0.06,
+    announcement: 'Wave 4 — Toxic Legacy',
+    announcementEmoji: '⚡',
+    focusGases: ['pfcs', 'sf6'],
+  },
+  {
+    name: 'The Invisible Threat',
+    duration: 660,
+    spawnInterval: 55,
+    spawnMult: 1.5,
+    cleantechChance: 0.08,
+    powerupChance: 0.06,
+    announcement: 'Wave 5 — The Invisible Threat',
+    announcementEmoji: '🖥️',
+    focusGases: ['nf3', 'sf6'],
+  },
+  {
+    name: 'Greenhouse Effect',
+    duration: 720,
+    spawnInterval: 50,
+    spawnMult: 1.6,
+    cleantechChance: 0.10,
+    powerupChance: 0.05,
+    announcement: 'Wave 6 — Greenhouse Effect',
+    announcementEmoji: '🌡️',
+    // All gases
+  },
+  {
+    name: 'Climate Crisis',
+    duration: 780,
+    spawnInterval: 45,
+    spawnMult: 1.8,
+    cleantechChance: 0.12,
+    powerupChance: 0.05,
+    announcement: 'Wave 7 — Climate Crisis',
+    announcementEmoji: '🔥',
+    // All gases, high intensity
+  },
+  {
+    name: 'ENDLESS MODE',
+    duration: Infinity,
+    spawnInterval: 40,
+    spawnMult: 2.0,
+    cleantechChance: 0.14,
+    powerupChance: 0.05,
+    announcement: '∞ Endless Mode',
+    announcementEmoji: '♾️',
+  },
+];
+
+export function makeEmptyStats(): Record<string, number> {
+  const stats: Record<string, number> = {};
+  for (const gas of GREENHOUSE_GASES) {
+    stats[gas.id] = 0;
+  }
+  return stats;
+}

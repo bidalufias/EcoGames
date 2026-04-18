@@ -49,7 +49,6 @@ class AudioManager {
   }
 
   playSlash(combo = 1): void {
-    // Softer eco tones
     const base = 500 + combo * 70;
     this.playTone(base, 'sine', 0.09, 0.2);
     this.playTone(base * 1.5, 'sine', 0.06, 0.12, 0.03);
@@ -67,6 +66,48 @@ class AudioManager {
     gain.connect(this.getMaster());
     noise.start();
     noise.stop(ctx.currentTime + 0.04);
+  }
+
+  /** Critical hit — bright, sharp, satisfying */
+  playCritical(): void {
+    // Sharp rising arpeggio
+    this.playTone(880, 'sine', 0.08, 0.3);
+    this.playTone(1175, 'sine', 0.06, 0.25, 0.04);
+    this.playTone(1397, 'sine', 0.06, 0.2, 0.08);
+    // Shimmer
+    this.playTone(1760, 'triangle', 0.1, 0.15, 0.12);
+    // Impact noise
+    const ctx = this.getCtx();
+    const noise = ctx.createOscillator();
+    const gain = ctx.createGain();
+    noise.type = 'sawtooth';
+    noise.frequency.value = 300;
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    noise.connect(gain);
+    gain.connect(this.getMaster());
+    noise.start();
+    noise.stop(ctx.currentTime + 0.07);
+  }
+
+  /** Clean tech caught safely — gentle positive chime */
+  playCatch(): void {
+    this.playTone(523, 'sine', 0.12, 0.2);
+    this.playTone(659, 'sine', 0.1, 0.15, 0.08);
+    this.playTone(784, 'sine', 0.08, 0.12, 0.16);
+  }
+
+  /** Wave start fanfare */
+  playWaveStart(): void {
+    [523, 659, 784, 1047].forEach((f, i) => {
+      this.playTone(f, 'sine', 0.15, 0.2, i * 0.08);
+    });
+  }
+
+  /** Gas behavior sounds */
+  playSplitMiss(): void {
+    this.playTone(200, 'sawtooth', 0.15, 0.1);
+    this.playTone(150, 'square', 0.12, 0.08, 0.05);
   }
 
   playMiss(): void {
@@ -125,7 +166,6 @@ class AudioManager {
     if (this.musicInterval !== null) return;
     const stepMs = (60 / this.currentBpm / 4) * 1000;
 
-    // Softer, more ambient bass pattern
     const bassPattern = [49, 0, 49, 0, 49, 0, 65, 0, 49, 0, 49, 0, 44, 0, 44, 0];
     const melodyPattern = [0, 0, 294, 0, 0, 0, 370, 0, 0, 0, 440, 0, 0, 0, 294, 0];
 

@@ -38,9 +38,6 @@ export function tickPowerups(state: PlayerState): void {
     p.expiresAt -= 1;
   }
   state.activePowerups = state.activePowerups.filter(p => p.expiresAt > 0);
-
-  // Shield is always active until explicitly consumed (by a miss)
-  // It's not timer-based — cleared in GameEngine when a miss occurs
 }
 
 export function hasPowerup(state: PlayerState, type: PowerupType): boolean {

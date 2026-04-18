@@ -34,6 +34,7 @@ import {
   COMBO_RESET_FRAMES,
   CARBON_SPIKE_COMBO_THRESHOLD,
   FACT_POPUP_INTERVAL,
+  makeEmptyStats,
 } from './data';
 import type {
   GameMode,
@@ -44,6 +45,7 @@ import type {
   PlayerState,
   ZoneConfig,
   FrenzyState,
+  GameStats,
 } from './types';
 
 export interface GameCallbacks {
@@ -122,9 +124,20 @@ export class GameEngine {
     this.zones = buildZones(mode, canvas.width, canvas.height);
 
     for (let i = 0; i < numPlayers; i++) {
+      const emptyStats: GameStats = {
+        gasSliced: makeEmptyStats(),
+        gasMissed: makeEmptyStats(),
+        criticalHits: 0,
+        totalSlices: 0,
+        cleanTechCaught: 0,
+        cleanTechSlashed: 0,
+        waveReached: 1,
+        timePlayed: 0,
+      };
       this.players.push({
         id: i, score: 0, lives: MAX_LIVES, combo: 0, maxCombo: 0,
         itemsSliced: 0, isAlive: true, activePowerups: [], streak: 0, shieldActive: false,
+        stats: emptyStats,
       });
       this.blades.push(new BladeTracker());
       this.zoneObjects.push([]);

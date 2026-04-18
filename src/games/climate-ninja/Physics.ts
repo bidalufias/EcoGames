@@ -1,5 +1,5 @@
-import type { GameObject, Particle, ScorePopup, ZoneConfig } from './types';
-import { pickRandomObject } from './data';
+import type { GameObject, Particle, ScorePopup, ZoneConfig, SlicedHalf, FogPatch } from './types';
+import { pickRandomObject, CRITICAL_BONUS_MULT } from './data';
 
 export const GRAVITY = 0.28;
 const PARTICLE_GRAVITY = 0.18;
@@ -10,6 +10,8 @@ const REFERENCE_AREA = 1280 * 720;
 let instanceCounter = 0;
 let particleCounter = 0;
 let popupCounter = 0;
+let halfCounter = 0;
+let fogCounter = 0;
 
 function computeSizeScale(zone: ZoneConfig): number {
   const zoneArea = zone.width * zone.height;
@@ -23,12 +25,18 @@ export function spawnObjectInZone(
   isFrenzy: boolean,
   slowMo: boolean,
   speedMult = 1,
+  cleantechOverride?: number,
+  powerupOverride?: number,
+  focusGases?: string[],
 ): GameObject {
-  const baseDef = pickRandomObject(score, isFrenzy);
+  const baseDef = pickRandomObject(score, isFrenzy, cleantechOverride, powerupOverride, focusGases);
   const sizeScale = computeSizeScale(zone);
   const def = sizeScale < 0.99 ? { ...baseDef, size: Math.round(baseDef.size * sizeScale) } : baseDef;
 
   const spawnEdge = zone.spawnEdge ?? 'bottom';
+
+  // Heavy gases fall faster
+  const gravMult = def.behavior === 'heavy' ? 1.35 : 1.0;
 
   if (spawnEdge === 'left' || spawnEdge === 'right') {
     const margin = def.size + 8;
@@ -56,6 +64,9 @@ export function spawnObjectInZone(
       rotationSpeed: (Math.random() - 0.5) * 0.08,
       sliced: false,
       offScreen: false,
+      visible: true,
+      blinkTimer: def.behavior === 'blink' ? 45 : undefined,
+      gravityMult: gravMult,
     };
   }
 
@@ -69,7 +80,7 @@ export function spawnObjectInZone(
 
   if (spawnEdge === 'top') {
     const ySpawn = zone.y - def.size;
-    let vy = Math.sqrt(2 * GRAVITY * dy) * speedMult;
+    let vy = Math.sqrt(2 * GRAVITY * dy) * speedMult * gravMult;
     if (slowMo) vy *= SLOW_MO_FACTOR;
     const vx = (Math.random() - 0.5) * 4 * speedMult;
 
@@ -84,11 +95,14 @@ export function spawnObjectInZone(
       rotationSpeed: (Math.random() - 0.5) * 0.08,
       sliced: false,
       offScreen: false,
+      visible: true,
+      blinkTimer: def.behavior === 'blink' ? 45 : undefined,
+      gravityMult: gravMult,
     };
   }
 
   const ySpawn = zone.y + zone.height + def.size;
-  let vy = -Math.sqrt(2 * GRAVITY * dy) * speedMult;
+  let vy = -Math.sqrt(2 * GRAVITY * dy) * speedMult * gravMult;
   if (slowMo) vy *= SLOW_MO_FACTOR;
   const vx = (Math.random() - 0.5) * 4 * speedMult;
 
@@ -103,6 +117,9 @@ export function spawnObjectInZone(
     rotationSpeed: (Math.random() - 0.5) * 0.08,
     sliced: false,
     offScreen: false,
+    visible: true,
+    blinkTimer: def.behavior === 'blink' ? 45 : undefined,
+    gravityMult: gravMult,
   };
 }
 
@@ -113,11 +130,23 @@ export function updateObjects(
   slowMo: boolean,
   speedMult = 1,
 ): void {
-  const g = GRAVITY * (slowMo ? SLOW_MO_FACTOR : 1) * speedMult;
+  const baseG = GRAVITY * (slowMo ? SLOW_MO_FACTOR : 1) * speedMult;
   const spawnEdge = zone.spawnEdge ?? 'bottom';
 
   for (const obj of objects) {
     if (obj.sliced || obj.offScreen) continue;
+
+    // Blink behavior — toggle visibility
+    if (obj.blinkTimer !== undefined) {
+      obj.blinkTimer -= dt;
+      if (obj.blinkTimer <= 0) {
+        obj.visible = !obj.visible;
+        // Faster blinking as game progresses
+        obj.blinkTimer = obj.visible ? 35 + Math.random() * 20 : 15 + Math.random() * 15;
+      }
+    }
+
+    const g = baseG * (obj.gravityMult ?? 1.0);
 
     if (spawnEdge === 'top') {
       obj.vy -= g * dt;
@@ -177,7 +206,31 @@ export function updateParticles(particles: Particle[], dt: number): void {
 export function updateScorePopups(popups: ScorePopup[], dt: number): void {
   for (const popup of popups) {
     popup.y += popup.vy * dt;
-    popup.alpha = Math.max(0, popup.alpha - 0.025 * dt);
+    popup.alpha = Math.max(0, popup.alpha - 0.022 * dt);
+    if (popup.bounce && popup.bounce > 0) {
+      popup.bounce = Math.max(0, popup.bounce - 0.06 * dt);
+    }
+  }
+}
+
+/** Update split halves — they fly apart and fade */
+export function updateSlicedHalves(halves: SlicedHalf[], dt: number): void {
+  for (const h of halves) {
+    h.vy += PARTICLE_GRAVITY * dt;
+    h.x += h.vx * dt;
+    h.y += h.vy * dt;
+    h.rotation += h.rotationSpeed * dt;
+    h.alpha = Math.max(0, h.alpha - 0.018 * dt);
+  }
+}
+
+/** Update fog patches — expand and fade */
+export function updateFogPatches(fogs: FogPatch[], dt: number): void {
+  for (const f of fogs) {
+    if (f.radius < f.maxRadius) {
+      f.radius += 0.8 * dt;
+    }
+    f.alpha = Math.max(0, f.alpha - 0.006 * dt);
   }
 }
 
@@ -188,7 +241,6 @@ export function createSplashParticles(obj: GameObject): Particle[] {
     const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
     const speed = 3 + Math.random() * 8;
     const life = 30 + Math.random() * 30;
-    // Use green/teal colors for eco theme
     const ecoColors = ['#14CC66', '#0D9B4A', '#1B8EBF', '#23B5E8', obj.def.color];
     const color = obj.def.kind === 'ghg' ? ecoColors[Math.floor(Math.random() * ecoColors.length)] : obj.def.splatColor;
     particles.push({
@@ -227,6 +279,53 @@ export function createSplashParticles(obj: GameObject): Particle[] {
   return particles;
 }
 
+/** Create split halves when an object is sliced */
+export function createSplitHalves(obj: GameObject): SlicedHalf[] {
+  const size = obj.def.size * 0.45;
+  return [
+    {
+      id: ++halfCounter,
+      emoji: obj.def.emoji,
+      x: obj.x - 5,
+      y: obj.y,
+      vx: -(2 + Math.random() * 3),
+      vy: -(3 + Math.random() * 2),
+      rotation: obj.rotation,
+      rotationSpeed: -(0.08 + Math.random() * 0.06),
+      alpha: 1,
+      side: -1,
+      color: obj.def.color,
+      size,
+    },
+    {
+      id: ++halfCounter,
+      emoji: obj.def.emoji,
+      x: obj.x + 5,
+      y: obj.y,
+      vx: 2 + Math.random() * 3,
+      vy: -(3 + Math.random() * 2),
+      rotation: obj.rotation,
+      rotationSpeed: 0.08 + Math.random() * 0.06,
+      alpha: 1,
+      side: 1,
+      color: obj.def.color,
+      size,
+    },
+  ];
+}
+
+/** Create fog cloud when CH₄ escapes */
+export function createFogPatch(x: number, y: number): FogPatch {
+  return {
+    id: ++fogCounter,
+    x,
+    y,
+    radius: 20,
+    alpha: 0.6,
+    maxRadius: 80 + Math.random() * 40,
+  };
+}
+
 export function createPowerupParticles(obj: GameObject): Particle[] {
   const count = 16;
   const particles: Particle[] = [];
@@ -250,20 +349,44 @@ export function createPowerupParticles(obj: GameObject): Particle[] {
   return particles;
 }
 
-export function createScorePopup(obj: GameObject, combo: number, doublePoints = false): ScorePopup {
+export function createScorePopup(
+  obj: GameObject,
+  combo: number,
+  doublePoints = false,
+  isCritical = false,
+): ScorePopup {
   const base = obj.def.points * (combo > 1 ? combo : 1);
-  const points = doublePoints ? base * 2 : base;
+  const critMult = isCritical ? CRITICAL_BONUS_MULT : 1;
+  const points = Math.round(base * critMult * (doublePoints ? 2 : 1));
   const formula = obj.def.formula || obj.def.label;
+  const critText = isCritical ? ' CRITICAL!' : '';
   const suffix = doublePoints ? ' 2x!' : combo > 1 ? ` x${combo}!` : '';
   const ppmText = obj.def.kind === 'ghg' ? ` -${points}ppm` : '';
   return {
     id: ++popupCounter,
     x: obj.x,
     y: obj.y - obj.def.size,
-    text: `${formula}${ppmText} +${points}${suffix}`,
+    text: `${formula}${ppmText} +${points}${suffix}${critText}`,
     alpha: 1,
     vy: -1.2,
-    color: doublePoints ? '#FFD700' : combo > 2 ? '#FFD700' : combo > 1 ? '#14CC66' : '#0D9B4A',
+    color: isCritical ? '#FF4500' : doublePoints ? '#FFD700' : combo > 2 ? '#FFD700' : combo > 1 ? '#14CC66' : '#0D9B4A',
+    fontSize: isCritical ? 34 : combo > 5 ? 28 : 24,
+    bounce: isCritical ? 1 : combo > 3 ? 0.5 : 0,
+  };
+}
+
+/** Create a clean tech catch popup (landed safely) */
+export function createCatchPopup(x: number, y: number, points: number): ScorePopup {
+  return {
+    id: ++popupCounter,
+    x,
+    y: y - 30,
+    text: `♻️ SAFE! +${points}`,
+    alpha: 1,
+    vy: -1.5,
+    color: '#27ae60',
+    fontSize: 26,
+    bounce: 0.6,
   };
 }
 
@@ -272,6 +395,8 @@ export function checkSliceCollision(
   bladePoints: Array<{ x: number; y: number }>,
 ): boolean {
   if (obj.sliced || obj.offScreen || bladePoints.length < 2) return false;
+  // Blinking objects are only hittable when visible
+  if (obj.visible === false) return false;
   const hitRadius = obj.def.size * 0.45;
   for (let i = 0; i < bladePoints.length - 1; i++) {
     const p1 = bladePoints[i];
@@ -281,6 +406,17 @@ export function checkSliceCollision(
     }
   }
   return false;
+}
+
+/** Calculate blade velocity from the last few points */
+export function calculateBladeVelocity(points: Array<{ x: number; y: number; time: number }>): number {
+  if (points.length < 2) return 0;
+  const p1 = points[points.length - 2];
+  const p2 = points[points.length - 1];
+  const dt = Math.max(p2.time - p1.time, 1);
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  return Math.sqrt(dx * dx + dy * dy) / dt * 16.67; // normalize to ~per-frame
 }
 
 function segmentCircleIntersect(
