@@ -266,9 +266,11 @@ export default function CarbonCrushGame() {
         <Box sx={{ height: 4, borderRadius: 2, background: '#E8EDF2', overflow: 'hidden' }}>
           <Box sx={{
             height: '100%', borderRadius: 2,
-            width: `${Math.min((score / CLEAN_TRANSITION_THRESHOLD) * 100, 100)}%`,
+            width: '100%',
             background: 'linear-gradient(90deg, #E74C3C, #FFD700, #8BC53F)',
-            transition: 'width 0.5s',
+            transform: `scaleX(${Math.min((score / CLEAN_TRANSITION_THRESHOLD) * 100, 100) / 100})`,
+            transformOrigin: 'left',
+            transition: 'transform 0.5s',
           }} />
         </Box>
         <Typography sx={{ fontSize: 11, color: '#8892B0', textAlign: 'center', mt: 0.5 }}>

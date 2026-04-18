@@ -6,56 +6,56 @@ const games = [
   {
     id: 'climate-ninja',
     title: 'Climate Ninja',
-    description: 'Slice through greenhouse gases!',
-    icon: '⚔️',
+    description: 'Slice through greenhouse gases! Learn the 7 GHGs threatening our planet.',
+    icon: '🥷',
     color: '#4CAF50',
     available: true,
-    tags: ['Action'],
+    tags: ['Touch', 'Action'],
   },
   {
     id: 'carbon-crush',
     title: 'Carbon Crush',
-    description: 'Match to phase out emissions!',
+    description: 'Match and phase out emission sources. Every match brings us closer to clean energy.',
     icon: '💎',
     color: '#2196F3',
     available: true,
-    tags: ['Puzzle'],
+    tags: ['Puzzle', 'Strategy'],
   },
   {
     id: 'recycle-rush',
     title: 'Recycle Rush',
-    description: 'Sort waste at lightning speed!',
-    icon: '♻️',
+    description: 'Sort waste at lightning speed. Learn what goes where before the landfill overflows!',
+    icon: '📦',
     color: '#FF9800',
     available: true,
-    tags: ['Arcade'],
+    tags: ['Action', 'Arcade'],
   },
   {
     id: 'eco-memory',
     title: 'Eco Memory',
-    description: 'Match gases to their sources!',
+    description: 'Test your climate knowledge. Match greenhouse gases to their sources and effects.',
     icon: '🧠',
     color: '#7C4DFF',
     available: true,
-    tags: ['Brain'],
+    tags: ['Puzzle', 'Brain Training'],
   },
   {
     id: 'green-defence',
     title: 'Green Defence',
-    description: 'Stop pollution waves. Reach Net Zero!',
+    description: 'Deploy clean tech to stop pollution waves. Reach Net Zero by 2050!',
     icon: '🛡️',
     color: '#00BFA5',
     available: true,
-    tags: ['Strategy'],
+    tags: ['Strategy', 'Tower Defence'],
   },
   {
     id: 'climate-2048',
     title: 'Climate 2048',
-    description: 'Merge tech to Net Zero!',
+    description: 'Merge your way to Net Zero. Upgrade technologies from LED bulbs to smart cities.',
     icon: '🔢',
     color: '#FF5722',
     available: true,
-    tags: ['Puzzle'],
+    tags: ['Puzzle', 'Brain Training'],
   },
 ];
 
@@ -68,9 +68,9 @@ export default function LandingPage() {
   return (
     <Box
       sx={{
-        height: '100vh',
+        minHeight: '100vh',
         width: '100vw',
-        overflow: 'hidden',
+        overflow: 'auto',
         background: 'linear-gradient(160deg, #0F172A 0%, #1a2744 40%, #0d3320 100%)',
         display: 'flex',
         flexDirection: 'column',
@@ -78,7 +78,7 @@ export default function LandingPage() {
       }}
     >
       {/* Animated background orbs */}
-      <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+      <Box sx={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
         <Box sx={{
           position: 'absolute', top: '-15%', left: '-10%', width: '50vw', height: '50vw',
           borderRadius: '50%', background: 'radial-gradient(circle, rgba(76,175,80,0.12) 0%, transparent 70%)',
@@ -121,15 +121,19 @@ export default function LandingPage() {
         </motion.div>
       </Box>
 
-      {/* Games Grid — fills remaining space */}
+      {/* Games Grid — responsive, fills width */}
       <Box sx={{
-        flex: 1, minHeight: 0, display: 'flex', justifyContent: 'center', alignItems: 'center',
+        flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
         px: { xs: 2, sm: 3, md: 5 }, py: { xs: 1, sm: 2 }, position: 'relative', zIndex: 1,
       }}>
         <Box sx={{
-          width: '100%', maxWidth: 1100,
+          width: '100%', maxWidth: 1200,
           display: 'grid',
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+          gridTemplateColumns: {
+            xs: 'repeat(2, 1fr)',
+            sm: 'repeat(3, 1fr)',
+            lg: 'repeat(3, 1fr)',
+          },
           gap: { xs: 1.5, sm: 2, md: 2.5 },
         }}>
           {games.map((game, i) => (

@@ -397,9 +397,12 @@ export default function GreenDefenceGame() {
                   borderRadius: 1, background: '#E8EDF2', overflow: 'hidden',
                 }}>
                   <Box sx={{
-                    width: `${(e.hp / e.maxHp) * 100}%`, height: '100%',
+                    width: '100%', height: '100%',
                     background: e.hp > e.maxHp * 0.5 ? '#8BC53F' : '#E74C3C',
-                    borderRadius: 1, transition: 'width 0.1s',
+                    borderRadius: 1,
+                    transform: `scaleX(${e.hp / e.maxHp})`,
+                    transformOrigin: 'left',
+                    transition: 'transform 0.1s',
                   }} />
                 </Box>
               </Box>

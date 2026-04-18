@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export default function GameTile({ id, title, description, icon, color, availabl
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+      initial={{ opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.35, delay: index * 0.06, ease: 'easeOut' }}
       style={{ height: '100%' }}
@@ -52,43 +52,60 @@ export default function GameTile({ id, title, description, icon, color, availabl
         }} />
 
         <Box sx={{ p: { xs: 1.5, sm: 2, md: 2.5 }, flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Icon + Title row */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Box sx={{
-              width: { xs: 40, sm: 46, md: 50 }, height: { xs: 40, sm: 46, md: 50 },
-              borderRadius: '12px', background: `${color}18`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: `0 0 20px ${color}15`,
-              flexShrink: 0,
+          {/* Icon — large, prominent */}
+          <Box sx={{
+            width: { xs: 48, sm: 56, md: 64 },
+            height: { xs: 48, sm: 56, md: 64 },
+            borderRadius: '14px',
+            background: `${color}18`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: `0 0 20px ${color}15`,
+            mb: 1.5,
+          }}>
+            <Typography sx={{
+              fontSize: { xs: '28px', sm: '32px', md: '36px' },
+              lineHeight: 1,
+              filter: `drop-shadow(0 0 8px ${color}40)`,
             }}>
-              <Typography sx={{ fontSize: { xs: '22px', md: '26px' }, lineHeight: 1 }}>{icon}</Typography>
-            </Box>
-            <Box sx={{ minWidth: 0 }}>
-              <Typography sx={{
-                fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2,
-                fontSize: { xs: '0.9rem', md: '1.05rem' }, letterSpacing: '-0.01em',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              }}>
-                {title}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 0.5, mt: 0.3 }}>
-                {tags.map((tag) => (
-                  <Box key={tag} component="span" sx={{
-                    fontSize: '0.6rem', fontWeight: 600, color: `${color}`,
-                    background: `${color}15`, px: 0.8, py: 0.1, borderRadius: '4px',
-                    letterSpacing: '0.03em', textTransform: 'uppercase',
-                  }}>
-                    {tag}
-                  </Box>
-                ))}
-              </Box>
-            </Box>
+              {icon}
+            </Typography>
+          </Box>
+
+          {/* Title */}
+          <Typography sx={{
+            fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2,
+            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+            letterSpacing: '-0.01em',
+            mb: 0.5,
+          }}>
+            {title}
+          </Typography>
+
+          {/* Tags */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+            {tags.map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                size="small"
+                sx={{
+                  background: `${color}15`,
+                  color: color,
+                  border: `1px solid ${color}25`,
+                  fontWeight: 600,
+                  fontSize: { xs: '0.6rem', md: '0.65rem' },
+                  height: 20,
+                  '& .MuiChip-label': { px: 0.8 },
+                }}
+              />
+            ))}
           </Box>
 
           {/* Description */}
           <Typography sx={{
-            color: 'rgba(255,255,255,0.45)', lineHeight: 1.4, flex: 1,
-            fontSize: { xs: '0.72rem', md: '0.8rem' }, mb: 1.5,
+            color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, flex: 1,
+            fontSize: { xs: '0.72rem', sm: '0.78rem', md: '0.82rem' },
+            mb: 1.5,
           }}>
             {description}
           </Typography>
