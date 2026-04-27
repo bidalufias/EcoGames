@@ -1,7 +1,9 @@
 import { Box, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import GameTile from '../components/GameTile';
 import EcoHeader from '../components/EcoHeader';
 import ParticleBackground from '../components/ParticleBackground';
+import { MGTC_GREEN, MGTC_BLUE } from '../theme/ecoTheme';
 
 const games = [
   {
@@ -10,9 +12,11 @@ const games = [
     inspiredBy: 'Fruit Ninja',
     topic: 'Greenhouse Gases',
     description: 'Slice through the 7 greenhouse gases warming our planet.',
+    learn: 'CO₂, CH₄, N₂O, F-gases & more',
+    difficulty: 'Easy' as const,
+    playTime: '3 min',
     icon: '🥷',
-    color: '#E8F5E9',
-    accent: '#4CAF50',
+    accent: '#16A34A',
     available: true,
   },
   {
@@ -21,9 +25,11 @@ const games = [
     inspiredBy: 'Candy Crush',
     topic: 'Clean Energy',
     description: 'Match polluting tech to phase it out for clean alternatives.',
+    learn: 'Fossil fuels → renewables',
+    difficulty: 'Medium' as const,
+    playTime: '5 min',
     icon: '💎',
-    color: '#E3F2FD',
-    accent: '#2196F3',
+    accent: '#2563EB',
     available: true,
   },
   {
@@ -32,9 +38,11 @@ const games = [
     inspiredBy: 'Diner Dash',
     topic: 'Waste & Recycling',
     description: 'Sort waste to the right bin before customers walk away.',
+    learn: 'Recycle, compost, hazardous, e-waste',
+    difficulty: 'Easy' as const,
+    playTime: '4 min',
     icon: '♻️',
-    color: '#FFF3E0',
-    accent: '#FF9800',
+    accent: '#EA580C',
     available: true,
   },
   {
@@ -43,9 +51,11 @@ const games = [
     inspiredBy: 'Memory Match',
     topic: 'Climate Knowledge',
     description: 'Pair greenhouse gases with their real-world sources.',
+    learn: 'Where emissions come from',
+    difficulty: 'Easy' as const,
+    playTime: '3 min',
     icon: '🧠',
-    color: '#EDE7F6',
-    accent: '#7C4DFF',
+    accent: '#7C3AED',
     available: true,
   },
   {
@@ -54,9 +64,11 @@ const games = [
     inspiredBy: 'Plants vs. Zombies',
     topic: 'Net Zero',
     description: 'Deploy clean tech to halt waves of pollution.',
+    learn: 'Solar, wind, EVs, carbon capture',
+    difficulty: 'Medium' as const,
+    playTime: '6 min',
     icon: '🛡️',
-    color: '#E0F2F1',
-    accent: '#00BFA5',
+    accent: '#0D9488',
     available: true,
   },
   {
@@ -65,9 +77,11 @@ const games = [
     inspiredBy: '2048',
     topic: 'Climate Tech',
     description: 'Merge climate solutions from LED bulbs to Net Zero cities.',
+    learn: 'The journey to Net Zero by 2050',
+    difficulty: 'Hard' as const,
+    playTime: '5 min',
     icon: '🔢',
-    color: '#FBE9E7',
-    accent: '#FF5722',
+    accent: '#DC2626',
     available: true,
   },
 ];
@@ -79,7 +93,8 @@ export default function LandingPage() {
         height: '100dvh',
         width: '100vw',
         overflow: 'hidden',
-        background: 'linear-gradient(180deg, #F8FAFB 0%, #EEF4F8 100%)',
+        background:
+          'radial-gradient(circle at 20% 0%, #DCFCE7 0%, transparent 45%), radial-gradient(circle at 100% 100%, #DBEAFE 0%, transparent 50%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -115,7 +130,68 @@ export default function LandingPage() {
       </Box>
 
       <Box sx={{ position: 'relative', zIndex: 2, flexShrink: 0 }}>
-        <EcoHeader />
+        <EcoHeader tagline="" />
+      </Box>
+
+      {/* Hero */}
+      <Box
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          flexShrink: 0,
+          textAlign: 'center',
+          px: 3,
+          pt: { xs: 1.5, md: 2.5 },
+          pb: { xs: 0.5, md: 1 },
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <Typography
+            sx={{
+              fontSize: { xs: '1.6rem', md: '2.4rem' },
+              fontWeight: 900,
+              lineHeight: 1,
+              letterSpacing: '-0.035em',
+              color: '#0F172A',
+            }}
+          >
+            Play. Learn.{' '}
+            <Box
+              component="span"
+              sx={{
+                background: `linear-gradient(135deg, ${MGTC_GREEN} 0%, ${MGTC_BLUE} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Save the Planet.
+            </Box>
+          </Typography>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12, ease: 'easeOut' }}
+        >
+          <Typography
+            sx={{
+              mt: 0.5,
+              color: '#475569',
+              fontSize: { xs: '0.78rem', md: '0.92rem' },
+              fontWeight: 500,
+              letterSpacing: '0.01em',
+            }}
+          >
+            Six classic games reimagined for climate education ·{' '}
+            <Box component="span" sx={{ color: MGTC_GREEN, fontWeight: 700 }}>
+              tap any game to start
+            </Box>
+          </Typography>
+        </motion.div>
       </Box>
 
       {/* Games Grid */}
@@ -129,17 +205,17 @@ export default function LandingPage() {
           justifyContent: 'center',
           alignItems: 'stretch',
           px: { xs: 2, md: 4 },
-          py: { xs: 2, md: 3 },
+          py: { xs: 1.5, md: 2 },
         }}
       >
         <Box
           sx={{
             width: '100%',
-            maxWidth: 1280,
+            maxWidth: 1320,
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
-            gap: { xs: 1.5, md: 2.25 },
+            gap: { xs: 1.75, md: 2.5 },
             minHeight: 0,
           }}
         >
@@ -155,19 +231,23 @@ export default function LandingPage() {
           position: 'relative',
           zIndex: 1,
           textAlign: 'center',
-          py: 0.85,
+          py: 0.9,
           flexShrink: 0,
+          borderTop: '1px solid rgba(15,23,42,0.06)',
+          background: 'rgba(255,255,255,0.5)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
         }}
       >
         <Typography
           sx={{
-            color: '#94A3B8',
-            fontSize: '0.7rem',
-            fontWeight: 500,
-            letterSpacing: '0.04em',
+            color: '#64748B',
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
           }}
         >
-          MGTC — Empowering Climate Education Through Play
+          MGTC · Empowering Climate Education Through Play
         </Typography>
       </Box>
     </Box>
