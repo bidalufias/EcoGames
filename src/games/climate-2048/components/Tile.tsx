@@ -78,13 +78,15 @@ export default function Tile({ tile, size, track, gapPct }: TileProps) {
           {tile.value}
         </Box>
 
-        {/* Center emoji */}
+        {/* Center emoji. Explicit emoji font stack first — on iOS Safari,
+            relying on auto-fallback from Inter occasionally leaves the glyph
+            unrendered, especially when CSS filters are in play. */}
         <Box
           sx={{
             fontSize: 'clamp(1.6rem, 7cqi, 3.2rem)',
             lineHeight: 1,
             mt: '4%',
-            filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.12))',
+            fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
           }}
         >
           {stage.emoji}

@@ -33,7 +33,10 @@ export const ecoTheme = createTheme({
     warning: { main: '#FF9800' },
   },
   typography: {
-    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    // Emoji fonts at the tail of the stack guarantee that color glyphs render
+    // even when the body font (Inter) lacks emoji coverage. Without this, iOS
+    // Safari sometimes leaves squares blank in the Climate 2048 tiles.
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
     h1: { fontWeight: 800, letterSpacing: '-0.04em', color: '#0F172A' },
     h2: { fontWeight: 700, letterSpacing: '-0.02em', color: '#0F172A' },
     h3: { fontWeight: 700, color: '#0F172A' },
