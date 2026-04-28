@@ -125,7 +125,7 @@ export default function CarbonCrushGame() {
   if (screen === 'intro') {
     return (
       <Box sx={{
-        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4, overflow: 'hidden',
       }}>
@@ -174,7 +174,7 @@ export default function CarbonCrushGame() {
   if (screen === 'leaderboard') {
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4,
       }}>
@@ -193,7 +193,7 @@ export default function CarbonCrushGame() {
   if (screen === 'gameover') {
     return (
       <Box sx={{
-        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, overflow: 'hidden',
       }}>
@@ -240,7 +240,7 @@ export default function CarbonCrushGame() {
   // --- Playing ---
   return (
     <Box sx={{
-      height: '100vh', bgcolor: '#F0F3F7', color: '#1A2332',
+      height: '100dvh', bgcolor: '#F0F3F7', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2, overflow: 'hidden',
     }}>
       {/* HUD */}

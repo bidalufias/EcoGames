@@ -88,7 +88,7 @@ export default function TechSelect({ onPick, onBack, modeLabel }: TechSelectProp
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '100dvh',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',

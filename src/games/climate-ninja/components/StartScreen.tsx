@@ -19,7 +19,7 @@ const speeds = [0.5, 0.75, 1, 1.25, 1.5];
 export default function StartScreen({ onSelectMode }: Props) {
   return (
     <Box sx={{
-      minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+      minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>

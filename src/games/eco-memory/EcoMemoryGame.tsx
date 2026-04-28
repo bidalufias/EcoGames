@@ -72,7 +72,7 @@ export default function EcoMemoryGame() {
   if (screen === 'intro') {
     return (
       <Box sx={{
-        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4, overflow: 'hidden',
       }}>
@@ -108,7 +108,7 @@ export default function EcoMemoryGame() {
   if (screen === 'leaderboard') {
     return (
       <Box sx={{
-        minHeight: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4,
       }}>
@@ -129,7 +129,7 @@ export default function EcoMemoryGame() {
     const memScore = Math.max(0, totalPairs * 100 - (moves - totalPairs) * 10);
     return (
       <Box sx={{
-        height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', px: 3,
         overflow: 'hidden',
       }}>
@@ -172,7 +172,7 @@ export default function EcoMemoryGame() {
   // --- Playing ---
   return (
     <Box sx={{
-      height: '100vh', bgcolor: '#F0F3F7', color: '#1A2332',
+      height: '100dvh', bgcolor: '#F0F3F7', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 2, py: 1, overflow: 'hidden', width: '100vw',
     }}>

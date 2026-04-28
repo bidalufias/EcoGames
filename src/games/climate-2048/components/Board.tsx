@@ -51,8 +51,10 @@ export default function Board({ state, track, onMove, maxSize, disabled, invertG
         position: 'relative',
         width: '100%',
         aspectRatio: '1 / 1',
-        maxWidth: maxSize ? `${maxSize}px` : undefined,
-        maxHeight: maxSize ? `${maxSize}px` : undefined,
+        // Cap to both the parent's width AND its height so the board shrinks
+        // to fit short viewports (e.g. iPad landscape) instead of overflowing.
+        maxWidth: maxSize ? `min(${maxSize}px, 100%)` : '100%',
+        maxHeight: maxSize ? `min(${maxSize}px, 100%)` : '100%',
         background: '#BBADA0',
         borderRadius: '8px',
         padding: '1.6%',

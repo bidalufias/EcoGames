@@ -111,33 +111,37 @@ function PlayerColumn({ label, controls, accent, slot, track, target, onMove, wi
         </Box>
       </Box>
 
-      <Box sx={{ position: 'relative' }}>
-        <Board
-          state={slot.state}
-          track={track}
-          onMove={onMove}
-          disabled={slot.stuck || !!winnerLabel}
-          invertGestures={flipped}
-        />
+      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+        {/* Square wrapper sized exactly like the board, so the overlay below
+            tracks the board's bounds rather than the leftover grid cell. */}
+        <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', maxWidth: '100%', maxHeight: '100%' }}>
+          <Board
+            state={slot.state}
+            track={track}
+            onMove={onMove}
+            disabled={slot.stuck || !!winnerLabel}
+            invertGestures={flipped}
+          />
 
-        {(slot.reachedTarget || slot.stuck) && !winnerLabel && (
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              background: slot.reachedTarget ? 'rgba(13, 155, 74, 0.45)' : 'rgba(118, 110, 101, 0.4)',
-              borderRadius: 'inherit',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 25,
-            }}
-          >
-            <Typography sx={{ color: '#FFFFFF', fontWeight: 900, fontSize: 'clamp(1rem, 4cqi, 1.6rem)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
-              {slot.reachedTarget ? `🎉 Reached ${target}!` : 'No moves left'}
-            </Typography>
-          </Box>
-        )}
+          {(slot.reachedTarget || slot.stuck) && !winnerLabel && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                background: slot.reachedTarget ? 'rgba(13, 155, 74, 0.45)' : 'rgba(118, 110, 101, 0.4)',
+                borderRadius: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 25,
+              }}
+            >
+              <Typography sx={{ color: '#FFFFFF', fontWeight: 900, fontSize: 'clamp(1rem, 4cqi, 1.6rem)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
+                {slot.reachedTarget ? `Reached ${target}!` : 'No moves left'}
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   );
@@ -230,7 +234,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
     return (
       <Box
         sx={{
-          height: '100vh',
+          height: '100dvh',
           bgcolor: '#FAF8EF',
           display: 'flex',
           flexDirection: 'column',
@@ -300,7 +304,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '100dvh',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',

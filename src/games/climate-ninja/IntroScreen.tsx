@@ -18,7 +18,7 @@ const cardVariants = {
 export default function IntroScreen({ onStart }: Props) {
   return (
     <Box sx={{
-      height: '100vh', bgcolor: '#FAFBFC', color: '#1A2332',
+      height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
       overflowY: 'auto', px: { xs: 2, md: 4 }, py: 4,
     }}>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

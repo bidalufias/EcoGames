@@ -107,7 +107,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
     return (
       <Box
         sx={{
-          height: '100vh',
+          height: '100dvh',
           bgcolor: '#FAF8EF',
           display: 'flex',
           flexDirection: 'column',
@@ -134,7 +134,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '100dvh',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
@@ -144,8 +144,9 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
         overflow: 'hidden',
       }}
     >
-      {/* HUD + controls row, capped at the same width as the board for visual alignment */}
-      <Box sx={{ width: '100%', maxWidth: 520, display: 'flex', flexDirection: 'column', gap: 1.6 }}>
+      {/* HUD + controls + board, capped to 520px wide; the board itself
+          shrinks to fit the leftover height so nothing clips on short viewports. */}
+      <Box sx={{ width: '100%', maxWidth: 520, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 1.4 }}>
         <HUD
           title="Climate 2048"
           subtitle={subtitle}
@@ -154,13 +155,16 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
           scoreDelta={scoreDelta}
           track={track}
         />
-        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', flexShrink: 0 }}>
           <EcoButton size="small" onClick={newGame}>New Game</EcoButton>
           <EcoButton size="small" variant="ghost" onClick={onChangeMode}>Change mode</EcoButton>
         </Box>
 
-        {/* Board area — overlay modals are positioned within this wrapper */}
-        <Box sx={{ position: 'relative', width: '100%' }}>
+        {/* Board area — fills the remaining height; Board self-caps to a square. */}
+        <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+          {/* Square wrapper sized exactly like the board so overlays below
+              track the board's bounds rather than the leftover space. */}
+          <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', maxWidth: '100%', maxHeight: '100%' }}>
           <Board state={state} track={track} onMove={doMove} disabled={showOver} />
 
           {/* Win overlay shows once at 4096; player can keep going or start over */}
@@ -224,19 +228,20 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
               </Box>
             </Box>
           )}
+          </Box>
         </Box>
 
         <Typography
           sx={{
-            mt: 0.5,
             color: '#776E65',
             opacity: 0.75,
             fontSize: '0.78rem',
             textAlign: 'center',
-            lineHeight: 1.5,
+            lineHeight: 1.4,
+            flexShrink: 0,
           }}
         >
-          <Box component="span" sx={{ fontWeight: 800 }}>How to play:</Box> arrow keys, WASD or swipe to slide tiles. When two tiles with the same tech meet, they merge into the next stage.
+          <Box component="span" sx={{ fontWeight: 800 }}>How to play:</Box> swipe, arrow keys or WASD to slide tiles. Matching techs merge into the next stage.
         </Typography>
       </Box>
     </Box>

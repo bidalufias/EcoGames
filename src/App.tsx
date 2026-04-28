@@ -14,7 +14,7 @@ const EcoMemoryGame = lazy(() => import('./games/eco-memory/EcoMemoryGame'));
 const GreenDefenceGame = lazy(() => import('./games/green-defence/GreenDefenceGame'));
 const Climate2048Game = lazy(() => import('./games/climate-2048/Climate2048Game'));
 
-const loadingStyle = { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' } as const;
+const loadingStyle = { minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' } as const;
 
 function MgtcLogo() {
   return (
@@ -87,7 +87,7 @@ function App() {
   return (
     <ThemeProvider theme={ecoTheme}>
       <CssBaseline />
-      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', background: '#0F172A' }}>
+      <Box sx={{ height: '100dvh', width: '100vw', overflow: 'hidden', background: '#0F172A' }}>
         <BrowserRouter>
           <AppLayout />
         </BrowserRouter>

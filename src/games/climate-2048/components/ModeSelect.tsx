@@ -92,7 +92,7 @@ export default function ModeSelect({ onPick, onBack }: ModeSelectProps) {
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '100dvh',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
