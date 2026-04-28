@@ -141,8 +141,8 @@ export default function LandingPage() {
           flexShrink: 0,
           textAlign: 'center',
           px: 3,
-          pt: { xs: 1.5, md: 2.5 },
-          pb: { xs: 0.5, md: 1 },
+          pt: { xs: 1, md: 1.5 },
+          pb: { xs: 0.25, md: 0.5 },
         }}
       >
         <motion.div
@@ -152,7 +152,7 @@ export default function LandingPage() {
         >
           <Typography
             sx={{
-              fontSize: { xs: '1.6rem', md: '2.4rem' },
+              fontSize: { xs: '1.4rem', md: '1.95rem' },
               fontWeight: 900,
               lineHeight: 1,
               letterSpacing: '-0.035em',
@@ -179,9 +179,9 @@ export default function LandingPage() {
         >
           <Typography
             sx={{
-              mt: 0.5,
+              mt: 0.3,
               color: '#475569',
-              fontSize: { xs: '0.78rem', md: '0.92rem' },
+              fontSize: { xs: '0.72rem', md: '0.82rem' },
               fontWeight: 500,
               letterSpacing: '0.01em',
             }}
@@ -204,8 +204,8 @@ export default function LandingPage() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'stretch',
-          px: { xs: 2, md: 4 },
-          py: { xs: 1.5, md: 2 },
+          px: { xs: 2, md: 3.5 },
+          py: { xs: 1.25, md: 1.5 },
         }}
       >
         <Box
@@ -215,7 +215,7 @@ export default function LandingPage() {
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
-            gap: { xs: 1.75, md: 2.5 },
+            gap: { xs: 1.25, md: 1.75 },
             minHeight: 0,
           }}
         >

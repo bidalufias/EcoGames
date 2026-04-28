@@ -92,16 +92,16 @@ export default function GameTile({
         </Box>
 
         {/* Topic chip */}
-        <Box sx={{ px: 2.25, pt: 2, display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 1 }}>
+        <Box sx={{ px: 2, pt: 1.4, display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 1 }}>
           <Box
             sx={{
               background: '#FFFFFF',
               color: accent,
               border: `1px solid ${accent}40`,
               borderRadius: '999px',
-              px: 1.4,
-              py: 0.45,
-              fontSize: '0.62rem',
+              px: 1.2,
+              py: 0.35,
+              fontSize: '0.6rem',
               fontWeight: 800,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
@@ -122,9 +122,9 @@ export default function GameTile({
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center',
-            px: { xs: 1.75, md: 2.5 },
-            pb: { xs: 1.75, md: 2.25 },
-            pt: 1,
+            px: { xs: 1.5, md: 2 },
+            pb: { xs: 1.25, md: 1.5 },
+            pt: 0.4,
             position: 'relative',
             zIndex: 1,
           }}
@@ -132,19 +132,19 @@ export default function GameTile({
           {/* Icon plate */}
           <Box
             sx={{
-              width: { xs: 68, md: 84 },
-              height: { xs: 68, md: 84 },
-              borderRadius: '22px',
+              width: { xs: 56, md: 66 },
+              height: { xs: 56, md: 66 },
+              borderRadius: '18px',
               background: `linear-gradient(140deg, ${accent} 0%, ${accent}D0 100%)`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: `0 10px 28px ${accent}55, inset 0 -3px 8px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.25)`,
+              boxShadow: `0 8px 22px ${accent}50, inset 0 -3px 8px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.25)`,
               flexShrink: 0,
-              mb: 1.2,
+              mb: 0.6,
             }}
           >
-            <Typography sx={{ fontSize: { xs: 36, md: 44 }, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>
+            <Typography sx={{ fontSize: { xs: 30, md: 36 }, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>
               {icon}
             </Typography>
           </Box>
@@ -155,7 +155,7 @@ export default function GameTile({
               fontWeight: 800,
               color: '#0F172A',
               lineHeight: 1.1,
-              fontSize: { xs: '1.1rem', md: '1.32rem' },
+              fontSize: { xs: '0.98rem', md: '1.15rem' },
               letterSpacing: '-0.02em',
             }}
           >
@@ -165,11 +165,12 @@ export default function GameTile({
           {/* Inspired by */}
           <Typography
             sx={{
-              mt: 0.3,
+              mt: 0.15,
               color: '#7A8A9E',
-              fontSize: { xs: '0.7rem', md: '0.74rem' },
+              fontSize: { xs: '0.65rem', md: '0.7rem' },
               fontStyle: 'italic',
               fontWeight: 500,
+              lineHeight: 1.2,
             }}
           >
             inspired by {inspiredBy}
@@ -178,39 +179,42 @@ export default function GameTile({
           {/* Description */}
           <Typography
             sx={{
-              mt: 1,
+              mt: 0.55,
               color: '#475569',
-              lineHeight: 1.45,
-              fontSize: { xs: '0.78rem', md: '0.84rem' },
+              lineHeight: 1.35,
+              fontSize: { xs: '0.72rem', md: '0.78rem' },
               fontWeight: 500,
             }}
           >
             {description}
           </Typography>
 
+          {/* Spacer pushes the rest to the bottom when there's room */}
+          <Box sx={{ flex: 1, minHeight: 4 }} />
+
           {/* What you'll learn */}
           <Box
             sx={{
-              mt: 1.1,
               alignSelf: 'stretch',
-              background: `${accent}12`,
-              border: `1px solid ${accent}28`,
+              background: `${accent}14`,
+              border: `1px solid ${accent}2E`,
               borderRadius: '10px',
-              px: 1.25,
-              py: 0.7,
+              px: 1.1,
+              py: 0.45,
               display: 'flex',
               alignItems: 'center',
-              gap: 0.6,
+              gap: 0.55,
               textAlign: 'left',
+              flexShrink: 0,
             }}
           >
-            <Box sx={{ fontSize: '0.85rem', lineHeight: 1, flexShrink: 0 }}>📚</Box>
+            <Box sx={{ fontSize: '0.8rem', lineHeight: 1, flexShrink: 0 }}>📚</Box>
             <Typography
               sx={{
                 color: '#1E293B',
-                fontSize: { xs: '0.7rem', md: '0.74rem' },
+                fontSize: { xs: '0.66rem', md: '0.7rem' },
                 fontWeight: 600,
-                lineHeight: 1.3,
+                lineHeight: 1.25,
               }}
             >
               <Box component="span" sx={{ color: accent, fontWeight: 800 }}>Learn:</Box>{' '}
@@ -221,52 +225,53 @@ export default function GameTile({
           {/* Meta row */}
           <Box
             sx={{
-              mt: 0.85,
+              mt: 0.5,
               alignSelf: 'stretch',
               display: 'flex',
               justifyContent: 'center',
-              gap: 1.25,
-              fontSize: { xs: '0.68rem', md: '0.72rem' },
+              gap: 1,
+              fontSize: { xs: '0.64rem', md: '0.68rem' },
               color: '#64748B',
               fontWeight: 600,
+              lineHeight: 1,
+              flexShrink: 0,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
-              <Box component="span" sx={{ fontSize: '0.85rem' }}>⚡</Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35 }}>
+              <Box component="span" sx={{ fontSize: '0.78rem' }}>⚡</Box>
               {difficulty}
             </Box>
             <Box sx={{ width: '1px', background: '#CBD5E1' }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
-              <Box component="span" sx={{ fontSize: '0.85rem' }}>⏱</Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35 }}>
+              <Box component="span" sx={{ fontSize: '0.78rem' }}>⏱</Box>
               {playTime}
             </Box>
           </Box>
 
-          <Box sx={{ flex: 1, minHeight: 6 }} />
-
           {/* Play CTA */}
           <Box
             sx={{
+              mt: 0.85,
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 0.6,
-              py: { xs: 1.1, md: 1.3 },
-              borderRadius: '14px',
+              gap: 0.5,
+              py: { xs: 0.85, md: 1 },
+              borderRadius: '12px',
               background: available
                 ? `linear-gradient(135deg, ${accent} 0%, ${accent}E6 100%)`
                 : '#E0E0E0',
               color: available ? '#FFFFFF' : '#9E9E9E',
               fontWeight: 800,
-              fontSize: { xs: '0.88rem', md: '0.96rem' },
+              fontSize: { xs: '0.78rem', md: '0.86rem' },
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
               flexShrink: 0,
-              boxShadow: available ? `0 6px 16px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.25)` : 'none',
+              boxShadow: available ? `0 5px 14px ${accent}50, inset 0 1px 0 rgba(255,255,255,0.25)` : 'none',
             }}
           >
-            <Box component="span" sx={{ fontSize: '0.85em' }}>▶</Box>
+            <Box component="span" sx={{ fontSize: '0.78em' }}>▶</Box>
             {available ? 'Play Now' : 'Coming Soon'}
           </Box>
         </Box>
