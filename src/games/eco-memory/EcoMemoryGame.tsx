@@ -14,12 +14,26 @@ import EcoButton from '../../components/EcoButton';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
 import Board from './components/Board';
 import HUD from './components/HUD';
+import MatchBurst from './components/MatchBurst';
+import Confetti from './components/Confetti';
+import { audio } from './audio';
 
 type Screen = 'intro' | 'playing' | 'gameover' | 'leaderboard';
+
+interface Burst {
+  id: number;
+  x: number;
+  y: number;
+  points: number;
+  color: string;
+}
 
 const BEST_KEY = 'eco-memory:best';
 const REVEAL_MATCH_MS = 650;
 const REVEAL_MISS_MS = 950;
+const BOARD_COLS = 4;
+const BOARD_ROWS = 4;
+const GAMEOVER_DELAY_MS = 1700; // long enough for confetti to play out
 
 const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
 
@@ -32,9 +46,13 @@ export default function EcoMemoryGame() {
   const [best, setBest] = useState(0);
   const [playerName, setPlayerName] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [bursts, setBursts] = useState<Burst[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [muted, setMuted] = useState(() => audio.isMuted());
 
   const totalPairs = GHG_PAIRS.length;
   const factTimer = useRef<number | null>(null);
+  const burstIdRef = useRef(0);
 
   // Load persisted best score on mount.
   useEffect(() => {
@@ -63,13 +81,35 @@ export default function EcoMemoryGame() {
       setGame(prev => {
         const result = resolveTurn(prev, totalPairs);
         if (result.delta !== 0) setScoreDelta(result.delta);
-        if (result.completedPair) {
+        if (result.matched && result.completedPair) {
           setFact(result.completedPair.fact);
           if (factTimer.current) window.clearTimeout(factTimer.current);
           factTimer.current = window.setTimeout(() => setFact(null), 3000);
+          // Spawn a "+points" flyaway at the centroid of the matched pair.
+          const aIdx = prev.deck.findIndex(c => c.id === aId);
+          const bIdx = prev.deck.findIndex(c => c.id === bId);
+          const cellCenter = (idx: number) => ({
+            x: ((idx % BOARD_COLS) + 0.5) / BOARD_COLS * 100,
+            y: (Math.floor(idx / BOARD_COLS) + 0.5) / BOARD_ROWS * 100,
+          });
+          const ca = cellCenter(aIdx);
+          const cb = cellCenter(bIdx);
+          const burst: Burst = {
+            id: burstIdRef.current++,
+            x: (ca.x + cb.x) / 2,
+            y: (ca.y + cb.y) / 2,
+            points: result.delta,
+            color: result.completedPair.color,
+          };
+          setBursts(b => [...b, burst]);
+          audio.match();
+        } else if (!result.matched) {
+          audio.miss();
         }
         if (result.finished) {
-          window.setTimeout(() => setScreen('gameover'), 600);
+          setShowConfetti(true);
+          audio.win();
+          window.setTimeout(() => setScreen('gameover'), GAMEOVER_DELAY_MS);
         }
         return result.state;
       });
@@ -91,16 +131,26 @@ export default function EcoMemoryGame() {
     setFact(null);
     setLocked(false);
     setSubmitted(false);
+    setBursts([]);
+    setShowConfetti(false);
     setScreen('playing');
   }, []);
 
   const onFlip = useCallback(
     (id: number) => {
       if (locked) return;
-      setGame(prev => (canFlip(prev, id) ? flipCard(prev, id) : prev));
+      setGame(prev => {
+        if (!canFlip(prev, id)) return prev;
+        audio.flip();
+        return flipCard(prev, id);
+      });
     },
     [locked],
   );
+
+  const toggleMute = useCallback(() => {
+    setMuted(audio.toggleMuted());
+  }, []);
 
   const submitScore = useCallback(async () => {
     if (!playerName.trim() || submitted) return;
@@ -350,6 +400,8 @@ export default function EcoMemoryGame() {
           totalPairs={totalPairs}
           streak={game.streak}
           scoreDelta={scoreDelta}
+          muted={muted}
+          onToggleMute={toggleMute}
         />
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, flexShrink: 0 }}>
@@ -359,10 +411,28 @@ export default function EcoMemoryGame() {
         </Box>
 
         {/* Board fills the leftover height; the inner grid self-caps to a
-            square that fits both width and height. */}
+            square that fits both width and height. Bursts + confetti overlay
+            this same wrapper so their coordinates match cell centres. */}
         <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
-          <Box sx={{ width: '100%', height: '100%' }}>
-            <Board deck={game.deck} cards={game.cards} onFlip={onFlip} disabled={locked} />
+          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Board
+              deck={game.deck}
+              cards={game.cards}
+              onFlip={onFlip}
+              disabled={locked}
+              cols={BOARD_COLS}
+            />
+            {bursts.map(b => (
+              <MatchBurst
+                key={b.id}
+                x={b.x}
+                y={b.y}
+                points={b.points}
+                color={b.color}
+                onDone={() => setBursts(prev => prev.filter(p => p.id !== b.id))}
+              />
+            ))}
+            {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
           </Box>
         </Box>
       </Box>
