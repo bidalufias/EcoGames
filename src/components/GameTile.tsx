@@ -17,30 +17,33 @@ interface GameTileProps {
   index?: number;
 }
 
-// Fluid sizing tokens — every dimension scales with the card's actual height
-// via container query height units. clamp(min, preferred, max) keeps things
-// readable on both small (~280px tall) and large (~600px tall) cards.
+// Fluid tokens — sized in container-query units against the card itself, so
+// every element grows or shrinks with the card. clamp() keeps things legible
+// on the smallest grid cell (~220×170) and stops them ballooning on huge
+// displays. We use the minimum of cqh and cqw so the layout never blows out
+// horizontally on landscape cards or vertically on portrait ones.
 const FLUID = {
-  bodyPad: 'clamp(14px, 3.6cqh, 24px)',
-  groupGap: 'clamp(6px, 1.8cqh, 14px)', // gap *inside* the top sub-group
-  minSectionGap: 'clamp(8px, 2.2cqh, 18px)', // minimum gap between body sections
-  iconPlate: 'clamp(54px, 18cqh, 96px)',
-  iconRadius: 'clamp(14px, 3.5cqh, 22px)',
-  iconFont: 'clamp(28px, 10cqh, 50px)',
-  titleFont: 'clamp(0.95rem, 4cqh, 1.4rem)',
-  inspiredFont: 'clamp(0.62rem, 1.9cqh, 0.78rem)',
-  descFont: 'clamp(0.85rem, 2.9cqh, 1.05rem)',
-  learnPx: 'clamp(10px, 2cqh, 16px)',
-  learnPy: 'clamp(6px, 1.5cqh, 12px)',
-  learnFont: 'clamp(0.78rem, 2.55cqh, 0.95rem)',
-  metaFont: 'clamp(0.66rem, 2.0cqh, 0.82rem)',
-  metaGap: 'clamp(8px, 2cqh, 14px)',
-  ctaPy: 'clamp(9px, 2.6cqh, 15px)',
-  ctaRadius: 'clamp(10px, 2cqh, 14px)',
-  ctaFont: 'clamp(0.82rem, 2.5cqh, 1rem)',
-  topicPx: 'clamp(8px, 1.6cqh, 12px)',
-  topicPy: 'clamp(3px, 0.8cqh, 5px)',
-  topicFont: 'clamp(0.55rem, 1.5cqh, 0.68rem)',
+  pad: 'clamp(10px, 3cqmin, 22px)',
+  rowGap: 'clamp(6px, 1.8cqmin, 14px)',
+  headerGap: 'clamp(8px, 2.4cqmin, 16px)',
+  iconPlate: 'clamp(44px, 18cqmin, 84px)',
+  iconRadius: 'clamp(10px, 3cqmin, 18px)',
+  iconFont: 'clamp(22px, 9cqmin, 44px)',
+  topicPx: 'clamp(6px, 1.6cqmin, 10px)',
+  topicPy: 'clamp(2px, 0.6cqmin, 4px)',
+  topicFont: 'clamp(0.5rem, 1.5cqmin, 0.66rem)',
+  titleFont: 'clamp(0.95rem, 4cqmin, 1.35rem)',
+  inspiredFont: 'clamp(0.6rem, 1.7cqmin, 0.74rem)',
+  descFont: 'clamp(0.74rem, 2.4cqmin, 0.92rem)',
+  learnPx: 'clamp(8px, 2cqmin, 14px)',
+  learnPy: 'clamp(5px, 1.4cqmin, 10px)',
+  learnFont: 'clamp(0.7rem, 2.1cqmin, 0.85rem)',
+  metaFont: 'clamp(0.62rem, 1.85cqmin, 0.78rem)',
+  metaGap: 'clamp(6px, 1.6cqmin, 12px)',
+  ctaPx: 'clamp(10px, 2.6cqmin, 18px)',
+  ctaPy: 'clamp(6px, 1.8cqmin, 12px)',
+  ctaRadius: 'clamp(8px, 1.8cqmin, 12px)',
+  ctaFont: 'clamp(0.72rem, 2.1cqmin, 0.92rem)',
 };
 
 export default function GameTile({
@@ -79,7 +82,7 @@ export default function GameTile({
           containerName: 'gametile',
           background: `linear-gradient(155deg, ${accent}26 0%, ${accent}10 38%, #FFFFFF 100%)`,
           border: `1px solid ${accent}38`,
-          borderRadius: 'clamp(16px, 3.5cqh, 26px)',
+          borderRadius: 'clamp(14px, 3cqmin, 22px)',
           overflow: 'hidden',
           cursor: available ? 'pointer' : 'default',
           touchAction: 'manipulation',
@@ -90,25 +93,25 @@ export default function GameTile({
           '@media (hover: hover)': {
             '&:hover': available
               ? {
-                  transform: 'translateY(-5px)',
+                  transform: 'translateY(-4px)',
                   boxShadow: `0 18px 40px ${accent}38, 0 2px 6px rgba(15,23,42,0.06)`,
                   borderColor: `${accent}66`,
                 }
               : {},
           },
           '&:active': available
-            ? { transform: 'scale(0.975)', boxShadow: `0 3px 10px ${accent}30` }
+            ? { transform: 'scale(0.98)', boxShadow: `0 3px 10px ${accent}30` }
             : {},
         }}
       >
-        {/* Decorative watermark icon (corner) */}
+        {/* Decorative watermark */}
         <Box
           aria-hidden
           sx={{
             position: 'absolute',
-            right: 'clamp(-24px, -3cqh, -10px)',
-            top: 'clamp(-16px, -1.5cqh, -6px)',
-            fontSize: 'clamp(90px, 32cqh, 200px)',
+            right: 'clamp(-22px, -2.5cqmin, -8px)',
+            bottom: 'clamp(-22px, -2.5cqmin, -8px)',
+            fontSize: 'clamp(80px, 28cqmin, 170px)',
             opacity: 0.07,
             color: accent,
             pointerEvents: 'none',
@@ -120,9 +123,9 @@ export default function GameTile({
           {icon}
         </Box>
 
-        {/* Body — five flex children (top group / description / learn / meta /
-            CTA) distributed via space-between, so the four gaps between them
-            are always equal regardless of card height. */}
+        {/* Body — flex column anchored to top and bottom edges. The
+            description flexes to take leftover space, so meta + CTA always
+            sit at the bottom regardless of how tall the card is. */}
         <Box
           sx={{
             flex: 1,
@@ -130,48 +133,21 @@ export default function GameTile({
             minWidth: 0,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            textAlign: 'center',
-            padding: FLUID.bodyPad,
-            gap: FLUID.minSectionGap,
+            padding: FLUID.pad,
+            gap: FLUID.rowGap,
             position: 'relative',
             zIndex: 1,
           }}
         >
-          {/* Top group: topic chip + icon + title (tight internal rhythm) */}
+          {/* Header row: icon plate (left) + title block (right) */}
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: FLUID.groupGap,
+              alignItems: 'flex-start',
+              gap: FLUID.headerGap,
               flexShrink: 0,
             }}
           >
-            {/* Topic chip — top right */}
-            <Box
-              sx={{
-                alignSelf: 'flex-end',
-                background: '#FFFFFF',
-                color: accent,
-                border: `1px solid ${accent}40`,
-                borderRadius: '999px',
-                px: FLUID.topicPx,
-                py: FLUID.topicPy,
-                fontSize: FLUID.topicFont,
-                fontWeight: 800,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                lineHeight: 1,
-                boxShadow: `0 1px 3px ${accent}20`,
-                flexShrink: 0,
-              }}
-            >
-              {topic}
-            </Box>
-
-            {/* Icon plate */}
             <Box
               sx={{
                 width: FLUID.iconPlate,
@@ -181,7 +157,7 @@ export default function GameTile({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: `0 8px 22px ${accent}50, inset 0 -3px 8px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.25)`,
+                boxShadow: `0 6px 18px ${accent}50, inset 0 -2px 6px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.25)`,
                 flexShrink: 0,
               }}
             >
@@ -196,8 +172,30 @@ export default function GameTile({
               </Typography>
             </Box>
 
-            {/* Title group (title + inspired-by) */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+            <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
+              <Box
+                sx={{
+                  alignSelf: 'flex-start',
+                  background: '#FFFFFF',
+                  color: accent,
+                  border: `1px solid ${accent}40`,
+                  borderRadius: '999px',
+                  px: FLUID.topicPx,
+                  py: FLUID.topicPy,
+                  fontSize: FLUID.topicFont,
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1,
+                  boxShadow: `0 1px 3px ${accent}20`,
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {topic}
+              </Box>
               <Typography
                 sx={{
                   fontWeight: 800,
@@ -205,18 +203,23 @@ export default function GameTile({
                   lineHeight: 1.1,
                   fontSize: FLUID.titleFont,
                   letterSpacing: '-0.02em',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {title}
               </Typography>
               <Typography
                 sx={{
-                  mt: 'clamp(2px, 0.6cqh, 5px)',
                   color: '#7A8A9E',
                   fontSize: FLUID.inspiredFont,
                   fontStyle: 'italic',
                   fontWeight: 500,
                   lineHeight: 1.2,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 inspired by {inspiredBy}
@@ -224,46 +227,52 @@ export default function GameTile({
             </Box>
           </Box>
 
-          {/* Description */}
+          {/* Description — flexes to absorb extra vertical room. */}
           <Typography
             component="div"
             sx={{
               color: '#475569',
-              lineHeight: 1.45,
+              lineHeight: 1.4,
               fontSize: FLUID.descFont,
               fontWeight: 500,
-              px: 'clamp(0px, 1.5cqh, 8px)',
-              flexShrink: 0,
+              flex: 1,
+              minHeight: 0,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
             }}
           >
             {description}
           </Typography>
 
-          {/* What you'll learn — centered, more prominent */}
+          {/* Learn box */}
           <Box
             sx={{
               background: `${accent}14`,
               border: `1px solid ${accent}2E`,
-              borderRadius: 'clamp(8px, 1.8cqh, 12px)',
+              borderRadius: 'clamp(8px, 1.6cqmin, 12px)',
               px: FLUID.learnPx,
               py: FLUID.learnPy,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 'clamp(5px, 1.2cqh, 9px)',
-              textAlign: 'center',
+              gap: 'clamp(5px, 1.2cqmin, 9px)',
               flexShrink: 0,
             }}
           >
-            <Box sx={{ fontSize: 'clamp(0.85rem, 2.6cqh, 1.05rem)', lineHeight: 1, flexShrink: 0 }}>📚</Box>
+            <Box sx={{ fontSize: 'clamp(0.85rem, 2.4cqmin, 1rem)', lineHeight: 1, flexShrink: 0 }}>📚</Box>
             <Typography
               component="div"
               sx={{
                 color: '#1E293B',
                 fontSize: FLUID.learnFont,
                 fontWeight: 600,
-                lineHeight: 1.35,
+                lineHeight: 1.3,
                 minWidth: 0,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
               }}
             >
               <Box component="span" sx={{ color: accent, fontWeight: 800 }}>Learn:</Box>{' '}
@@ -271,55 +280,66 @@ export default function GameTile({
             </Typography>
           </Box>
 
-          {/* Meta row */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: FLUID.metaGap,
-              fontSize: FLUID.metaFont,
-              color: '#64748B',
-              fontWeight: 600,
-              lineHeight: 1,
-              flexShrink: 0,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqh, 5px)' }}>
-              <Box component="span" sx={{ fontSize: 'clamp(0.74rem, 2.2cqh, 0.9rem)' }}>⚡</Box>
-              {difficulty}
-            </Box>
-            <Box sx={{ width: '1px', background: '#CBD5E1' }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqh, 5px)' }}>
-              <Box component="span" sx={{ fontSize: 'clamp(0.74rem, 2.2cqh, 0.9rem)' }}>⏱</Box>
-              {playTime}
-            </Box>
-          </Box>
-
-          {/* Play CTA */}
+          {/* Footer row anchored to the bottom: meta (left) + CTA (right) */}
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 'clamp(4px, 1cqh, 8px)',
-              py: FLUID.ctaPy,
-              borderRadius: FLUID.ctaRadius,
-              background: available
-                ? `linear-gradient(135deg, ${accent} 0%, ${accent}E6 100%)`
-                : '#E0E0E0',
-              color: available ? '#FFFFFF' : '#9E9E9E',
-              fontWeight: 800,
-              fontSize: FLUID.ctaFont,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
+              justifyContent: 'space-between',
+              gap: FLUID.metaGap,
               flexShrink: 0,
-              boxShadow: available
-                ? `0 5px 14px ${accent}50, inset 0 1px 0 rgba(255,255,255,0.25)`
-                : 'none',
             }}
           >
-            <Box component="span" sx={{ fontSize: '0.78em' }}>▶</Box>
-            {available ? 'Play Now' : 'Coming Soon'}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: FLUID.metaGap,
+                fontSize: FLUID.metaFont,
+                color: '#64748B',
+                fontWeight: 600,
+                lineHeight: 1,
+                minWidth: 0,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
+                <Box component="span" sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>⚡</Box>
+                {difficulty}
+              </Box>
+              <Box sx={{ width: '1px', height: '1em', background: '#CBD5E1' }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
+                <Box component="span" sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>⏱</Box>
+                {playTime}
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'clamp(4px, 1cqmin, 8px)',
+                px: FLUID.ctaPx,
+                py: FLUID.ctaPy,
+                borderRadius: FLUID.ctaRadius,
+                background: available
+                  ? `linear-gradient(135deg, ${accent} 0%, ${accent}E6 100%)`
+                  : '#E0E0E0',
+                color: available ? '#FFFFFF' : '#9E9E9E',
+                fontWeight: 800,
+                fontSize: FLUID.ctaFont,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                boxShadow: available
+                  ? `0 5px 14px ${accent}50, inset 0 1px 0 rgba(255,255,255,0.25)`
+                  : 'none',
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.78em' }}>▶</Box>
+              {available ? 'Play' : 'Soon'}
+            </Box>
           </Box>
         </Box>
       </Box>
