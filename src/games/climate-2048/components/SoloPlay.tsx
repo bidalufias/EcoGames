@@ -107,7 +107,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
     return (
       <Box
         sx={{
-          height: '100dvh',
+          height: '100%',
           bgcolor: '#FAF8EF',
           display: 'flex',
           flexDirection: 'column',
@@ -134,13 +134,13 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         px: 3,
-        py: 'clamp(12px, 2.5vh, 28px)',
+        py: 'clamp(12px, 2.5cqh, 28px)',
         overflow: 'hidden',
       }}
     >
@@ -198,7 +198,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
                 gap: 1.2,
               }}
             >
-              <Typography sx={{ fontSize: 'clamp(1.4rem, 4vh, 2.2rem)', fontWeight: 900, color: '#776E65' }}>
+              <Typography sx={{ fontSize: 'clamp(1.4rem, 4cqh, 2.2rem)', fontWeight: 900, color: '#776E65' }}>
                 Game over
               </Typography>
               <Typography sx={{ color: '#776E65', fontSize: '0.95rem' }}>

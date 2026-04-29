@@ -133,7 +133,7 @@ export default function ClimateNinjaGame() {
 
   if (screen === 'playing') {
     return (
-      <div style={{ position: 'relative', width: '100vw', height: '100dvh', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
         <GameCanvas
           mode={mode}
           playerNames={playerNames}

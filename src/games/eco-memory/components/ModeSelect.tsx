@@ -198,7 +198,7 @@ export default function ModeSelect({ onPick }: ModeSelectProps) {
   return (
     <Box
       sx={{
-        minHeight: '100dvh',
+        minHeight: '100%',
         bgcolor: '#FAFBFC',
         color: '#1A2332',
         display: 'flex',

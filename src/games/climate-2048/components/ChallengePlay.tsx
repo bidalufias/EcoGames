@@ -234,7 +234,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
     return (
       <Box
         sx={{
-          height: '100dvh',
+          height: '100%',
           bgcolor: '#FAF8EF',
           display: 'flex',
           flexDirection: 'column',
@@ -248,7 +248,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
         <Typography sx={{ fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#A39A8C' }}>
           Challenge · {track.short}
         </Typography>
-        <Typography sx={{ mt: 0.5, fontSize: 'clamp(1.6rem, 3.6vh, 2.3rem)', fontWeight: 900, color: '#776E65', lineHeight: 1 }}>
+        <Typography sx={{ mt: 0.5, fontSize: 'clamp(1.6rem, 3.6cqh, 2.3rem)', fontWeight: 900, color: '#776E65', lineHeight: 1 }}>
           Pick the target tile
         </Typography>
         <Typography sx={{ mt: 1, color: '#776E65', opacity: 0.78, fontSize: '0.92rem', textAlign: 'center', maxWidth: 540 }}>
@@ -304,13 +304,13 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        px: 'clamp(8px, 1.5vw, 24px)',
-        py: 'clamp(8px, 1.6vh, 18px)',
+        px: 'clamp(8px, 1.5cqw, 24px)',
+        py: 'clamp(8px, 1.6cqh, 18px)',
         overflow: 'hidden',
       }}
     >
@@ -348,7 +348,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
           flex: 1,
           minHeight: 0,
           display: 'flex',
-          gap: 'clamp(12px, 2vw, 28px)',
+          gap: 'clamp(12px, 2cqw, 28px)',
           alignItems: 'stretch',
           position: 'relative',
         }}
@@ -431,7 +431,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
             }}
           >
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.32, ease: 'easeOut' }}>
-              <Typography sx={{ fontSize: 'clamp(1.6rem, 5vh, 2.6rem)', fontWeight: 900, color: '#776E65', lineHeight: 1.05 }}>
+              <Typography sx={{ fontSize: 'clamp(1.6rem, 5cqh, 2.6rem)', fontWeight: 900, color: '#776E65', lineHeight: 1.05 }}>
                 {winnerLabel}
               </Typography>
               <Typography sx={{ mt: 1, color: '#776E65', opacity: 0.85, fontSize: '0.95rem' }}>

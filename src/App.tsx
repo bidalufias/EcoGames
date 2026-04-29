@@ -14,7 +14,7 @@ const EcoMemoryGame = lazy(() => import('./games/eco-memory/EcoMemoryGame'));
 const GreenDefenceGame = lazy(() => import('./games/green-defence/GreenDefenceGame'));
 const Climate2048Game = lazy(() => import('./games/climate-2048/Climate2048Game'));
 
-const loadingStyle = { minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' } as const;
+const loadingStyle = { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' } as const;
 
 function MgtcLogo() {
   return (
@@ -23,10 +23,10 @@ function MgtcLogo() {
       src="/mgtc-logo.png"
       alt="MGTC"
       sx={{
-        position: 'fixed',
-        top: { xs: 16, md: 24 },
-        right: { xs: 16, md: 32 },
-        height: { xs: 28, md: 36 },
+        position: 'absolute',
+        top: 'clamp(10px, 2.5cqh, 24px)',
+        right: 'clamp(12px, 3cqw, 32px)',
+        height: 'clamp(22px, 5cqh, 36px)',
         width: 'auto',
         zIndex: 9999,
         opacity: 0.85,
@@ -87,10 +87,12 @@ function App() {
   return (
     <ThemeProvider theme={ecoTheme}>
       <CssBaseline />
-      <Box sx={{ height: '100dvh', width: '100vw', overflow: 'hidden', background: '#0F172A' }}>
-        <BrowserRouter>
-          <AppLayout />
-        </BrowserRouter>
+      <Box className="app-frame">
+        <Box className="app-stage">
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </Box>
       </Box>
     </ThemeProvider>
   );

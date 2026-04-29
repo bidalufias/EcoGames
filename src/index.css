@@ -10,9 +10,35 @@ html, body {
 }
 
 #root {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
+}
+
+/* 16:9 stage frame: lock the entire app to a 16:9 aspect ratio so every
+   game fits the screen without scrolling. The frame fills the viewport
+   and letterboxes the stage; the stage itself is the largest 16:9 box
+   that fits, and acts as a CSS container so descendants can size against
+   it via cqw/cqh. */
+.app-frame {
+  position: fixed;
+  inset: 0;
+  background: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.app-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: min(100dvh, calc(100vw * 9 / 16));
+  overflow: hidden;
+  container-type: size;
+  container-name: stage;
+  background: #0F172A;
 }
 
 /* Selection color */

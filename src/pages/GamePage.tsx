@@ -20,11 +20,13 @@ export default function GamePage() {
   return (
     <Box
       sx={{
-        minHeight: '100dvh',
+        height: '100%',
+        width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         pt: 10,
+        overflow: 'hidden',
       }}
     >
       <Container maxWidth="sm" sx={{ textAlign: 'center' }}>

@@ -20,9 +20,9 @@ export default function BackToHome() {
     <Box
       onClick={() => navigate('/')}
       sx={{
-        position: 'fixed',
-        top: { xs: 16, md: 24 },
-        left: { xs: 16, md: 32 },
+        position: 'absolute',
+        top: 'clamp(10px, 2.5cqh, 24px)',
+        left: 'clamp(12px, 3cqw, 32px)',
         zIndex: 10001,
         px: 2,
         py: 0.8,

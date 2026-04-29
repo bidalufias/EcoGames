@@ -194,7 +194,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
     return (
       <Box
         sx={{
-          height: '100dvh',
+          height: '100%',
           bgcolor: '#FAFBFC',
           color: '#1A2332',
           display: 'flex',
@@ -263,7 +263,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
               mb: 3,
               maxWidth: 560,
               width: '100%',
-              maxHeight: '24vh',
+              maxHeight: '24cqh',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
@@ -307,14 +307,14 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#F0F3F7',
         color: '#1A2332',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        px: 'clamp(8px, 2vw, 24px)',
-        py: 'clamp(8px, 2vh, 16px)',
+        px: 'clamp(8px, 2cqw, 24px)',
+        py: 'clamp(8px, 2cqh, 16px)',
         overflow: 'hidden',
       }}
     >
@@ -470,7 +470,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',

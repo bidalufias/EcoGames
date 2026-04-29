@@ -88,7 +88,7 @@ export default function TechSelect({ onPick, onBack, modeLabel }: TechSelectProp
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
@@ -113,7 +113,7 @@ export default function TechSelect({ onPick, onBack, modeLabel }: TechSelectProp
       <Typography
         sx={{
           mt: 0.5,
-          fontSize: 'clamp(1.6rem, 3.6vh, 2.3rem)',
+          fontSize: 'clamp(1.6rem, 3.6cqh, 2.3rem)',
           fontWeight: 900,
           color: '#776E65',
           textAlign: 'center',

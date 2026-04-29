@@ -39,7 +39,7 @@ export default function MatchBurst({ x, y, points, color, onDone }: MatchBurstPr
           background: '#FFFFFF',
           border: `2px solid ${color}`,
           color,
-          fontSize: 'clamp(0.95rem, 3.4vw, 1.4rem)',
+          fontSize: 'clamp(0.95rem, 3.4cqw, 1.4rem)',
           fontWeight: 900,
           boxShadow: `0 4px 14px ${color}44`,
           fontVariantNumeric: 'tabular-nums',

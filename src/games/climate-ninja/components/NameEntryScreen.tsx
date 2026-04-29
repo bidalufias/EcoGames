@@ -22,7 +22,7 @@ export default function NameEntryScreen({ playerCount, onSubmit }: Props) {
 
   return (
     <Box sx={{
-      minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
+      minHeight: '100%', bgcolor: '#FAFBFC', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       px: 3, py: 4,
     }}>

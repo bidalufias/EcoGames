@@ -90,8 +90,8 @@ export default function LandingPage() {
   return (
     <Box
       sx={{
-        height: '100dvh',
-        width: '100vw',
+        height: '100%',
+        width: '100%',
         overflow: 'hidden',
         background:
           'radial-gradient(circle at 20% 0%, #DCFCE7 0%, transparent 45%), radial-gradient(circle at 100% 100%, #DBEAFE 0%, transparent 50%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)',
@@ -102,7 +102,8 @@ export default function LandingPage() {
     >
       <ParticleBackground />
 
-      {/* Portrait orientation guard */}
+      {/* Portrait orientation guard — drawn over the dark letterbox so users
+          who hold the device the wrong way still get a nudge. */}
       <Box
         sx={{
           display: 'none',
@@ -141,8 +142,8 @@ export default function LandingPage() {
           flexShrink: 0,
           textAlign: 'center',
           px: 3,
-          pt: 'clamp(8px, 2vh, 24px)',
-          pb: 'clamp(2px, 0.8vh, 10px)',
+          pt: 'clamp(8px, 2cqh, 24px)',
+          pb: 'clamp(2px, 0.8cqh, 10px)',
         }}
       >
         <motion.div
@@ -152,7 +153,7 @@ export default function LandingPage() {
         >
           <Typography
             sx={{
-              fontSize: 'clamp(1.3rem, 3.8vh, 2.4rem)',
+              fontSize: 'clamp(1.3rem, 3.8cqh, 2.4rem)',
               fontWeight: 900,
               lineHeight: 1,
               letterSpacing: '-0.035em',
@@ -179,9 +180,9 @@ export default function LandingPage() {
         >
           <Typography
             sx={{
-              mt: 'clamp(2px, 0.6vh, 8px)',
+              mt: 'clamp(2px, 0.6cqh, 8px)',
               color: '#475569',
-              fontSize: 'clamp(0.7rem, 1.4vh, 0.95rem)',
+              fontSize: 'clamp(0.7rem, 1.4cqh, 0.95rem)',
               fontWeight: 500,
               letterSpacing: '0.01em',
             }}
@@ -204,8 +205,8 @@ export default function LandingPage() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'stretch',
-          px: 'clamp(12px, 2.5vw, 36px)',
-          py: 'clamp(8px, 1.6vh, 22px)',
+          px: 'clamp(12px, 2.5cqw, 36px)',
+          py: 'clamp(8px, 1.6cqh, 22px)',
         }}
       >
         <Box
@@ -215,7 +216,7 @@ export default function LandingPage() {
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
-            gap: 'clamp(10px, 1.6vh, 22px)',
+            gap: 'clamp(10px, 1.6cqh, 22px)',
             minHeight: 0,
           }}
         >

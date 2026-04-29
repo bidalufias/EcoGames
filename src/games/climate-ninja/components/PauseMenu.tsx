@@ -10,7 +10,7 @@ interface Props {
 export default function PauseMenu({ onResume, onQuit }: Props) {
   return (
     <Box sx={{
-      position: 'fixed', inset: 0, zIndex: 100,
+      position: 'absolute', inset: 0, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'rgba(250,251,252,0.92)', backdropFilter: 'blur(8px)',
     }}>

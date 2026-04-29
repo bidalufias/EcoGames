@@ -25,15 +25,21 @@ export default function ParticleBackground() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Track the canvas's actual rendered size — the canvas lives inside the
+    // 16:9 stage, not the viewport, so we sync to its parent's box.
+    const sync = () => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(rect.width));
+      canvas.height = Math.max(1, Math.floor(rect.height));
     };
-    resize();
-    window.addEventListener('resize', resize);
+    sync();
+
+    const observer = new ResizeObserver(sync);
+    if (canvas.parentElement) observer.observe(canvas.parentElement);
+    observer.observe(canvas);
 
     // Create particles — MGTC brand colors, light mode
-    const count = Math.min(40, Math.floor(window.innerWidth * window.innerHeight / 30000));
+    const count = Math.min(40, Math.floor(canvas.width * canvas.height / 30000));
     const colors = [
       'rgba(139, 197, 63,',   // MGTC green
       'rgba(168, 216, 110,',  // light green
@@ -133,7 +139,7 @@ export default function ParticleBackground() {
 
     return () => {
       cancelAnimationFrame(animRef.current);
-      window.removeEventListener('resize', resize);
+      observer.disconnect();
     };
   }, []);
 
@@ -141,7 +147,7 @@ export default function ParticleBackground() {
     <canvas
       ref={canvasRef}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',

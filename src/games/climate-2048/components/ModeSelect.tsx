@@ -92,7 +92,7 @@ export default function ModeSelect({ onPick, onBack }: ModeSelectProps) {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#FAF8EF',
         display: 'flex',
         flexDirection: 'column',
@@ -106,7 +106,7 @@ export default function ModeSelect({ onPick, onBack }: ModeSelectProps) {
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
         <Typography
           sx={{
-            fontSize: 'clamp(1.8rem, 4vh, 2.6rem)',
+            fontSize: 'clamp(1.8rem, 4cqh, 2.6rem)',
             fontWeight: 900,
             color: '#776E65',
             textAlign: 'center',

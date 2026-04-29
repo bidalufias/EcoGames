@@ -114,7 +114,7 @@ export default function RecycleRushGame() {
   if (screen === 'intro') {
     return (
       <Box sx={{
-        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100%', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4, overflow: 'hidden',
       }}>
@@ -160,7 +160,7 @@ export default function RecycleRushGame() {
   if (screen === 'leaderboard') {
     return (
       <Box sx={{
-        minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
+        minHeight: '100%', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, py: 4,
       }}>
@@ -179,7 +179,7 @@ export default function RecycleRushGame() {
   if (screen === 'gameover') {
     return (
       <Box sx={{
-        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
+        height: '100%', bgcolor: '#FAFBFC', color: '#1A2332',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         px: 3, overflow: 'hidden',
       }}>
@@ -224,7 +224,7 @@ export default function RecycleRushGame() {
   // --- Playing ---
   return (
     <Box ref={gameRef} sx={{
-      height: '100dvh', bgcolor: '#F0F3F7', color: '#1A2332',
+      height: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
       display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2,
       touchAction: 'none', userSelect: 'none', overflow: 'hidden',
     }}>
@@ -316,7 +316,7 @@ export default function RecycleRushGame() {
       <AnimatePresence>
         {fact && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
+            style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
             <Box sx={{
               px: 3, py: 1.5, borderRadius: 2,
               background: '#FF8C4215', border: '1px solid #FF8C4230',

@@ -190,7 +190,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
     return (
       <Box
         sx={{
-          minHeight: '100dvh',
+          minHeight: '100%',
           bgcolor: '#FAFBFC',
           color: '#1A2332',
           display: 'flex',
@@ -221,7 +221,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
     return (
       <Box
         sx={{
-          height: '100dvh',
+          height: '100%',
           bgcolor: '#FAFBFC',
           color: '#1A2332',
           display: 'flex',
@@ -269,7 +269,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
               mb: 3,
               maxWidth: 560,
               width: '100%',
-              maxHeight: '32vh',
+              maxHeight: '32cqh',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
@@ -341,14 +341,14 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
   return (
     <Box
       sx={{
-        height: '100dvh',
+        height: '100%',
         bgcolor: '#F0F3F7',
         color: '#1A2332',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        px: 'clamp(8px, 2vw, 24px)',
-        py: 'clamp(8px, 2vh, 20px)',
+        px: 'clamp(8px, 2cqw, 24px)',
+        py: 'clamp(8px, 2cqh, 20px)',
         overflow: 'hidden',
       }}
     >
@@ -473,7 +473,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               bottom: 'max(20px, env(safe-area-inset-bottom))',
               left: '50%',
               transform: 'translateX(-50%)',

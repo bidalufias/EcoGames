@@ -26,6 +26,14 @@ export default function GameCanvas({
   const callbacksRef = useRef({ onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy, onZonesUpdate });
   callbacksRef.current = { onGameOver, onScoreUpdate, onLivesUpdate, onComboUpdate, onPowerupUpdate, onFrenzy, onZonesUpdate };
 
+  // Size the canvas to its container (the 16:9 stage), not the raw viewport.
+  const measure = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return { w: 0, h: 0 };
+    const rect = container.getBoundingClientRect();
+    return { w: Math.max(1, Math.floor(rect.width)), h: Math.max(1, Math.floor(rect.height)) };
+  }, []);
+
   const initEngine = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -35,9 +43,9 @@ export default function GameCanvas({
       engineRef.current = null;
     }
 
-    // Fullscreen canvas
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const { w, h } = measure();
+    canvas.width = w;
+    canvas.height = h;
 
     const engine = new GameEngine(
       canvas, mode, playerNames, speedMult,
@@ -55,26 +63,36 @@ export default function GameCanvas({
 
     // Send initial zones
     callbacksRef.current.onZonesUpdate(engine.getZones());
-  }, [mode, playerNames, speedMult]);
+  }, [mode, playerNames, speedMult, measure]);
 
   useEffect(() => {
     initEngine();
     return () => { engineRef.current?.stop(); };
   }, [initEngine, gameKey]);
 
-  // Resize handler — fullscreen
+  // Track container size — the stage may resize when the user rotates or
+  // resizes the window even though the stage itself is locked to 16:9.
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (!canvas || !engineRef.current) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      engineRef.current.resize(canvas.width, canvas.height);
+      const { w, h } = measure();
+      if (w === canvas.width && h === canvas.height) return;
+      canvas.width = w;
+      canvas.height = h;
+      engineRef.current.resize(w, h);
       callbacksRef.current.onZonesUpdate(engineRef.current.getZones());
     };
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(container);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [measure]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
