@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -70,7 +71,21 @@ export default function GameTile({
       style={{ height: '100%', display: 'flex', minHeight: 0, minWidth: 0 }}
     >
       <Box
+        role="button"
+        tabIndex={available ? 0 : -1}
+        aria-disabled={!available}
+        aria-label={`Play ${title}: ${description}`}
         onClick={available ? () => navigate(`/games/${id}`) : undefined}
+        onKeyDown={
+          available
+            ? (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/games/${id}`);
+                }
+              }
+            : undefined
+        }
         sx={{
           flex: 1,
           minHeight: 0,
@@ -84,7 +99,7 @@ export default function GameTile({
           border: `1px solid ${accent}38`,
           borderRadius: 'clamp(14px, 3cqmin, 22px)',
           overflow: 'hidden',
-          cursor: available ? 'pointer' : 'default',
+          cursor: available ? 'pointer' : 'not-allowed',
           touchAction: 'manipulation',
           WebkitTapHighlightColor: 'transparent',
           userSelect: 'none',
@@ -102,6 +117,11 @@ export default function GameTile({
           '&:active': available
             ? { transform: 'scale(0.98)', boxShadow: `0 3px 10px ${accent}30` }
             : {},
+          '&:focus-visible': {
+            outline: `3px solid ${accent}`,
+            outlineOffset: 3,
+          },
+          opacity: available ? 1 : 0.7,
         }}
       >
         {/* Decorative watermark */}
@@ -197,7 +217,9 @@ export default function GameTile({
                 {topic}
               </Box>
               <Typography
+                component="h3"
                 sx={{
+                  m: 0,
                   fontWeight: 800,
                   color: '#0F172A',
                   lineHeight: 1.1,

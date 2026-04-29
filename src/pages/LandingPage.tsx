@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import GameTile from '../components/GameTile';
 import EcoHeader from '../components/EcoHeader';
 import ParticleBackground from '../components/ParticleBackground';
-import { MGTC_GREEN, MGTC_BLUE } from '../theme/ecoTheme';
 
 const games = [
   {
@@ -100,6 +99,7 @@ export default function LandingPage() {
         position: 'relative',
       }}
     >
+      <a href="#games" className="skip-link">Skip to games</a>
       <ParticleBackground />
 
       {/* Portrait orientation guard — drawn over the dark letterbox so users
@@ -130,12 +130,14 @@ export default function LandingPage() {
         </Typography>
       </Box>
 
-      <Box sx={{ position: 'relative', zIndex: 2, flexShrink: 0 }}>
+      <Box component="header" sx={{ position: 'relative', zIndex: 2, flexShrink: 0 }}>
         <EcoHeader tagline="" />
       </Box>
 
       {/* Hero */}
       <Box
+        component="section"
+        aria-labelledby="hero-heading"
         sx={{
           position: 'relative',
           zIndex: 1,
@@ -152,7 +154,10 @@ export default function LandingPage() {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <Typography
+            id="hero-heading"
+            component="h1"
             sx={{
+              m: 0,
               fontSize: 'clamp(1.3rem, 3.8cqh, 2.4rem)',
               fontWeight: 900,
               lineHeight: 1,
@@ -160,16 +165,9 @@ export default function LandingPage() {
               color: '#0F172A',
             }}
           >
-            Play. Learn.{' '}
-            <Box
-              component="span"
-              sx={{
-                background: `linear-gradient(135deg, ${MGTC_GREEN} 0%, ${MGTC_BLUE} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Save the Planet.
+            Six little games.{' '}
+            <Box component="span" sx={{ fontWeight: 500, color: '#15803D' }}>
+              One warming planet.
             </Box>
           </Typography>
         </motion.div>
@@ -187,16 +185,16 @@ export default function LandingPage() {
               letterSpacing: '0.01em',
             }}
           >
-            Six classic games reimagined for climate education ·{' '}
-            <Box component="span" sx={{ color: MGTC_GREEN, fontWeight: 700 }}>
-              tap any game to start
-            </Box>
+            Pick a game, play a round, learn something about the climate you didn{'’'}t know before.
           </Typography>
         </motion.div>
       </Box>
 
       {/* Games Grid */}
       <Box
+        component="main"
+        id="games"
+        aria-label="Climate games"
         sx={{
           position: 'relative',
           zIndex: 1,
@@ -228,6 +226,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <Box
+        component="footer"
         sx={{
           position: 'relative',
           zIndex: 1,
@@ -235,20 +234,18 @@ export default function LandingPage() {
           py: 0.9,
           flexShrink: 0,
           borderTop: '1px solid rgba(15,23,42,0.06)',
-          background: 'rgba(255,255,255,0.5)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(255,255,255,0.78)',
         }}
       >
         <Typography
           sx={{
-            color: '#64748B',
+            color: '#475569',
             fontSize: '0.72rem',
             fontWeight: 600,
             letterSpacing: '0.05em',
           }}
         >
-          MGTC · Empowering Climate Education Through Play
+          MGTC · Empowering climate education through play
         </Typography>
       </Box>
     </Box>

@@ -22,9 +22,8 @@ export default function IntroScreen({ onStart }: Props) {
       overflowY: 'auto', px: { xs: 2, md: 4 }, py: 4,
     }}>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Typography variant="h3" align="center" sx={{
-          background: 'linear-gradient(135deg, #8BC53F, #007DC4)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        <Typography variant="h3" component="h1" align="center" sx={{
+          color: '#15803D',
           fontWeight: 800, mb: 1,
         }}>
           🥷 Climate Ninja

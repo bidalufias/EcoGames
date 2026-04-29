@@ -29,7 +29,16 @@ function ModeCard({ title, tagline, emoji, accent, bullets, onPick }: ModeCardPr
       style={{ flex: 1, display: 'flex', minWidth: 0 }}
     >
       <Box
+        role="button"
+        tabIndex={0}
+        aria-label={`${title}: ${tagline}`}
         onClick={onPick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onPick();
+          }
+        }}
         sx={{
           flex: 1,
           cursor: 'pointer',
@@ -45,6 +54,10 @@ function ModeCard({ title, tagline, emoji, accent, bullets, onPick }: ModeCardPr
           '&:hover': {
             borderColor: accent,
             boxShadow: `0 12px 36px ${accent}33`,
+          },
+          '&:focus-visible': {
+            outline: `3px solid ${accent}`,
+            outlineOffset: 4,
           },
         }}
       >
@@ -105,7 +118,9 @@ export default function ModeSelect({ onPick, onBack }: ModeSelectProps) {
     >
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
         <Typography
+          component="h1"
           sx={{
+            m: 0,
             fontSize: 'clamp(1.8rem, 4cqh, 2.6rem)',
             fontWeight: 900,
             color: '#776E65',

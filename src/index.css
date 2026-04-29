@@ -60,3 +60,40 @@ html, body {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(15px, 25px) scale(0.95); }
 }
+
+/* Focus ring: visible on keyboard navigation only. Color is a high-contrast
+   green that survives both the light hub and any darker game surface. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid #15803D;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Skip link: hidden until focused, then jumps to main content. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 10px 16px;
+  background: #15803D;
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 0.18s ease-out;
+  z-index: 100000;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* Honor user motion preferences. Caps any animation/transition we forgot
+   and disables decorative loops. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
