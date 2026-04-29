@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BINS, WASTE_ITEMS, randomWaste, DIFFICULTY_LEVELS, PLAYFIELD_W } from './data';
 import EcoButton from '../../components/EcoButton';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
+import { useFitScale } from '../../lib/useFitScale';
+
+const PLAYFIELD_NATURAL = { w: PLAYFIELD_W * 65, h: 500 };
 
 interface FallingItem {
   id: number;
@@ -29,6 +32,7 @@ export default function RecycleRushGame() {
   const [fact, setFact] = useState('');
   const [nextId, setNextId] = useState(0);
   const gameRef = useRef<HTMLDivElement>(null);
+  const { parentRef: fitRef, scale: fitScale } = useFitScale(PLAYFIELD_NATURAL);
   const stateRef = useRef({ score, lives, level, streak, sorted, mistakes, items, selectedBin, nextId });
 
   stateRef.current = { score, lives, level, streak, sorted, mistakes, items, selectedBin, nextId };
@@ -224,92 +228,104 @@ export default function RecycleRushGame() {
   // --- Playing ---
   return (
     <Box ref={gameRef} sx={{
-      height: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2,
+      height: '100%', width: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      pt: 'clamp(48px, 7cqh, 72px)', pb: 'clamp(12px, 2cqh, 24px)',
+      px: 'clamp(8px, 2cqw, 24px)', gap: 'clamp(6px, 1.2cqh, 12px)',
       touchAction: 'none', userSelect: 'none', overflow: 'hidden',
     }}>
       {/* HUD */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 1, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 'clamp(12px, 2.5cqw, 24px)', alignItems: 'center', flexShrink: 0 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>SCORE</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#FF8C42' }}>{score}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>SCORE</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#FF8C42', lineHeight: 1.1 }}>{score}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>LIVES</Typography>
-          <Typography sx={{ fontWeight: 800, color: lives <= 2 ? '#E74C3C' : '#1A2332' }}>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>LIVES</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: lives <= 2 ? '#E74C3C' : '#1A2332', lineHeight: 1.1 }}>
             {'🌍'.repeat(Math.max(0, lives))}
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>LEVEL</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#8BC53F' }}>{level + 1}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>LEVEL</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#8BC53F', lineHeight: 1.1 }}>{level + 1}</Typography>
         </Box>
         {streak >= 3 && (
           <Box sx={{ textAlign: 'center' }}>
-            <Typography sx={{ fontSize: 11, color: '#FF8C42' }}>🔥 STREAK</Typography>
-            <Typography sx={{ fontWeight: 800, color: '#FF8C42' }}>{streak}</Typography>
+            <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#FF8C42', letterSpacing: '0.1em' }}>🔥 STREAK</Typography>
+            <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#FF8C42', lineHeight: 1.1 }}>{streak}</Typography>
           </Box>
         )}
       </Box>
 
       {/* Bin selector */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 'clamp(4px, 1cqw, 10px)', flexWrap: 'wrap', justifyContent: 'center', flexShrink: 0 }}>
         {BINS.map(bin => (
           <Box
             key={bin.id}
             onClick={() => handleBinClick(bin.id)}
             sx={{
-              px: 1.5, py: 0.8, borderRadius: 2, cursor: 'pointer',
+              px: 'clamp(8px, 1.4cqw, 14px)', py: 'clamp(4px, 0.8cqh, 8px)', borderRadius: 2, cursor: 'pointer',
               background: selectedBin === bin.id ? `${bin.color}20` : '#FFFFFF',
               border: `2px solid ${selectedBin === bin.id ? bin.color : '#E8EDF2'}`,
               transition: 'all 0.15s',
               '&:hover': { borderColor: bin.color },
             }}
           >
-            <Typography sx={{ fontSize: 22 }}>{bin.emoji}</Typography>
+            <Typography sx={{ fontSize: 'clamp(16px, 2.8cqh, 22px)' }}>{bin.emoji}</Typography>
           </Box>
         ))}
       </Box>
 
-      {/* Playfield */}
-      <Box sx={{
-        position: 'relative', width: PLAYFIELD_W * 65, height: 500,
-        background: '#FFFFFF', borderRadius: 2,
-        border: '1px solid #E8EDF2',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-        overflow: 'hidden',
-      }}>
-        <AnimatePresence>
-          {items.map(item => (
-            <motion.div key={item.id}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              style={{
-                position: 'absolute',
-                left: item.col * 65 + 7,
-                top: item.row * 45,
-                width: 52, height: 52,
-              }}
-            >
-              <Box
-                onClick={() => selectedBin && handleItemClick(item)}
-                sx={{
-                  width: '100%', height: '100%', borderRadius: 2,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 32, cursor: selectedBin ? 'pointer' : 'default',
-                  background: selectedBin ? '#F8F9FB' : 'transparent',
-                  border: selectedBin ? '1px solid #E8EDF2' : 'none',
-                  transition: 'all 0.15s',
-                  '&:hover': selectedBin ? { background: '#F0F3F7', transform: 'scale(1.1)' } : {},
+      {/* Playfield wrapper — fills remaining space; the natural-pixel
+          playfield below is auto-scaled to fit. */}
+      <Box
+        ref={fitRef}
+        sx={{ flex: 1, minHeight: 0, minWidth: 0, width: '100%', display: 'grid', placeItems: 'center' }}
+      >
+        <Box sx={{
+          position: 'relative',
+          width: PLAYFIELD_NATURAL.w,
+          height: PLAYFIELD_NATURAL.h,
+          background: '#FFFFFF', borderRadius: 2,
+          border: '1px solid #E8EDF2',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          overflow: 'hidden',
+          transform: `scale(${fitScale})`,
+          transformOrigin: 'center center',
+        }}>
+          <AnimatePresence>
+            {items.map(item => (
+              <motion.div key={item.id}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                style={{
+                  position: 'absolute',
+                  left: item.col * 65 + 7,
+                  top: item.row * 45,
+                  width: 52, height: 52,
                 }}
-                title={item.waste.name}
               >
-                {item.waste.emoji}
-              </Box>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                <Box
+                  onClick={() => selectedBin && handleItemClick(item)}
+                  sx={{
+                    width: '100%', height: '100%', borderRadius: 2,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 32, cursor: selectedBin ? 'pointer' : 'default',
+                    background: selectedBin ? '#F8F9FB' : 'transparent',
+                    border: selectedBin ? '1px solid #E8EDF2' : 'none',
+                    transition: 'all 0.15s',
+                    '&:hover': selectedBin ? { background: '#F0F3F7', transform: 'scale(1.1)' } : {},
+                  }}
+                  title={item.waste.name}
+                >
+                  {item.waste.emoji}
+                </Box>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </Box>
       </Box>
 
       {/* Fact */}

@@ -5,6 +5,9 @@ import { TOWER_TYPES, ENEMY_TYPES, WAVE_CONFIG, GRID_W, GRID_H, CELL, getPath } 
 import type { Tower, Enemy, Projectile } from './data';
 import EcoButton from '../../components/EcoButton';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
+import { useFitScale } from '../../lib/useFitScale';
+
+const GRID_NATURAL = { w: GRID_W * CELL, h: GRID_H * CELL };
 
 type Screen = 'intro' | 'playing' | 'gameover' | 'leaderboard';
 
@@ -37,6 +40,7 @@ export default function GreenDefenceGame() {
   const [waveActive, setWaveActive] = useState(false);
   const [fact, setFact] = useState('');
   const nextId = useRef(0);
+  const { parentRef: fitRef, scale: fitScale } = useFitScale(GRID_NATURAL);
 
   const stateRef = useRef({ towers, enemies, projectiles, budget, lives, wave, score, waveActive });
   stateRef.current = { towers, enemies, projectiles, budget, lives, wave, score, waveActive };
@@ -284,27 +288,29 @@ export default function GreenDefenceGame() {
 
   return (
     <Box sx={{
-      height: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2,
+      height: '100%', width: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      pt: 'clamp(48px, 7cqh, 72px)', pb: 'clamp(8px, 1.6cqh, 18px)',
+      px: 'clamp(8px, 2cqw, 24px)', gap: 'clamp(4px, 1cqh, 10px)',
       overflow: 'hidden',
     }}>
       {/* HUD */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 1, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 'clamp(10px, 2.4cqw, 24px)', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', flexShrink: 0 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>SCORE</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#8BC53F' }}>{score}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>SCORE</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#8BC53F', lineHeight: 1.1 }}>{score}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>BUDGET</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#FF8C42' }}>💰 {budget}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>BUDGET</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#FF8C42', lineHeight: 1.1 }}>💰 {budget}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>LIVES</Typography>
-          <Typography sx={{ fontWeight: 800, color: lives <= 5 ? '#E74C3C' : '#1A2332' }}>🌍 {lives}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>LIVES</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: lives <= 5 ? '#E74C3C' : '#1A2332', lineHeight: 1.1 }}>🌍 {lives}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0' }}>WAVE</Typography>
-          <Typography sx={{ fontWeight: 800, color: '#007DC4' }}>{wave}/{WAVE_CONFIG.length}</Typography>
+          <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', letterSpacing: '0.1em' }}>WAVE</Typography>
+          <Typography sx={{ fontSize: 'clamp(0.95rem, 2.4cqh, 1.2rem)', fontWeight: 800, color: '#007DC4', lineHeight: 1.1 }}>{wave}/{WAVE_CONFIG.length}</Typography>
         </Box>
         {!waveActive && wave < WAVE_CONFIG.length && (
           <EcoButton onClick={startWave} size="small">
@@ -314,13 +320,13 @@ export default function GreenDefenceGame() {
       </Box>
 
       {/* Tower selector */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 'clamp(4px, 1cqw, 10px)', flexWrap: 'wrap', justifyContent: 'center', flexShrink: 0 }}>
         {TOWER_TYPES.map(t => (
           <Box
             key={t.type}
             onClick={() => setSelectedTower(t.type === selectedTower ? null : t.type)}
             sx={{
-              px: 1.5, py: 0.5, borderRadius: 2, cursor: 'pointer',
+              px: 'clamp(8px, 1.4cqw, 14px)', py: 'clamp(2px, 0.5cqh, 5px)', borderRadius: 2, cursor: 'pointer',
               background: selectedTower === t.type ? `${t.color}20` : '#FFFFFF',
               border: `2px solid ${selectedTower === t.type ? t.color : '#E8EDF2'}`,
               transition: 'all 0.15s', textAlign: 'center',
@@ -328,19 +334,27 @@ export default function GreenDefenceGame() {
               boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
             }}
           >
-            <Typography sx={{ fontSize: 20 }}>{t.emoji}</Typography>
-            <Typography sx={{ fontSize: 10, color: t.color, fontWeight: 700 }}>💰{t.cost}</Typography>
+            <Typography sx={{ fontSize: 'clamp(15px, 2.5cqh, 20px)' }}>{t.emoji}</Typography>
+            <Typography sx={{ fontSize: 'clamp(8px, 1.2cqh, 10px)', color: t.color, fontWeight: 700 }}>💰{t.cost}</Typography>
           </Box>
         ))}
       </Box>
 
-      {/* Grid */}
+      {/* Grid wrapper — fills the remaining space; the natural-pixel grid
+          below is auto-scaled to fit. Click events still resolve to the
+          original row/col because the browser scales coordinates with us. */}
+      <Box
+        ref={fitRef}
+        sx={{ flex: 1, minHeight: 0, minWidth: 0, width: '100%', display: 'grid', placeItems: 'center' }}
+      >
       <Box sx={{
-        position: 'relative', width: GRID_W * CELL, height: GRID_H * CELL,
+        position: 'relative', width: GRID_NATURAL.w, height: GRID_NATURAL.h,
         background: '#FFFFFF', borderRadius: 2,
         border: '1px solid #E8EDF2',
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         overflow: 'hidden',
+        transform: `scale(${fitScale})`,
+        transformOrigin: 'center center',
       }}>
         {/* Grid cells */}
         {Array.from({ length: GRID_H }).map((_, r) =>
@@ -419,11 +433,12 @@ export default function GreenDefenceGame() {
           }} />
         ))}
       </Box>
+      </Box>
 
       {/* Selected tower info */}
       {selectedDef && (
-        <Box sx={{ mt: 1, textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 12, color: selectedDef.color }}>
+        <Box sx={{ mt: 1, textAlign: 'center', flexShrink: 0 }}>
+          <Typography sx={{ fontSize: 'clamp(10px, 1.5cqh, 12px)', color: selectedDef.color }}>
             {selectedDef.emoji} {selectedDef.name} — DMG: {selectedDef.damage} | Range: {selectedDef.range} | Click grid to place
           </Typography>
         </Box>

@@ -240,29 +240,32 @@ export default function CarbonCrushGame() {
   // --- Playing ---
   return (
     <Box sx={{
-      height: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, px: 2, overflow: 'hidden',
+      height: '100%', width: '100%', bgcolor: '#F0F3F7', color: '#1A2332',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      pt: 'clamp(48px, 7cqh, 72px)', pb: 'clamp(12px, 2cqh, 24px)',
+      px: 'clamp(8px, 2cqw, 24px)', gap: 'clamp(6px, 1.4cqh, 14px)',
+      overflow: 'hidden',
     }}>
       {/* HUD */}
-      <Box sx={{ display: 'flex', gap: 4, mb: 2, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 'clamp(16px, 3cqw, 32px)', alignItems: 'center', flexShrink: 0 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 12, color: '#8892B0' }}>SCORE</Typography>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#8BC53F' }}>{score.toLocaleString()}</Typography>
+          <Typography sx={{ fontSize: 'clamp(10px, 1.4cqh, 12px)', color: '#8892B0', letterSpacing: '0.1em' }}>SCORE</Typography>
+          <Typography sx={{ fontSize: 'clamp(1.1rem, 3cqh, 1.6rem)', fontWeight: 800, color: '#8BC53F', lineHeight: 1.1 }}>{score.toLocaleString()}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 12, color: '#8892B0' }}>MOVES</Typography>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: moves <= 5 ? '#E74C3C' : '#1A2332' }}>{moves}</Typography>
+          <Typography sx={{ fontSize: 'clamp(10px, 1.4cqh, 12px)', color: '#8892B0', letterSpacing: '0.1em' }}>MOVES</Typography>
+          <Typography sx={{ fontSize: 'clamp(1.1rem, 3cqh, 1.6rem)', fontWeight: 800, color: moves <= 5 ? '#E74C3C' : '#1A2332', lineHeight: 1.1 }}>{moves}</Typography>
         </Box>
         {combo > 1 && (
           <Box sx={{ textAlign: 'center' }}>
-            <Typography sx={{ fontSize: 12, color: '#FF8C42' }}>COMBO</Typography>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: '#FF8C42' }}>x{combo}</Typography>
+            <Typography sx={{ fontSize: 'clamp(10px, 1.4cqh, 12px)', color: '#FF8C42', letterSpacing: '0.1em' }}>COMBO</Typography>
+            <Typography sx={{ fontSize: 'clamp(1.1rem, 3cqh, 1.6rem)', fontWeight: 800, color: '#FF8C42', lineHeight: 1.1 }}>x{combo}</Typography>
           </Box>
         )}
       </Box>
 
       {/* Progress bar */}
-      <Box sx={{ width: GRID_COLS * 62, maxWidth: '100%', mb: 2 }}>
+      <Box sx={{ width: '100%', maxWidth: 'min(560px, 80cqh)', flexShrink: 0 }}>
         <Box sx={{ height: 4, borderRadius: 2, background: '#E8EDF2', overflow: 'hidden' }}>
           <Box sx={{
             height: '100%', borderRadius: 2,
@@ -273,18 +276,26 @@ export default function CarbonCrushGame() {
             transition: 'transform 0.5s',
           }} />
         </Box>
-        <Typography sx={{ fontSize: 11, color: '#8892B0', textAlign: 'center', mt: 0.5 }}>
+        <Typography sx={{ fontSize: 'clamp(9px, 1.3cqh, 11px)', color: '#8892B0', textAlign: 'center', mt: 0.5 }}>
           {phaseLevel > 0 ? '🌿 Clean tech active!' : `${Math.round((score / CLEAN_TRANSITION_THRESHOLD) * 100)}% to clean transition`}
         </Typography>
       </Box>
 
-      {/* Grid */}
+      {/* Grid — fills the remaining space as the largest square that fits.
+          Sizing the inner box with `height: 100%, aspect-ratio: 1` and
+          `maxWidth: 100%` lets CSS shrink it to whichever axis is the
+          binding constraint, so it never clips on shorter stages. */}
+      <Box sx={{
+        flex: 1, minHeight: 0, minWidth: 0, width: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
       <Box sx={{
         display: 'grid',
         gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
-        gap: 2,
-        maxWidth: GRID_COLS * 62,
-        width: '100%',
+        gap: 'clamp(2px, 0.6cqmin, 8px)',
+        height: '100%',
+        aspectRatio: '1 / 1',
+        maxWidth: '100%',
       }}>
         <AnimatePresence>
           {grid.map((row, r) =>
@@ -304,7 +315,7 @@ export default function CarbonCrushGame() {
                     sx={{
                       width: '100%', aspectRatio: '1', borderRadius: 2,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: { xs: 28, sm: 36 },
+                      fontSize: 'clamp(18px, 5cqmin, 36px)',
                       background: isSelected
                         ? `${tile.color}18`
                         : '#FFFFFF',
@@ -322,6 +333,7 @@ export default function CarbonCrushGame() {
             })
           )}
         </AnimatePresence>
+      </Box>
       </Box>
 
       {/* Fact popup */}
