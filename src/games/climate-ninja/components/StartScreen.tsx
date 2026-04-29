@@ -24,9 +24,8 @@ export default function StartScreen({ onSelectMode }: Props) {
       px: 3, py: 4,
     }}>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <Typography variant="h4" align="center" sx={{
-          background: 'linear-gradient(135deg, #8BC53F, #007DC4)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        <Typography variant="h4" component="h1" align="center" sx={{
+          color: '#15803D',
           fontWeight: 800, mb: 1,
         }}>
           🥷 Climate Ninja
@@ -41,16 +40,31 @@ export default function StartScreen({ onSelectMode }: Props) {
         {modes.map((m, i) => (
           <Grid size={{ xs: 12, sm: 6 }} key={m.mode}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <Box onClick={() => onSelectMode(m.mode, 1)} sx={{
-                p: 3, borderRadius: 3, cursor: 'pointer', textAlign: 'center',
-                background: '#FFFFFF', backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(13,155,74,0.15)',
-                transition: 'all 0.3s',
-                '&:hover': {
-                  borderColor: '#8BC53F', boxShadow: '0 0 30px rgba(13,155,74,0.2)',
-                  transform: 'scale(1.02)',
-                },
-              }}>
+              <Box
+                role="button"
+                tabIndex={0}
+                aria-label={`${m.title}: ${m.desc}`}
+                onClick={() => onSelectMode(m.mode, 1)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectMode(m.mode, 1);
+                  }
+                }}
+                sx={{
+                  p: 3, borderRadius: 3, cursor: 'pointer', textAlign: 'center',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(13,155,74,0.15)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    borderColor: '#8BC53F', boxShadow: '0 4px 16px rgba(13,155,74,0.15)',
+                  },
+                  '&:focus-visible': {
+                    outline: '3px solid #15803D',
+                    outlineOffset: 3,
+                  },
+                }}
+              >
                 <Typography sx={{ fontSize: 48, mb: 1 }}>{m.icon}</Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>{m.title}</Typography>
                 <Typography variant="body2" sx={{ color: '#5A6A7E' }}>{m.desc}</Typography>

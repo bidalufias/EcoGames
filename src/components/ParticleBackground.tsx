@@ -25,8 +25,9 @@ export default function ParticleBackground() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Track the canvas's actual rendered size — the canvas lives inside the
-    // 16:9 stage, not the viewport, so we sync to its parent's box.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduceMotion.matches) return;
+
     const sync = () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width = Math.max(1, Math.floor(rect.width));
@@ -38,14 +39,16 @@ export default function ParticleBackground() {
     if (canvas.parentElement) observer.observe(canvas.parentElement);
     observer.observe(canvas);
 
-    // Create particles — MGTC brand colors, light mode
-    const count = Math.min(40, Math.floor(canvas.width * canvas.height / 30000));
+    const isSmall = canvas.width < 900;
+    const density = isSmall ? 60000 : 30000;
+    const cap = isSmall ? 20 : 36;
+    const count = Math.min(cap, Math.floor((canvas.width * canvas.height) / density));
+
     const colors = [
-      'rgba(139, 197, 63,',   // MGTC green
-      'rgba(168, 216, 110,',  // light green
-      'rgba(0, 125, 196,',    // MGTC blue
-      'rgba(61, 161, 224,',   // light blue
-      'rgba(139, 197, 63,',   // MGTC green
+      'rgba(139, 197, 63,',
+      'rgba(168, 216, 110,',
+      'rgba(0, 125, 196,',
+      'rgba(61, 161, 224,',
     ];
 
     const particles: Particle[] = [];
@@ -67,9 +70,27 @@ export default function ParticleBackground() {
     }
     particlesRef.current = particles;
 
-    let time = 0;
-    const animate = () => {
-      time += 0.016;
+    const FRAME = 1000 / 30;
+    let lastDraw = 0;
+    let paused = document.visibilityState === 'hidden';
+
+    const onVisibility = () => {
+      paused = document.visibilityState === 'hidden';
+      if (!paused) {
+        lastDraw = 0;
+        animRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    const animate = (now: number = performance.now()) => {
+      if (paused) return;
+      if (now - lastDraw < FRAME) {
+        animRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastDraw = now;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (const p of particles) {
@@ -78,7 +99,6 @@ export default function ParticleBackground() {
         p.rotation += p.rotationSpeed;
         p.pulsePhase += 0.02;
 
-        // Wrap around
         if (p.x < -20) p.x = canvas.width + 20;
         if (p.x > canvas.width + 20) p.x = -20;
         if (p.y < -20) p.y = canvas.height + 20;
@@ -113,32 +133,14 @@ export default function ParticleBackground() {
         ctx.restore();
       }
 
-      // Subtle connection lines
-      ctx.globalAlpha = 1;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            const opacity = (1 - dist / 120) * 0.04;
-            ctx.strokeStyle = `rgba(139, 197, 63, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
       animRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    animRef.current = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animRef.current);
+      document.removeEventListener('visibilitychange', onVisibility);
       observer.disconnect();
     };
   }, []);
@@ -146,6 +148,7 @@ export default function ParticleBackground() {
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden
       style={{
         position: 'absolute',
         top: 0,

@@ -1,6 +1,9 @@
+import type { KeyboardEvent } from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+
+export type TileTemplate = 'headline' | 'index' | 'object';
 
 interface GameTileProps {
   id: string;
@@ -14,63 +17,461 @@ interface GameTileProps {
   icon: string;
   accent: string;
   available: boolean;
+  template: TileTemplate;
+  number: number;
   index?: number;
 }
 
-// Fluid tokens — sized in container-query units against the card itself, so
-// every element grows or shrinks with the card. clamp() keeps things legible
-// on the smallest grid cell (~220×170) and stops them ballooning on huge
-// displays. We use the minimum of cqh and cqw so the layout never blows out
-// horizontally on landscape cards or vertically on portrait ones.
-const FLUID = {
-  pad: 'clamp(10px, 3cqmin, 22px)',
-  rowGap: 'clamp(6px, 1.8cqmin, 14px)',
-  headerGap: 'clamp(8px, 2.4cqmin, 16px)',
-  iconPlate: 'clamp(44px, 18cqmin, 84px)',
-  iconRadius: 'clamp(10px, 3cqmin, 18px)',
-  iconFont: 'clamp(22px, 9cqmin, 44px)',
-  topicPx: 'clamp(6px, 1.6cqmin, 10px)',
-  topicPy: 'clamp(2px, 0.6cqmin, 4px)',
-  topicFont: 'clamp(0.5rem, 1.5cqmin, 0.66rem)',
-  titleFont: 'clamp(0.95rem, 4cqmin, 1.35rem)',
-  inspiredFont: 'clamp(0.6rem, 1.7cqmin, 0.74rem)',
-  descFont: 'clamp(0.74rem, 2.4cqmin, 0.92rem)',
-  learnPx: 'clamp(8px, 2cqmin, 14px)',
-  learnPy: 'clamp(5px, 1.4cqmin, 10px)',
-  learnFont: 'clamp(0.7rem, 2.1cqmin, 0.85rem)',
-  metaFont: 'clamp(0.62rem, 1.85cqmin, 0.78rem)',
-  metaGap: 'clamp(6px, 1.6cqmin, 12px)',
-  ctaPx: 'clamp(10px, 2.6cqmin, 18px)',
-  ctaPy: 'clamp(6px, 1.8cqmin, 12px)',
-  ctaRadius: 'clamp(8px, 1.8cqmin, 12px)',
-  ctaFont: 'clamp(0.72rem, 2.1cqmin, 0.92rem)',
-};
+const PAD = 'clamp(14px, 3.5cqmin, 28px)';
+const META_FONT = 'clamp(0.62rem, 1.85cqmin, 0.78rem)';
+const META_GAP = 'clamp(6px, 1.6cqmin, 12px)';
 
-export default function GameTile({
-  id,
-  title,
-  inspiredBy,
-  topic,
-  description,
-  learn,
-  difficulty,
-  playTime,
-  icon,
-  accent,
-  available,
-  index = 0,
-}: GameTileProps) {
+function MetaLine({ difficulty, playTime, accent }: { difficulty: string; playTime: string; accent: string }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: META_GAP,
+        fontSize: META_FONT,
+        color: '#5B5247',
+        fontWeight: 600,
+        lineHeight: 1,
+        minWidth: 0,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)', color: accent }}>
+        <Box component="span" aria-hidden sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>◆</Box>
+        {difficulty}
+      </Box>
+      <Box sx={{ width: '1px', height: '0.9em', background: '#D7CFC0' }} />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
+        <Box component="span" aria-hidden sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>⏱</Box>
+        {playTime}
+      </Box>
+    </Box>
+  );
+}
+
+function InspiredBy({ inspiredBy }: { inspiredBy: string }) {
+  return (
+    <Typography
+      className="tile-inspired"
+      sx={{
+        position: 'absolute',
+        top: 'clamp(8px, 2cqmin, 14px)',
+        right: 'clamp(10px, 2.4cqmin, 16px)',
+        fontSize: 'clamp(0.55rem, 1.5cqmin, 0.68rem)',
+        color: '#9C8E78',
+        fontStyle: 'italic',
+        fontWeight: 500,
+        letterSpacing: '0.02em',
+        opacity: 0,
+        transition: 'opacity 0.18s ease',
+        pointerEvents: 'none',
+      }}
+    >
+      after {inspiredBy}
+    </Typography>
+  );
+}
+
+function HeadlineTile(props: GameTileProps) {
+  const { title, description, learn, difficulty, playTime, icon, accent, inspiredBy } = props;
+  return (
+    <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          top: 'clamp(-30px, -6cqmin, -10px)',
+          right: 'clamp(-22px, -3cqmin, -6px)',
+          fontSize: 'clamp(110px, 38cqmin, 220px)',
+          lineHeight: 1,
+          filter: `drop-shadow(0 6px 14px ${accent}33)`,
+          transform: 'rotate(-8deg)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      >
+        {icon}
+      </Box>
+
+      <Box
+        sx={{
+          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: PAD,
+          gap: 'clamp(8px, 2cqmin, 16px)',
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            display: 'inline-block',
+            alignSelf: 'flex-start',
+            color: accent,
+            fontSize: 'clamp(0.55rem, 1.6cqmin, 0.7rem)',
+            fontWeight: 800,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            lineHeight: 1,
+          }}
+        >
+          {props.topic}
+        </Typography>
+
+        <Typography
+          component="h3"
+          sx={{
+            m: 0,
+            fontWeight: 900,
+            color: '#1F1B14',
+            lineHeight: 0.95,
+            fontSize: 'clamp(1.5rem, 6.5cqmin, 2.6rem)',
+            letterSpacing: '-0.035em',
+            maxWidth: '70%',
+          }}
+        >
+          {title}
+        </Typography>
+
+        <Typography
+          component="div"
+          sx={{
+            color: '#3F3A2F',
+            fontSize: 'clamp(0.78rem, 2.4cqmin, 0.95rem)',
+            fontWeight: 500,
+            lineHeight: 1.4,
+            flex: 1,
+            minHeight: 0,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            maxWidth: '90%',
+          }}
+        >
+          {description}
+        </Typography>
+
+        <Box
+          sx={{
+            position: 'relative',
+            paddingLeft: 'clamp(10px, 2.4cqmin, 16px)',
+            borderLeft: `2px solid ${accent}`,
+          }}
+        >
+          <Typography
+            component="div"
+            sx={{
+              fontSize: 'clamp(0.7rem, 2.1cqmin, 0.85rem)',
+              fontWeight: 600,
+              color: accent,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              lineHeight: 1.1,
+              mb: 'clamp(2px, 0.5cqmin, 4px)',
+            }}
+          >
+            You{'’'}ll learn
+          </Typography>
+          <Typography
+            component="div"
+            sx={{
+              color: '#1F1B14',
+              fontSize: 'clamp(0.74rem, 2.2cqmin, 0.88rem)',
+              fontWeight: 600,
+              lineHeight: 1.35,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {learn}
+          </Typography>
+        </Box>
+
+        <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: META_GAP }}>
+          <MetaLine difficulty={difficulty} playTime={playTime} accent={accent} />
+          <Typography
+            component="span"
+            sx={{
+              fontSize: 'clamp(0.72rem, 2.1cqmin, 0.92rem)',
+              fontWeight: 700,
+              color: accent,
+              letterSpacing: '0.02em',
+            }}
+          >
+            Play →
+          </Typography>
+        </Box>
+      </Box>
+      <InspiredBy inspiredBy={inspiredBy} />
+    </Box>
+  );
+}
+
+function IndexTile(props: GameTileProps) {
+  const { number, title, description, learn, difficulty, playTime, accent, inspiredBy } = props;
+  return (
+    <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      <Box
+        sx={{
+          position: 'relative',
+          height: '100%',
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          columnGap: 'clamp(12px, 3cqmin, 22px)',
+          padding: PAD,
+        }}
+      >
+        <Typography
+          aria-hidden
+          component="span"
+          sx={{
+            color: accent,
+            fontSize: 'clamp(2.4rem, 12cqmin, 5rem)',
+            fontWeight: 900,
+            lineHeight: 0.8,
+            letterSpacing: '-0.06em',
+            fontFeatureSettings: '"tnum" 1, "lnum" 1',
+            opacity: 0.92,
+          }}
+        >
+          {String(number).padStart(2, '0')}
+        </Typography>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <Typography
+            component="span"
+            sx={{
+              color: '#7A6F5C',
+              fontSize: 'clamp(0.55rem, 1.6cqmin, 0.7rem)',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              lineHeight: 1,
+              mb: 'clamp(4px, 1cqmin, 8px)',
+            }}
+          >
+            {props.topic}
+          </Typography>
+
+          <Typography
+            component="h3"
+            sx={{
+              m: 0,
+              fontWeight: 800,
+              color: '#1F1B14',
+              lineHeight: 1.05,
+              fontSize: 'clamp(1.05rem, 4.4cqmin, 1.7rem)',
+              letterSpacing: '-0.02em',
+              mb: 'clamp(4px, 1cqmin, 8px)',
+            }}
+          >
+            {title}
+          </Typography>
+
+          <Typography
+            component="div"
+            sx={{
+              color: '#3F3A2F',
+              fontSize: 'clamp(0.74rem, 2.3cqmin, 0.92rem)',
+              fontWeight: 500,
+              lineHeight: 1.45,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              flex: 1,
+              minHeight: 0,
+              mb: 'clamp(8px, 2cqmin, 14px)',
+            }}
+          >
+            {description}{' '}
+            <Box component="span" sx={{ color: accent, fontWeight: 700 }}>
+              {learn}.
+            </Box>
+          </Typography>
+
+          <Box
+            sx={{
+              borderTop: '1px solid #E2D9C7',
+              pt: 'clamp(6px, 1.5cqmin, 10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: META_GAP,
+            }}
+          >
+            <MetaLine difficulty={difficulty} playTime={playTime} accent={accent} />
+            <Typography
+              component="span"
+              sx={{
+                fontSize: 'clamp(0.72rem, 2.1cqmin, 0.92rem)',
+                fontWeight: 700,
+                color: accent,
+                letterSpacing: '0.02em',
+              }}
+            >
+              Play →
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+      <InspiredBy inspiredBy={inspiredBy} />
+    </Box>
+  );
+}
+
+function ObjectTile(props: GameTileProps) {
+  const { title, description, learn, difficulty, playTime, icon, accent, inspiredBy } = props;
+  return (
+    <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: `linear-gradient(180deg, ${accent}1F 0%, ${accent}0A 38%, transparent 38.1%)`,
+          pointerEvents: 'none',
+        }}
+      />
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          top: 'clamp(8%, 9cqmin, 14%)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 'clamp(48px, 18cqmin, 96px)',
+          lineHeight: 1,
+          filter: `drop-shadow(0 8px 14px ${accent}38)`,
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      >
+        {icon}
+      </Box>
+
+      <Box
+        sx={{
+          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: PAD,
+          paddingTop: 'clamp(40%, 42cqmin, 46%)',
+          gap: 'clamp(6px, 1.5cqmin, 10px)',
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            color: accent,
+            fontSize: 'clamp(0.55rem, 1.6cqmin, 0.7rem)',
+            fontWeight: 800,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            lineHeight: 1,
+          }}
+        >
+          {props.topic}
+        </Typography>
+
+        <Typography
+          component="h3"
+          sx={{
+            m: 0,
+            fontWeight: 800,
+            color: '#1F1B14',
+            lineHeight: 1.05,
+            fontSize: 'clamp(1.05rem, 4.4cqmin, 1.7rem)',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {title}
+        </Typography>
+
+        <Typography
+          component="div"
+          sx={{
+            color: '#3F3A2F',
+            fontSize: 'clamp(0.74rem, 2.3cqmin, 0.92rem)',
+            fontWeight: 500,
+            lineHeight: 1.4,
+            flex: 1,
+            minHeight: 0,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {description} <Box component="span" sx={{ color: accent, fontWeight: 700 }}>{learn}.</Box>
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 'auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            gap: META_GAP,
+            textAlign: 'left',
+          }}
+        >
+          <MetaLine difficulty={difficulty} playTime={playTime} accent={accent} />
+          <Typography
+            component="span"
+            sx={{
+              fontSize: 'clamp(0.72rem, 2.1cqmin, 0.92rem)',
+              fontWeight: 700,
+              color: accent,
+              letterSpacing: '0.02em',
+            }}
+          >
+            Play →
+          </Typography>
+        </Box>
+      </Box>
+      <InspiredBy inspiredBy={inspiredBy} />
+    </Box>
+  );
+}
+
+export default function GameTile(props: GameTileProps) {
+  const { id, title, description, accent, available, template, index = 0 } = props;
   const navigate = useNavigate();
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.36, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
       style={{ height: '100%', display: 'flex', minHeight: 0, minWidth: 0 }}
     >
       <Box
+        role="button"
+        tabIndex={available ? 0 : -1}
+        aria-disabled={!available}
+        aria-label={`Play ${title}: ${description}`}
         onClick={available ? () => navigate(`/games/${id}`) : undefined}
+        onKeyDown={
+          available
+            ? (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/games/${id}`);
+                }
+              }
+            : undefined
+        }
         sx={{
           flex: 1,
           minHeight: 0,
@@ -80,268 +481,38 @@ export default function GameTile({
           flexDirection: 'column',
           containerType: 'size',
           containerName: 'gametile',
-          background: `linear-gradient(155deg, ${accent}26 0%, ${accent}10 38%, #FFFFFF 100%)`,
-          border: `1px solid ${accent}38`,
+          background: '#FFFCF5',
+          border: `1px solid ${accent}26`,
           borderRadius: 'clamp(14px, 3cqmin, 22px)',
           overflow: 'hidden',
-          cursor: available ? 'pointer' : 'default',
+          cursor: available ? 'pointer' : 'not-allowed',
           touchAction: 'manipulation',
           WebkitTapHighlightColor: 'transparent',
           userSelect: 'none',
-          boxShadow: `0 6px 24px ${accent}1F, 0 1px 2px rgba(15,23,42,0.04)`,
+          boxShadow: '0 1px 2px rgba(31,27,20,0.04), 0 6px 18px rgba(31,27,20,0.05)',
           transition: 'transform 0.18s ease, box-shadow 0.28s ease, border-color 0.28s ease',
           '@media (hover: hover)': {
             '&:hover': available
               ? {
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 18px 40px ${accent}38, 0 2px 6px rgba(15,23,42,0.06)`,
+                  transform: 'translateY(-3px)',
+                  boxShadow: `0 2px 4px rgba(31,27,20,0.06), 0 14px 28px ${accent}26`,
                   borderColor: `${accent}66`,
+                  '& .tile-inspired': { opacity: 1 },
                 }
               : {},
           },
-          '&:active': available
-            ? { transform: 'scale(0.98)', boxShadow: `0 3px 10px ${accent}30` }
-            : {},
+          '&:focus-visible': {
+            outline: `3px solid ${accent}`,
+            outlineOffset: 3,
+            '& .tile-inspired': { opacity: 1 },
+          },
+          '&:active': available ? { transform: 'scale(0.985)' } : {},
+          opacity: available ? 1 : 0.6,
         }}
       >
-        {/* Decorative watermark */}
-        <Box
-          aria-hidden
-          sx={{
-            position: 'absolute',
-            right: 'clamp(-22px, -2.5cqmin, -8px)',
-            bottom: 'clamp(-22px, -2.5cqmin, -8px)',
-            fontSize: 'clamp(80px, 28cqmin, 170px)',
-            opacity: 0.07,
-            color: accent,
-            pointerEvents: 'none',
-            transform: 'rotate(-12deg)',
-            lineHeight: 1,
-            userSelect: 'none',
-          }}
-        >
-          {icon}
-        </Box>
-
-        {/* Body — flex column anchored to top and bottom edges. The
-            description flexes to take leftover space, so meta + CTA always
-            sit at the bottom regardless of how tall the card is. */}
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            minWidth: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: FLUID.pad,
-            gap: FLUID.rowGap,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          {/* Header row: icon plate (left) + title block (right) */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: FLUID.headerGap,
-              flexShrink: 0,
-            }}
-          >
-            <Box
-              sx={{
-                width: FLUID.iconPlate,
-                height: FLUID.iconPlate,
-                borderRadius: FLUID.iconRadius,
-                background: `linear-gradient(140deg, ${accent} 0%, ${accent}D0 100%)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: `0 6px 18px ${accent}50, inset 0 -2px 6px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.25)`,
-                flexShrink: 0,
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: FLUID.iconFont,
-                  lineHeight: 1,
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
-                }}
-              >
-                {icon}
-              </Typography>
-            </Box>
-
-            <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
-              <Box
-                sx={{
-                  alignSelf: 'flex-start',
-                  background: '#FFFFFF',
-                  color: accent,
-                  border: `1px solid ${accent}40`,
-                  borderRadius: '999px',
-                  px: FLUID.topicPx,
-                  py: FLUID.topicPy,
-                  fontSize: FLUID.topicFont,
-                  fontWeight: 800,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  lineHeight: 1,
-                  boxShadow: `0 1px 3px ${accent}20`,
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {topic}
-              </Box>
-              <Typography
-                sx={{
-                  fontWeight: 800,
-                  color: '#0F172A',
-                  lineHeight: 1.1,
-                  fontSize: FLUID.titleFont,
-                  letterSpacing: '-0.02em',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {title}
-              </Typography>
-              <Typography
-                sx={{
-                  color: '#7A8A9E',
-                  fontSize: FLUID.inspiredFont,
-                  fontStyle: 'italic',
-                  fontWeight: 500,
-                  lineHeight: 1.2,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                inspired by {inspiredBy}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Description — flexes to absorb extra vertical room. */}
-          <Typography
-            component="div"
-            sx={{
-              color: '#475569',
-              lineHeight: 1.4,
-              fontSize: FLUID.descFont,
-              fontWeight: 500,
-              flex: 1,
-              minHeight: 0,
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {description}
-          </Typography>
-
-          {/* Learn box */}
-          <Box
-            sx={{
-              background: `${accent}14`,
-              border: `1px solid ${accent}2E`,
-              borderRadius: 'clamp(8px, 1.6cqmin, 12px)',
-              px: FLUID.learnPx,
-              py: FLUID.learnPy,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'clamp(5px, 1.2cqmin, 9px)',
-              flexShrink: 0,
-            }}
-          >
-            <Box sx={{ fontSize: 'clamp(0.85rem, 2.4cqmin, 1rem)', lineHeight: 1, flexShrink: 0 }}>📚</Box>
-            <Typography
-              component="div"
-              sx={{
-                color: '#1E293B',
-                fontSize: FLUID.learnFont,
-                fontWeight: 600,
-                lineHeight: 1.3,
-                minWidth: 0,
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-              }}
-            >
-              <Box component="span" sx={{ color: accent, fontWeight: 800 }}>Learn:</Box>{' '}
-              {learn}
-            </Typography>
-          </Box>
-
-          {/* Footer row anchored to the bottom: meta (left) + CTA (right) */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: FLUID.metaGap,
-              flexShrink: 0,
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: FLUID.metaGap,
-                fontSize: FLUID.metaFont,
-                color: '#64748B',
-                fontWeight: 600,
-                lineHeight: 1,
-                minWidth: 0,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
-                <Box component="span" sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>⚡</Box>
-                {difficulty}
-              </Box>
-              <Box sx={{ width: '1px', height: '1em', background: '#CBD5E1' }} />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 'clamp(2px, 0.6cqmin, 5px)' }}>
-                <Box component="span" sx={{ fontSize: 'clamp(0.7rem, 2.1cqmin, 0.88rem)' }}>⏱</Box>
-                {playTime}
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'clamp(4px, 1cqmin, 8px)',
-                px: FLUID.ctaPx,
-                py: FLUID.ctaPy,
-                borderRadius: FLUID.ctaRadius,
-                background: available
-                  ? `linear-gradient(135deg, ${accent} 0%, ${accent}E6 100%)`
-                  : '#E0E0E0',
-                color: available ? '#FFFFFF' : '#9E9E9E',
-                fontWeight: 800,
-                fontSize: FLUID.ctaFont,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                boxShadow: available
-                  ? `0 5px 14px ${accent}50, inset 0 1px 0 rgba(255,255,255,0.25)`
-                  : 'none',
-              }}
-            >
-              <Box component="span" sx={{ fontSize: '0.78em' }}>▶</Box>
-              {available ? 'Play' : 'Soon'}
-            </Box>
-          </Box>
-        </Box>
+        {template === 'headline' && <HeadlineTile {...props} />}
+        {template === 'index' && <IndexTile {...props} />}
+        {template === 'object' && <ObjectTile {...props} />}
       </Box>
     </motion.div>
   );

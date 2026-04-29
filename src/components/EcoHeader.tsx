@@ -1,12 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { MGTC_GREEN, MGTC_BLUE } from '../theme/ecoTheme';
 
 interface EcoHeaderProps {
   tagline?: string;
 }
 
-export default function EcoHeader({ tagline = 'Six classic games. One climate mission.' }: EcoHeaderProps) {
+export default function EcoHeader({ tagline = 'Six classic games, one climate mission.' }: EcoHeaderProps) {
   return (
     <motion.div
       initial={{ y: -12, opacity: 0 }}
@@ -39,9 +38,7 @@ export default function EcoHeader({ tagline = 'Six classic games. One climate mi
             sx={{
               fontSize: { xs: '1.05rem', md: '1.2rem' },
               fontWeight: 800,
-              background: `linear-gradient(135deg, ${MGTC_GREEN}, ${MGTC_BLUE})`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#15803D',
               letterSpacing: '-0.02em',
               lineHeight: 1,
             }}

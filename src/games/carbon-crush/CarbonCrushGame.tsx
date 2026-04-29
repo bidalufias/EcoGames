@@ -130,9 +130,8 @@ export default function CarbonCrushGame() {
         px: 3, py: 4, overflow: 'hidden',
       }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Typography variant="h3" sx={{
-            background: 'linear-gradient(135deg, #007DC4, #8BC53F)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, mb: 2,
+          <Typography variant="h3" component="h1" sx={{
+            color: '#1565C0', fontWeight: 800, mb: 2,
           }} align="center">
             💎 Carbon Crush
           </Typography>
