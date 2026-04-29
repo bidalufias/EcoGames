@@ -88,9 +88,21 @@ interface HUDProps {
   totalPairs: number;
   streak: number;
   scoreDelta?: number;
+  muted: boolean;
+  onToggleMute: () => void;
 }
 
-export default function HUD({ score, best, moves, matches, totalPairs, streak, scoreDelta }: HUDProps) {
+export default function HUD({
+  score,
+  best,
+  moves,
+  matches,
+  totalPairs,
+  streak,
+  scoreDelta,
+  muted,
+  onToggleMute,
+}: HUDProps) {
   return (
     <Box
       sx={{
@@ -98,6 +110,7 @@ export default function HUD({ score, best, moves, matches, totalPairs, streak, s
         gap: 1,
         width: '100%',
         flexWrap: 'wrap',
+        alignItems: 'stretch',
       }}
     >
       <StatBox label="Score" value={score.toLocaleString()} delta={scoreDelta} highlight />
@@ -105,6 +118,33 @@ export default function HUD({ score, best, moves, matches, totalPairs, streak, s
       <StatBox label="Moves" value={moves} />
       <StatBox label="Pairs" value={`${matches}/${totalPairs}`} accent="#9B59B6" />
       {streak >= 2 && <StatBox label="Streak" value={`×${streak}`} accent="#F39C12" />}
+      <Box
+        component="button"
+        onClick={onToggleMute}
+        aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+        aria-pressed={muted}
+        sx={{
+          background: '#FFFFFF',
+          border: '1px solid #E1E6ED',
+          borderRadius: 2,
+          px: 1.2,
+          minWidth: 44,
+          cursor: 'pointer',
+          fontSize: '1.15rem',
+          color: muted ? '#A0AABB' : '#1A2332',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'background 0.15s, color 0.15s',
+          '&:hover': { background: '#F0F3F7' },
+          '&:focus-visible': {
+            outline: '2px solid #9B59B6',
+            outlineOffset: 2,
+          },
+        }}
+      >
+        {muted ? '🔇' : '🔊'}
+      </Box>
     </Box>
   );
 }

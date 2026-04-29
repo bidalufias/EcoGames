@@ -117,6 +117,19 @@ export function flipCard(state: GameState, id: number): GameState {
   };
 }
 
+/**
+ * Reveal (or hide) every unmatched card at once. Used by study mode to show
+ * the full deck face-up before play begins, then flip everything back.
+ */
+export function revealAll(state: GameState, value: boolean): GameState {
+  const cards: Record<number, CardState> = {};
+  for (const id in state.cards) {
+    const c = state.cards[id];
+    cards[id] = c.matched ? c : { ...c, flipped: value };
+  }
+  return { ...state, cards, flippedIds: [] };
+}
+
 export function canFlip(state: GameState, id: number): boolean {
   const card = state.cards[id];
   if (!card || card.flipped || card.matched) return false;

@@ -55,11 +55,16 @@ export default function Card({ def, state, onClick, disabled }: CardProps) {
       <motion.div
         animate={{
           rotateY: isOpen ? 180 : 0,
-          scale: matched ? 0.94 : 1,
+          // Pulse on match-lock so the player feels the success: punch up to
+          // 1.12, then settle to a slightly shrunk 0.94 (matches the "done"
+          // resting state). Same shape as the Climate 2048 merge pulse.
+          scale: matched ? [1, 1.12, 0.94] : 1,
         }}
         transition={{
           rotateY: { type: 'spring', stiffness: 260, damping: 24 },
-          scale: { duration: 0.25 },
+          scale: matched
+            ? { duration: 0.42, times: [0, 0.45, 1], ease: 'easeOut' }
+            : { duration: 0.25 },
         }}
         style={{
           width: '100%',
