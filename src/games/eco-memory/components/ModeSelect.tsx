@@ -481,11 +481,11 @@ export default function ModeSelect({ onPick }: ModeSelectProps) {
         </Box>
       </motion.div>
 
-      {/* Mode cards — main hit targets */}
+      {/* Mode cards — main hit targets. Natural height (not flex) so the
+          glossary below gets the remaining room. */}
       <Box
         sx={{
-          flex: 1,
-          minHeight: 0,
+          flexShrink: 0,
           display: 'flex',
           gap: 'clamp(10px, 2cqmin, 18px)',
           alignItems: 'stretch',
@@ -517,54 +517,121 @@ export default function ModeSelect({ onPick }: ModeSelectProps) {
         />
       </Box>
 
-      {/* Pairs preview footer */}
+      {/* Glossary preview — spends the leftover height teaching what each
+          pair is, so a first-time player isn't surprised mid-game. */}
       <Box
         sx={{
-          flexShrink: 0,
+          flex: 1,
+          minHeight: 0,
           display: 'flex',
-          alignItems: 'center',
-          gap: 'clamp(8px, 1.6cqmin, 14px)',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 'clamp(6px, 1.2cqh, 10px)',
           borderTop: `1px solid ${PAPER.hairline}`,
-          pt: 'clamp(8px, 1.6cqh, 14px)',
+          pt: 'clamp(8px, 1.6cqh, 12px)',
         }}
       >
-        <Typography
-          component="span"
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexShrink: 0 }}>
+          <Typography
+            component="span"
+            sx={{
+              color: ACCENT,
+              fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+              fontWeight: 800,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+            }}
+          >
+            What you'll learn
+          </Typography>
+          <Typography
+            component="span"
+            sx={{
+              color: PAPER.meta,
+              fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+              fontWeight: 600,
+              fontStyle: 'italic',
+            }}
+          >
+            · {visiblePairs.length} pairs to match
+          </Typography>
+        </Box>
+        <Box
           sx={{
-            color: PAPER.meta,
-            fontSize: 'clamp(0.6rem, 1.4cqh, 0.7rem)',
-            fontWeight: 800,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            whiteSpace: 'nowrap',
+            flex: 1,
+            minHeight: 0,
+            overflowY: 'auto',
+            display: 'grid',
+            gridTemplateColumns: `repeat(auto-fit, minmax(clamp(180px, 20cqw, 260px), 1fr))`,
+            gap: 'clamp(6px, 1.2cqmin, 10px)',
+            pr: 1,
           }}
         >
-          You'll match {visiblePairs.length}
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(5px, 1cqmin, 8px)', justifyContent: 'center' }}>
           {visiblePairs.map(p => (
             <Box
               key={p.label}
               sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'clamp(3px, 0.7cqmin, 5px)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'clamp(8px, 1.6cqmin, 12px)',
                 px: 'clamp(8px, 1.6cqmin, 12px)',
-                py: 'clamp(3px, 0.7cqh, 5px)',
-                borderRadius: 999,
+                py: 'clamp(6px, 1.2cqh, 9px)',
                 background: PAPER.surface,
-                border: `1px solid ${PAPER.hairline}`,
-                fontSize: 'clamp(0.66rem, 1.5cqh, 0.78rem)',
-                color: PAPER.ink,
-                fontFamily: EMOJI_FONT,
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
+                border: `1px solid ${p.color}28`,
+                borderLeft: `3px solid ${p.color}`,
+                borderRadius: 'clamp(6px, 1.2cqmin, 10px)',
+                lineHeight: 1.35,
+                minWidth: 0,
               }}
             >
-              <Box component="span" aria-hidden sx={{ color: p.color, fontWeight: 800 }}>◆</Box>
-              {p.emoji} {p.label} ↔ {p.sourceEmoji} {p.source}
+              <Box
+                aria-hidden
+                sx={{
+                  fontSize: 'clamp(1rem, 2.4cqh, 1.3rem)',
+                  fontFamily: EMOJI_FONT,
+                  flexShrink: 0,
+                }}
+              >
+                {p.emoji}
+              </Box>
+              <Box sx={{ minWidth: 0 }}>
+                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(4px, 0.8cqmin, 7px)', flexWrap: 'wrap' }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: p.color,
+                      fontSize: 'clamp(0.78rem, 1.8cqh, 0.92rem)',
+                      fontWeight: 800,
+                      letterSpacing: '-0.005em',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {p.label}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: PAPER.meta,
+                      fontSize: 'clamp(0.62rem, 1.4cqh, 0.74rem)',
+                      fontWeight: 600,
+                      fontFamily: EMOJI_FONT,
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    ↔ {p.sourceEmoji} {p.source}
+                  </Typography>
+                </Box>
+                <Typography
+                  sx={{
+                    mt: 'clamp(2px, 0.4cqh, 4px)',
+                    color: PAPER.subInk,
+                    fontSize: 'clamp(0.66rem, 1.5cqh, 0.78rem)',
+                    fontWeight: 500,
+                    lineHeight: 1.35,
+                  }}
+                >
+                  {p.fact}
+                </Typography>
+              </Box>
             </Box>
           ))}
         </Box>
