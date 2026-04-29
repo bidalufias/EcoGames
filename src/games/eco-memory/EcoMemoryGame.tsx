@@ -1,264 +1,399 @@
-import { useState, useCallback } from 'react';
-import { Box, Typography, useMediaQuery } from '@mui/material';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Typography } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { createCards, GHG_PAIRS } from './data';
-import type { Card } from './data';
+import { GHG_PAIRS } from './data';
+import {
+  canFlip,
+  flipCard,
+  rating,
+  resolveTurn,
+  startGame,
+  type GameState,
+} from './engine';
 import EcoButton from '../../components/EcoButton';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
+import Board from './components/Board';
+import HUD from './components/HUD';
 
 type Screen = 'intro' | 'playing' | 'gameover' | 'leaderboard';
 
+const BEST_KEY = 'eco-memory:best';
+const REVEAL_MATCH_MS = 650;
+const REVEAL_MISS_MS = 950;
+
+const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+
 export default function EcoMemoryGame() {
   const [screen, setScreen] = useState<Screen>('intro');
-  const [playerName, setPlayerName] = useState('');
-  const [cards, setCards] = useState<Card[]>([]);
-  const [flipped, setFlipped] = useState<number[]>([]);
-  const [moves, setMoves] = useState(0);
-  const [matches, setMatches] = useState(0);
-  const [fact, setFact] = useState('');
+  const [game, setGame] = useState<GameState>(() => startGame());
+  const [scoreDelta, setScoreDelta] = useState<number | undefined>(undefined);
+  const [fact, setFact] = useState<string | null>(null);
   const [locked, setLocked] = useState(false);
-
-  const isLandscape = useMediaQuery('(orientation: landscape)');
-  const isSmall = useMediaQuery('(max-height: 500px)');
+  const [best, setBest] = useState(0);
+  const [playerName, setPlayerName] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const totalPairs = GHG_PAIRS.length;
-  const totalCards = totalPairs * 2;
-  const cols = isLandscape ? (totalCards <= 16 ? 4 : 5) : 4;
-  const gap = 8;
-  const availH = isSmall ? '70vh' : '78vh';
+  const factTimer = useRef<number | null>(null);
 
-  const startGame = useCallback(() => {
-    setCards(createCards());
-    setFlipped([]); setMoves(0); setMatches(0); setFact(''); setLocked(false);
+  // Load persisted best score on mount.
+  useEffect(() => {
+    const raw = localStorage.getItem(BEST_KEY);
+    setBest(raw ? Number(raw) || 0 : 0);
+  }, []);
+
+  // Persist when score beats best.
+  useEffect(() => {
+    if (game.score > best) {
+      setBest(game.score);
+      localStorage.setItem(BEST_KEY, String(game.score));
+    }
+  }, [game.score, best]);
+
+  // Two cards flipped → resolve after a short reveal so the player can see
+  // both faces. Replaces the old in-render `setTimeout`.
+  useEffect(() => {
+    if (game.flippedIds.length !== 2) return;
+    setLocked(true);
+    const [aId, bId] = game.flippedIds;
+    const a = game.deck.find(c => c.id === aId)!;
+    const b = game.deck.find(c => c.id === bId)!;
+    const wait = a.pairId === b.pairId ? REVEAL_MATCH_MS : REVEAL_MISS_MS;
+    const timer = window.setTimeout(() => {
+      setGame(prev => {
+        const result = resolveTurn(prev, totalPairs);
+        if (result.delta !== 0) setScoreDelta(result.delta);
+        if (result.completedPair) {
+          setFact(result.completedPair.fact);
+          if (factTimer.current) window.clearTimeout(factTimer.current);
+          factTimer.current = window.setTimeout(() => setFact(null), 3000);
+        }
+        if (result.finished) {
+          window.setTimeout(() => setScreen('gameover'), 600);
+        }
+        return result.state;
+      });
+      setLocked(false);
+    }, wait);
+    return () => window.clearTimeout(timer);
+  }, [game.flippedIds, game.deck, totalPairs]);
+
+  useEffect(
+    () => () => {
+      if (factTimer.current) window.clearTimeout(factTimer.current);
+    },
+    [],
+  );
+
+  const startNewGame = useCallback(() => {
+    setGame(startGame());
+    setScoreDelta(undefined);
+    setFact(null);
+    setLocked(false);
+    setSubmitted(false);
     setScreen('playing');
   }, []);
 
-  const handleCardClick = useCallback((id: number) => {
-    if (locked) return;
-    const card = cards.find(c => c.id === id);
-    if (!card || card.flipped || card.matched) return;
+  const onFlip = useCallback(
+    (id: number) => {
+      if (locked) return;
+      setGame(prev => (canFlip(prev, id) ? flipCard(prev, id) : prev));
+    },
+    [locked],
+  );
 
-    const newFlipped = [...flipped, id];
-    setFlipped(newFlipped);
-    setCards(prev => prev.map(c => c.id === id ? { ...c, flipped: true } : c));
+  const submitScore = useCallback(async () => {
+    if (!playerName.trim() || submitted) return;
+    const { submitScore: send } = await import('../../lib/supabase');
+    await send({ game_id: 'eco-memory', player_name: playerName.trim(), score: game.score });
+    setSubmitted(true);
+    setScreen('leaderboard');
+  }, [playerName, submitted, game.score]);
 
-    if (newFlipped.length === 2) {
-      setMoves(m => m + 1);
-      setLocked(true);
-      const [first, second] = newFlipped.map(fid => cards.find(c => c.id === fid)!);
-
-      if (first.pairId === second.pairId) {
-        setMatches(m => m + 1);
-        setFact(`💡 ${first.fact}`);
-        setTimeout(() => {
-          setCards(prev => prev.map(c => c.pairId === first.pairId ? { ...c, matched: true } : c));
-          setFlipped([]); setLocked(false);
-          setTimeout(() => setFact(''), 3000);
-        }, 500);
-      } else {
-        setTimeout(() => {
-          setCards(prev => prev.map(c => newFlipped.includes(c.id) ? { ...c, flipped: false } : c));
-          setFlipped([]); setLocked(false);
-        }, 1000);
-      }
-    }
-  }, [cards, flipped, locked]);
-
-  if (screen === 'playing' && matches === totalPairs) {
-    setTimeout(() => setScreen('gameover'), 500);
-  }
-
-  // --- Intro ---
+  // ---------- Intro ----------
   if (screen === 'intro') {
     return (
-      <Box sx={{
-        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        px: 3, py: 4, overflow: 'hidden',
-      }}>
+      <Box
+        sx={{
+          height: '100dvh',
+          bgcolor: '#FAFBFC',
+          color: '#1A2332',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: 3,
+          py: 4,
+          overflow: 'hidden',
+        }}
+      >
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Typography variant="h3" sx={{
-            background: 'linear-gradient(135deg, #9B59B6, #007DC4)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, mb: 2,
-          }} align="center">🧠 Eco Memory</Typography>
-          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 4 }} align="center">
-            Match greenhouse gases to their sources and effects!
+          <Typography
+            variant="h3"
+            sx={{
+              background: 'linear-gradient(135deg, #9B59B6, #007DC4)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 800,
+              mb: 1.5,
+              fontFamily: `Inter, ${EMOJI_FONT}`,
+            }}
+            align="center"
+          >
+            🧠 Eco Memory
+          </Typography>
+          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 3 }} align="center">
+            Match greenhouse gases to their sources.
           </Typography>
         </motion.div>
-        <Box sx={{ maxWidth: 600, mb: 3 }}>
-          <Typography sx={{ mb: 2, color: '#1A2332' }} align="center">Match each gas to its source:</Typography>
+        <Box sx={{ maxWidth: 620, mb: 3 }}>
+          <Typography sx={{ mb: 1.5, color: '#1A2332' }} align="center">
+            Pairs you can match:
+          </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
             {GHG_PAIRS.map(p => (
-              <Box key={p.label} sx={{ px: 1.5, py: 0.5, borderRadius: 2, background: `${p.color}10`, border: `1px solid ${p.color}25`, fontSize: 14 }}>
-                {p.emoji} {p.label} ↔ {p.source}
+              <Box
+                key={p.label}
+                sx={{
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 2,
+                  background: `${p.color}10`,
+                  border: `1px solid ${p.color}30`,
+                  fontSize: 14,
+                  fontFamily: EMOJI_FONT,
+                }}
+              >
+                {p.emoji} {p.label} ↔ {p.sourceEmoji} {p.source}
               </Box>
             ))}
           </Box>
         </Box>
-        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 450, textAlign: 'center' }}>
-          Flip cards to find matching pairs. Each match reveals a climate fact!
-          Try to match all {totalPairs} pairs in as few moves as possible.
+        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 470, textAlign: 'center' }}>
+          Flip two cards to find a match. Streaks score bigger — every match unlocks a climate fact.
         </Typography>
-        <EcoButton onClick={startGame} size="large">Start Matching 🧠</EcoButton>
+        <EcoButton onClick={startNewGame} size="large">
+          Start Matching 🧠
+        </EcoButton>
       </Box>
     );
   }
 
-  // --- Leaderboard ---
+  // ---------- Leaderboard ----------
   if (screen === 'leaderboard') {
     return (
-      <Box sx={{
-        minHeight: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        px: 3, py: 4,
-      }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, mb: 4 }}>🏆 Eco Memory Leaderboard</Typography>
+      <Box
+        sx={{
+          minHeight: '100dvh',
+          bgcolor: '#FAFBFC',
+          color: '#1A2332',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: 3,
+          py: 4,
+        }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: 800, mb: 4 }}>
+          🏆 Eco Memory Leaderboard
+        </Typography>
         <Box sx={{ width: '100%', maxWidth: 500 }}>
           <LeaderboardPanel gameId="eco-memory" playerName={playerName} />
         </Box>
-        <Box sx={{ mt: 4 }}>
-          <EcoButton onClick={startGame}>Play Again</EcoButton>
+        <Box sx={{ mt: 4, display: 'flex', gap: 1.5 }}>
+          <EcoButton onClick={startNewGame}>Play Again</EcoButton>
+          <EcoButton variant="secondary" onClick={() => setScreen('intro')}>
+            Info
+          </EcoButton>
         </Box>
       </Box>
     );
   }
 
-  // --- Game Over ---
+  // ---------- Game over ----------
   if (screen === 'gameover') {
-    const rating = moves <= totalPairs + 2 ? '🏆 Perfect!' : moves <= totalPairs * 2 ? '⭐ Great!' : moves <= totalPairs * 3 ? '👍 Good!' : '🌱 Keep Learning!';
-    const memScore = Math.max(0, totalPairs * 100 - (moves - totalPairs) * 10);
     return (
-      <Box sx={{
-        height: '100dvh', bgcolor: '#FAFBFC', color: '#1A2332',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', px: 3,
-        overflow: 'hidden',
-      }}>
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
-          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }} align="center">All Matched! 🎉</Typography>
-          <Typography variant="h5" sx={{ color: '#9B59B6', mb: 1 }} align="center">{rating}</Typography>
-          <Typography sx={{ color: '#5A6A7E', mb: 3 }} align="center">
-            Completed in {moves} moves ({totalPairs} pairs)
+      <Box
+        sx={{
+          height: '100dvh',
+          bgcolor: '#FAFBFC',
+          color: '#1A2332',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}>
+          <Typography variant="h3" sx={{ fontWeight: 800, mb: 1.5 }} align="center">
+            All Matched! 🎉
           </Typography>
+          <Typography variant="h5" sx={{ color: '#9B59B6', mb: 1 }} align="center">
+            {rating(game.moves, totalPairs)}
+          </Typography>
+          <Typography sx={{ color: '#5A6A7E', mb: 1 }} align="center">
+            Score <Box component="span" sx={{ fontWeight: 800, color: '#1A2332' }}>{game.score.toLocaleString()}</Box>
+            {' · '}
+            Moves <Box component="span" sx={{ fontWeight: 800, color: '#1A2332' }}>{game.moves}</Box>
+            {' · '}
+            Best streak <Box component="span" sx={{ fontWeight: 800, color: '#1A2332' }}>×{game.streak}</Box>
+          </Typography>
+          {game.score === best && best > 0 && (
+            <Typography sx={{ color: '#0D9B4A', fontWeight: 700, mb: 2 }} align="center">
+              🌟 New personal best!
+            </Typography>
+          )}
         </motion.div>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 2 }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+
+        {game.unlocked.length > 0 && (
+          <Box
+            sx={{
+              mt: 1,
+              mb: 3,
+              maxWidth: 560,
+              width: '100%',
+              maxHeight: '32vh',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0.6,
+            }}
+          >
+            {game.unlocked.map((u, i) => (
+              <Box
+                key={i}
+                sx={{
+                  px: 1.5,
+                  py: 0.8,
+                  borderRadius: 2,
+                  background: `${u.color}10`,
+                  border: `1px solid ${u.color}25`,
+                  fontSize: 13,
+                  color: '#1A2332',
+                }}
+              >
+                <Box component="span" sx={{ fontFamily: EMOJI_FONT, mr: 0.5 }}>
+                  {u.emoji}
+                </Box>
+                <Box component="span" sx={{ fontWeight: 700, color: u.color, mr: 0.5 }}>
+                  {u.label}
+                </Box>
+                — {u.fact}
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
             <input
               value={playerName}
               onChange={e => setPlayerName(e.target.value)}
               placeholder="Your name"
               maxLength={20}
               style={{
-                padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(13,155,74,0.3)',
-                fontSize: '1rem', outline: 'none', width: 160,
+                padding: '8px 16px',
+                borderRadius: 8,
+                border: '1px solid rgba(13,155,74,0.3)',
+                fontSize: '1rem',
+                outline: 'none',
+                width: 180,
               }}
             />
-            <EcoButton onClick={async () => {
-              if (playerName.trim()) {
-                const { submitScore } = await import('../../lib/supabase');
-                await submitScore({ game_id: 'eco-memory', player_name: playerName.trim(), score: memScore });
-              }
-              setScreen('leaderboard');
-            }}>🏆 Leaderboard</EcoButton>
+            <EcoButton onClick={submitScore}>🏆 Submit</EcoButton>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <EcoButton onClick={startGame}>Play Again</EcoButton>
-            <EcoButton onClick={() => setScreen('intro')} variant="secondary">Info</EcoButton>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <EcoButton onClick={startNewGame}>Play Again</EcoButton>
+            <EcoButton onClick={() => setScreen('intro')} variant="secondary">
+              Info
+            </EcoButton>
           </Box>
         </Box>
       </Box>
     );
   }
 
-  // --- Playing ---
+  // ---------- Playing ----------
   return (
-    <Box sx={{
-      height: '100dvh', bgcolor: '#F0F3F7', color: '#1A2332',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      px: 2, py: 1, overflow: 'hidden', width: '100vw',
-    }}>
-      {/* HUD */}
-      <Box sx={{ display: 'flex', gap: 4, mb: 1, flexShrink: 0 }}>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#5A6A7E' }}>MOVES</Typography>
-          <Typography sx={{ fontWeight: 800, fontSize: 20 }}>{moves}</Typography>
+    <Box
+      sx={{
+        height: '100dvh',
+        bgcolor: '#F0F3F7',
+        color: '#1A2332',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        px: 'clamp(8px, 2vw, 24px)',
+        py: 'clamp(8px, 2vh, 20px)',
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 620,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1.2,
+        }}
+      >
+        <HUD
+          score={game.score}
+          best={best}
+          moves={game.moves}
+          matches={game.matches}
+          totalPairs={totalPairs}
+          streak={game.streak}
+          scoreDelta={scoreDelta}
+        />
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, flexShrink: 0 }}>
+          <EcoButton size="small" onClick={startNewGame}>
+            New Game
+          </EcoButton>
         </Box>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 11, color: '#5A6A7E' }}>MATCHES</Typography>
-          <Typography sx={{ fontWeight: 800, fontSize: 20, color: '#9B59B6' }}>{matches}/{totalPairs}</Typography>
+
+        {/* Board fills the leftover height; the inner grid self-caps to a
+            square that fits both width and height. */}
+        <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+          <Box sx={{ width: '100%', height: '100%' }}>
+            <Board deck={game.deck} cards={game.cards} onFlip={onFlip} disabled={locked} />
+          </Box>
         </Box>
       </Box>
 
-      {/* Card Grid — responsive, no layout shift */}
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gap: `${gap}px`,
-        width: `min(95vw, ${isLandscape ? '80vh' : '95vw'})`,
-        maxHeight: availH,
-      }}>
-        {cards.map(card => {
-          const isOpen = card.flipped || card.matched;
-          return (
-            <Box
-              key={card.id}
-              onClick={() => handleCardClick(card.id)}
-              sx={{
-                aspectRatio: '1',
-                borderRadius: 2,
-                cursor: card.matched ? 'default' : 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: card.matched ? `${card.color}10` : '#FFFFFF',
-                border: `2px solid ${card.matched ? card.color : isOpen ? card.color : '#D0D7E0'}`,
-                boxShadow: isOpen ? `0 2px 8px ${card.color}20` : '0 1px 3px rgba(0,0,0,0.06)',
-                transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
-                '&:hover': !card.flipped && !card.matched ? {
-                  borderColor: `${card.color}55`,
-                  boxShadow: `0 2px 8px ${card.color}15`,
-                } : {},
-                opacity: card.matched ? 0.5 : 1,
-                overflow: 'hidden',
-                p: '6%',
-              }}
-            >
-              {/* Icon — always same space */}
-              <Box sx={{
-                fontSize: 'clamp(20px, 5vw, 36px)',
-                lineHeight: 1,
-              }}>
-                {isOpen ? card.emoji : '🌱'}
-              </Box>
-              {/* Label — always same height, hidden text for face-down */}
-              <Box sx={{
-                mt: 0.5,
-                fontSize: 'clamp(7px, 1.8vw, 11px)',
-                fontWeight: 700,
-                color: isOpen ? card.color : 'transparent',
-                textAlign: 'center',
-                lineHeight: 1.1,
-                minHeight: '1.2em',
-                maxWidth: '100%',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                transition: 'color 0.2s',
-              }}>
-                {isOpen ? card.label : '•'}
-              </Box>
-            </Box>
-          );
-        })}
-      </Box>
-
-      {/* Fact popup */}
       <AnimatePresence>
         {fact && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
-            <Box sx={{ px: 3, py: 1.5, borderRadius: 2, background: '#9B59B612', border: '1px solid #9B59B625', maxWidth: 400, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: 13, color: '#9B59B6' }}>{fact}</Typography>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            style={{
+              position: 'fixed',
+              bottom: 'max(20px, env(safe-area-inset-bottom))',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 50,
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 1.5,
+                borderRadius: 2,
+                background: '#9B59B612',
+                border: '1px solid #9B59B635',
+                maxWidth: 460,
+                textAlign: 'center',
+                backdropFilter: 'blur(6px)',
+              }}
+            >
+              <Typography sx={{ fontSize: 13, color: '#9B59B6', fontWeight: 600 }}>💡 {fact}</Typography>
             </Box>
           </motion.div>
         )}
