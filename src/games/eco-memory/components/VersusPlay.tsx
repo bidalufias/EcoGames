@@ -103,6 +103,158 @@ function PaperButton({ children, onClick, ariaLabel, ariaPressed, variant = 'out
   );
 }
 
+interface ActionRowProps {
+  muted: boolean;
+  onToggleMute: () => void;
+  onNewGame: () => void;
+  onExit: () => void;
+  difficultyLabel: string;
+  pairsLeft: number;
+  totalPairs: number;
+}
+
+/**
+ * Mirrored action row used at both ends of the versus screen — meta on the
+ * left, mute / new / change-mode on the right. Mirroring (rather than a single
+ * top strip) means whichever player just made a move can reach the controls
+ * without standing up; per-end orientation is applied by the parent.
+ */
+function ActionRow({
+  muted,
+  onToggleMute,
+  onNewGame,
+  onExit,
+  difficultyLabel,
+  pairsLeft,
+  totalPairs,
+}: ActionRowProps) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 'clamp(8px, 1.6cqmin, 14px)',
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, minWidth: 0 }}>
+        <Typography
+          component="span"
+          sx={{
+            color: ACCENT,
+            fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+            fontWeight: 800,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Versus · {difficultyLabel}
+        </Typography>
+        <Typography
+          component="span"
+          sx={{
+            color: PAPER.meta,
+            fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+            fontWeight: 600,
+            fontStyle: 'italic',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          · {pairsLeft} of {totalPairs} left
+        </Typography>
+      </Box>
+      <Box sx={{ display: 'flex', gap: 'clamp(6px, 1.2cqmin, 10px)' }}>
+        <PaperButton
+          onClick={onToggleMute}
+          ariaLabel={muted ? 'Unmute sound' : 'Mute sound'}
+          ariaPressed={muted}
+        >
+          <Box component="span" aria-hidden sx={{ fontFamily: EMOJI_FONT }}>
+            {muted ? '🔇' : '🔊'}
+          </Box>
+        </PaperButton>
+        <PaperButton onClick={onNewGame} ariaLabel="Start a new game">
+          <Box component="span" aria-hidden>↻</Box> New
+        </PaperButton>
+        <PaperButton variant="ghost" onClick={onExit} ariaLabel="Change mode and difficulty">
+          <Box component="span" aria-hidden>↩</Box> Modes
+        </PaperButton>
+      </Box>
+    </Box>
+  );
+}
+
+interface FactRibbonProps {
+  fact: string;
+  accent: string;
+  anchor: 'top' | 'bottom';
+  flipped?: boolean;
+}
+
+/**
+ * One half of the dual fact ribbon. Anchored to the top or bottom edge of the
+ * board area so cards aren't obscured; the `flipped` variant rotates 180° so
+ * the player on the far side reads it upright.
+ */
+function FactRibbon({ fact, accent, anchor, flipped }: FactRibbonProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: anchor === 'top' ? -10 : 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: anchor === 'top' ? -6 : 6 }}
+      transition={{ duration: 0.26, ease: 'easeOut' }}
+      style={{
+        position: 'absolute',
+        left: '50%',
+        [anchor]: 'clamp(2px, 0.8cqh, 8px)',
+        transform: `translateX(-50%) ${flipped ? 'rotate(180deg)' : ''}`.trim(),
+        zIndex: 50,
+        pointerEvents: 'none',
+        maxWidth: 'min(520px, 86%)',
+      }}
+    >
+      <Box
+        sx={{
+          px: 'clamp(12px, 2.2cqmin, 18px)',
+          py: 'clamp(6px, 1.2cqh, 9px)',
+          borderRadius: 'clamp(10px, 2cqmin, 16px)',
+          background: PAPER.surface,
+          border: `1.5px solid ${accent}55`,
+          boxShadow: `0 8px 22px ${accent}22, 0 1px 2px rgba(31,27,20,0.06)`,
+          textAlign: 'center',
+          lineHeight: 1.4,
+        }}
+      >
+        <Box
+          component="span"
+          sx={{
+            color: accent,
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+            mr: 0.6,
+            fontSize: 'clamp(0.66rem, 1.5cqh, 0.78rem)',
+            textTransform: 'uppercase',
+          }}
+        >
+          Fact
+        </Box>
+        <Box component="span" sx={{ color: PAPER.faded, mr: 0.6 }}>—</Box>
+        <Box
+          component="span"
+          sx={{
+            color: PAPER.ink,
+            fontSize: 'clamp(0.74rem, 1.6cqh, 0.88rem)',
+            fontWeight: 500,
+          }}
+        >
+          {fact}
+        </Box>
+      </Box>
+    </motion.div>
+  );
+}
+
 export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlayProps) {
   const pairs = getPairsForDifficulty(difficulty);
   const { cols: BOARD_COLS, rows: BOARD_ROWS } = getLayoutForDifficulty(difficulty);
@@ -442,64 +594,19 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
         position: 'relative',
       }}
     >
-      {/* Top action row + meta — single horizontal strip */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 'clamp(8px, 1.6cqmin, 14px)',
-          flexShrink: 0,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, minWidth: 0 }}>
-          <Typography
-            component="span"
-            sx={{
-              color: ACCENT,
-              fontSize: 'clamp(0.62rem, 1.4cqh, 0.72rem)',
-              fontWeight: 800,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Eco Memory · Versus · {difficultyDef.label}
-          </Typography>
-          <Typography
-            component="span"
-            sx={{
-              color: PAPER.meta,
-              fontSize: 'clamp(0.62rem, 1.4cqh, 0.72rem)',
-              fontWeight: 600,
-              fontStyle: 'italic',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            · {totalPairs - game.matches} pairs left
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 'clamp(6px, 1.2cqmin, 10px)' }}>
-          <PaperButton
-            onClick={toggleMute}
-            ariaLabel={muted ? 'Unmute sound' : 'Mute sound'}
-            ariaPressed={muted}
-          >
-            <Box component="span" aria-hidden sx={{ fontFamily: EMOJI_FONT }}>
-              {muted ? '🔇' : '🔊'}
-            </Box>
-          </PaperButton>
-          <PaperButton onClick={startNewGame} ariaLabel="Start a new game">
-            <Box component="span" aria-hidden>↻</Box> New
-          </PaperButton>
-          <PaperButton variant="ghost" onClick={onExit} ariaLabel="Change mode and difficulty">
-            <Box component="span" aria-hidden>↩</Box> Modes
-          </PaperButton>
-        </Box>
+      {/* Player 2's region — actions + HUD, all rotated 180° so the player
+          on the far side of a tabletop iPad reads them upright. */}
+      <Box sx={{ flexShrink: 0, transform: 'rotate(180deg)' }}>
+        <ActionRow
+          muted={muted}
+          onToggleMute={toggleMute}
+          onNewGame={startNewGame}
+          onExit={onExit}
+          difficultyLabel={difficultyDef.label}
+          pairsLeft={totalPairs - game.matches}
+          totalPairs={totalPairs}
+        />
       </Box>
-
-      {/* Player 2 panel — rotated 180° so it reads right-side up from the
-          far side of a tabletop iPad. */}
       <Box sx={{ flexShrink: 0 }}>
         <PlayerHUD
           label={PLAYERS[1].label}
@@ -512,7 +619,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
         />
       </Box>
 
-      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center', position: 'relative' }}>
         <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
           <Board
             deck={game.deck}
@@ -566,6 +673,31 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Dual-mirrored fact ribbon. One copy hangs at each end of the
+              board, oriented for that player, so neither has to read upside
+              down. The current scorer's accent colours both. */}
+          <AnimatePresence>
+            {fact && (
+              <FactRibbon
+                key={`p2-${fact}`}
+                fact={fact}
+                accent={PLAYERS[current].accent}
+                anchor="top"
+                flipped
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {fact && (
+              <FactRibbon
+                key={`p1-${fact}`}
+                fact={fact}
+                accent={PLAYERS[current].accent}
+                anchor="bottom"
+              />
+            )}
+          </AnimatePresence>
         </Box>
       </Box>
 
@@ -579,53 +711,18 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
           isActive={current === 0 && !finished}
         />
       </Box>
-
-      <AnimatePresence>
-        {fact && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.24, ease: 'easeOut' }}
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 50,
-              pointerEvents: 'none',
-              maxWidth: 'min(440px, 70%)',
-            }}
-          >
-            <Box
-              sx={{
-                px: 'clamp(12px, 2.4cqmin, 20px)',
-                py: 'clamp(8px, 1.6cqh, 12px)',
-                borderRadius: 'clamp(8px, 1.6cqmin, 14px)',
-                background: PAPER.surface,
-                border: `1.5px solid ${PLAYERS[current].accent}55`,
-                boxShadow: `0 12px 30px ${PLAYERS[current].accent}22, 0 1px 2px rgba(31,27,20,0.06)`,
-                textAlign: 'center',
-              }}
-            >
-              <Box
-                component="span"
-                sx={{
-                  color: PLAYERS[current].accent,
-                  fontWeight: 800,
-                  letterSpacing: '0.04em',
-                  mr: 0.6,
-                }}
-              >
-                Fact —
-              </Box>
-              <Box component="span" sx={{ color: PAPER.ink, fontSize: 'clamp(0.74rem, 1.6cqh, 0.86rem)', fontWeight: 500 }}>
-                {fact}
-              </Box>
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Player 1's region — same controls in normal orientation. */}
+      <Box sx={{ flexShrink: 0 }}>
+        <ActionRow
+          muted={muted}
+          onToggleMute={toggleMute}
+          onNewGame={startNewGame}
+          onExit={onExit}
+          difficultyLabel={difficultyDef.label}
+          pairsLeft={totalPairs - game.matches}
+          totalPairs={totalPairs}
+        />
+      </Box>
     </Box>
   );
 }
