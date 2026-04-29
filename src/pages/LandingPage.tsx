@@ -1,22 +1,95 @@
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import GameTile from '../components/GameTile';
+import GameTile, { type TileTemplate } from '../components/GameTile';
 import EcoHeader from '../components/EcoHeader';
-import ParticleBackground from '../components/ParticleBackground';
 
-const games = [
+interface GameDef {
+  id: string;
+  title: string;
+  inspiredBy: string;
+  topic: string;
+  description: string;
+  learn: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  playTime: string;
+  icon: string;
+  accent: string;
+  available: boolean;
+  template: TileTemplate;
+}
+
+// Grid order: A, B, C, B, C, A. The pattern places the two same-template
+// tiles diagonally so no two adjacent cells share a template.
+const games: GameDef[] = [
   {
     id: 'climate-ninja',
     title: 'Climate Ninja',
     inspiredBy: 'Fruit Ninja',
     topic: 'Greenhouse Gases',
-    description: 'Slice through the 7 greenhouse gases warming our planet.',
-    learn: 'Identify CO₂, methane and the other gases driving climate change',
-    difficulty: 'Easy' as const,
+    description: 'Slice through the seven greenhouse gases warming our planet.',
+    learn: 'Tell apart CO₂, methane, and the other gases driving climate change',
+    difficulty: 'Easy',
     playTime: '3 min',
     icon: '🥷',
     accent: '#16A34A',
     available: true,
+    template: 'headline',
+  },
+  {
+    id: 'recycle-rush',
+    title: 'Recycle Rush',
+    inspiredBy: 'Diner Dash',
+    topic: 'Waste & Recycling',
+    description: 'Sort the bins before customers walk away.',
+    learn: 'Where recyclables, compost, hazardous, and e-waste actually belong',
+    difficulty: 'Easy',
+    playTime: '4 min',
+    icon: '♻️',
+    accent: '#C2410C',
+    available: true,
+    template: 'index',
+  },
+  {
+    id: 'eco-memory',
+    title: 'Eco Memory',
+    inspiredBy: 'Memory Match',
+    topic: 'Climate Knowledge',
+    description: 'Pair greenhouse gases with their real-world sources.',
+    learn: 'Where each greenhouse gas comes from in everyday life',
+    difficulty: 'Easy',
+    playTime: '3 min',
+    icon: '🧠',
+    accent: '#6D28D9',
+    available: true,
+    template: 'object',
+  },
+  {
+    id: 'green-defence',
+    title: 'Green Defence',
+    inspiredBy: 'Plants vs. Zombies',
+    topic: 'Net Zero',
+    description: 'Deploy clean tech to halt waves of pollution.',
+    learn: 'How solar, wind, EVs, and carbon capture cut emissions',
+    difficulty: 'Medium',
+    playTime: '6 min',
+    icon: '🛡️',
+    accent: '#0F766E',
+    available: true,
+    template: 'index',
+  },
+  {
+    id: 'climate-2048',
+    title: 'Climate 2048',
+    inspiredBy: '2048',
+    topic: 'Climate Tech',
+    description: 'Merge a tech stack from a single component up to a Net-Zero deployment.',
+    learn: 'How a clean technology scales from wafer to grid-connected farm',
+    difficulty: 'Hard',
+    playTime: '5 min',
+    icon: '🔢',
+    accent: '#B91C1C',
+    available: true,
+    template: 'object',
   },
   {
     id: 'carbon-crush',
@@ -25,65 +98,19 @@ const games = [
     topic: 'Clean Energy',
     description: 'Match polluting tech to phase it out for clean alternatives.',
     learn: 'How renewables like solar and wind are replacing fossil fuels',
-    difficulty: 'Medium' as const,
+    difficulty: 'Medium',
     playTime: '5 min',
     icon: '💎',
-    accent: '#2563EB',
+    accent: '#1D4ED8',
     available: true,
-  },
-  {
-    id: 'recycle-rush',
-    title: 'Recycle Rush',
-    inspiredBy: 'Diner Dash',
-    topic: 'Waste & Recycling',
-    description: 'Sort waste to the right bin before customers walk away.',
-    learn: 'Which bin recyclables, compost, hazardous waste and e-waste belong in',
-    difficulty: 'Easy' as const,
-    playTime: '4 min',
-    icon: '♻️',
-    accent: '#EA580C',
-    available: true,
-  },
-  {
-    id: 'eco-memory',
-    title: 'Eco Memory',
-    inspiredBy: 'Memory Match',
-    topic: 'Climate Knowledge',
-    description: 'Pair greenhouse gases with their real-world sources.',
-    learn: 'Where greenhouse gases come from in everyday life and industry',
-    difficulty: 'Easy' as const,
-    playTime: '3 min',
-    icon: '🧠',
-    accent: '#7C3AED',
-    available: true,
-  },
-  {
-    id: 'green-defence',
-    title: 'Green Defence',
-    inspiredBy: 'Plants vs. Zombies',
-    topic: 'Net Zero',
-    description: 'Deploy clean tech to halt waves of pollution.',
-    learn: 'How solar, wind, EVs and carbon capture cut emissions',
-    difficulty: 'Medium' as const,
-    playTime: '6 min',
-    icon: '🛡️',
-    accent: '#0D9488',
-    available: true,
-  },
-  {
-    id: 'climate-2048',
-    title: 'Climate 2048',
-    inspiredBy: '2048',
-    topic: 'Climate Tech',
-    description: 'Merge a tech stack from a single component up to a Net-Zero deployment.',
-    learn: 'How a clean technology like solar scales from wafer to grid-connected farm',
-    difficulty: 'Hard' as const,
-    playTime: '5 min',
-    icon: '🔢',
-    accent: '#DC2626',
-    available: true,
+    template: 'headline',
   },
 ];
+
+// Inline grain SVG: a deterministic noise pattern, ~1 kB. Adds the paper
+// feel without shipping a separate asset request.
+const PAPER_GRAIN =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 export default function LandingPage() {
   return (
@@ -92,18 +119,18 @@ export default function LandingPage() {
         height: '100%',
         width: '100%',
         overflow: 'hidden',
-        background:
-          'radial-gradient(circle at 20% 0%, #DCFCE7 0%, transparent 45%), radial-gradient(circle at 100% 100%, #DBEAFE 0%, transparent 50%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)',
+        background: '#FAF7F0',
+        backgroundImage: PAPER_GRAIN,
+        backgroundRepeat: 'repeat',
+        backgroundSize: '220px 220px',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
       }}
     >
       <a href="#games" className="skip-link">Skip to games</a>
-      <ParticleBackground />
 
-      {/* Portrait orientation guard — drawn over the dark letterbox so users
-          who hold the device the wrong way still get a nudge. */}
+      {/* Portrait orientation guard. */}
       <Box
         sx={{
           display: 'none',
@@ -111,8 +138,8 @@ export default function LandingPage() {
             display: 'flex',
             position: 'fixed',
             inset: 0,
-            background: '#0F172A',
-            color: '#FFFFFF',
+            background: '#1F1B14',
+            color: '#FAF7F0',
             zIndex: 99999,
             alignItems: 'center',
             justifyContent: 'center',
@@ -123,10 +150,10 @@ export default function LandingPage() {
           },
         }}
       >
-        <Box sx={{ fontSize: '4rem' }}>🔄</Box>
+        <Box sx={{ fontSize: '4rem' }} aria-hidden>🔄</Box>
         <Typography sx={{ fontSize: '1.4rem', fontWeight: 700 }}>Please rotate your device</Typography>
-        <Typography sx={{ color: '#94A3B8', fontSize: '0.95rem', maxWidth: 320 }}>
-          EcoGames is designed for landscape mode for the best touchscreen experience.
+        <Typography sx={{ color: '#C5BBA9', fontSize: '0.95rem', maxWidth: 320 }}>
+          EcoGames is designed for landscape mode, so the games can fit the screen.
         </Typography>
       </Box>
 
@@ -144,8 +171,8 @@ export default function LandingPage() {
           flexShrink: 0,
           textAlign: 'center',
           px: 3,
-          pt: 'clamp(8px, 2cqh, 24px)',
-          pb: 'clamp(2px, 0.8cqh, 10px)',
+          pt: 'clamp(10px, 2.4cqh, 28px)',
+          pb: 'clamp(4px, 1cqh, 14px)',
         }}
       >
         <motion.div
@@ -158,15 +185,15 @@ export default function LandingPage() {
             component="h1"
             sx={{
               m: 0,
-              fontSize: 'clamp(1.3rem, 3.8cqh, 2.4rem)',
+              fontSize: 'clamp(1.4rem, 4.2cqh, 2.8rem)',
               fontWeight: 900,
-              lineHeight: 1,
-              letterSpacing: '-0.035em',
-              color: '#0F172A',
+              lineHeight: 0.98,
+              letterSpacing: '-0.04em',
+              color: '#1F1B14',
             }}
           >
             Six little games.{' '}
-            <Box component="span" sx={{ fontWeight: 500, color: '#15803D' }}>
+            <Box component="span" sx={{ fontWeight: 500, fontStyle: 'italic', color: '#15803D' }}>
               One warming planet.
             </Box>
           </Typography>
@@ -178,11 +205,13 @@ export default function LandingPage() {
         >
           <Typography
             sx={{
-              mt: 'clamp(2px, 0.6cqh, 8px)',
-              color: '#475569',
-              fontSize: 'clamp(0.7rem, 1.4cqh, 0.95rem)',
+              mt: 'clamp(4px, 0.8cqh, 10px)',
+              color: '#5B5247',
+              fontSize: 'clamp(0.72rem, 1.5cqh, 0.98rem)',
               fontWeight: 500,
-              letterSpacing: '0.01em',
+              letterSpacing: '0.005em',
+              maxWidth: 640,
+              mx: 'auto',
             }}
           >
             Pick a game, play a round, learn something about the climate you didn{'’'}t know before.
@@ -219,7 +248,7 @@ export default function LandingPage() {
           }}
         >
           {games.map((game, i) => (
-            <GameTile key={game.id} {...game} index={i} />
+            <GameTile key={game.id} {...game} number={i + 1} index={i} />
           ))}
         </Box>
       </Box>
@@ -231,18 +260,18 @@ export default function LandingPage() {
           position: 'relative',
           zIndex: 1,
           textAlign: 'center',
-          py: 0.9,
+          py: 1,
           flexShrink: 0,
-          borderTop: '1px solid rgba(15,23,42,0.06)',
-          background: 'rgba(255,255,255,0.78)',
+          borderTop: '1px solid #E8DFCB',
+          background: 'rgba(250, 247, 240, 0.85)',
         }}
       >
         <Typography
           sx={{
-            color: '#475569',
+            color: '#7A6F5C',
             fontSize: '0.72rem',
             fontWeight: 600,
-            letterSpacing: '0.05em',
+            letterSpacing: '0.06em',
           }}
         >
           MGTC · Empowering climate education through play
