@@ -696,10 +696,11 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
         />
       </Box>
 
-      {/* Main play row — board centred between two mirrored fact stacks so
-          each player has a column on their right hand (left of screen for
-          P2, right of screen for P1). The cards are never covered and both
-          players can re-read previously unlocked facts at any time. */}
+      {/* Main play row — board centred between two mirrored fact stacks. The
+          left column reads upright for Player 1 (who sits at the bottom edge
+          of the iPad), and the right column is rotated 180° for Player 2 on
+          the far side, so each player has a stack on their own side of the
+          board. */}
       <Box
         sx={{
           flex: 1,
@@ -711,7 +712,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
           alignItems: 'stretch',
         }}
       >
-        <FactStack unlocked={game.unlocked} flipped />
+        <FactStack unlocked={game.unlocked} />
 
         <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center', position: 'relative' }}>
           <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -770,7 +771,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
           </Box>
         </Box>
 
-        <FactStack unlocked={game.unlocked} />
+        <FactStack unlocked={game.unlocked} flipped />
       </Box>
 
       <Box sx={{ flexShrink: 0 }}>
