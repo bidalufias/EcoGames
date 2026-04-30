@@ -187,88 +187,159 @@ function ActionRow({
 
 interface FactStackProps {
   unlocked: GameState['unlocked'];
-  anchor: 'top' | 'bottom';
   flipped?: boolean;
 }
 
 /**
- * Per-player fact stack. Anchored to the edge of the board area on the side
- * the player is sitting at, so newly unlocked facts pile up next to that
- * player's HUD instead of disappearing on a timer. The `flipped` variant
- * rotates 180° for the player on the far side of a tabletop iPad. Limited to
- * the last few entries with an inner scroll to keep cards visible.
+ * Per-player fact stack. Lives in a fixed-width column to the side of the
+ * board so the cards are never obscured. The `flipped` variant rotates 180°
+ * for the player on the far side of a tabletop iPad — pair it with the
+ * opposite-side column so each player has a stack on their right hand. Newly
+ * unlocked facts animate in at the top and previous facts stay scrollable, so
+ * either player can re-read what they've already matched.
  */
-function FactStack({ unlocked, anchor, flipped }: FactStackProps) {
-  // Newest first so it lands closest to the player's HUD on either side.
+function FactStack({ unlocked, flipped }: FactStackProps) {
+  // Newest first so it lands at the top of the (rotated) column.
   const items = unlocked.slice().reverse();
   return (
     <Box
       sx={{
-        position: 'absolute',
-        left: '50%',
-        [anchor]: 'clamp(2px, 0.8cqh, 8px)',
-        transform: `translateX(-50%) ${flipped ? 'rotate(180deg)' : ''}`.trim(),
-        transformOrigin: 'center',
-        zIndex: 50,
-        pointerEvents: 'auto',
-        width: 'min(520px, 86%)',
-        maxHeight: 'clamp(80px, 20cqh, 160px)',
-        overflowY: 'auto',
+        flexShrink: 0,
+        width: 'clamp(120px, 16cqw, 200px)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 'clamp(4px, 0.8cqh, 6px)',
+        minHeight: 0,
+        transform: flipped ? 'rotate(180deg)' : 'none',
+        transformOrigin: 'center',
       }}
     >
-      <AnimatePresence initial={false}>
-        {items.map(u => (
-          <motion.div
-            key={u.pairId}
-            layout
-            initial={{ opacity: 0, y: anchor === 'top' ? -8 : 8, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: 1,
+          mb: 'clamp(4px, 0.8cqh, 6px)',
+          flexShrink: 0,
+          minWidth: 0,
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            color: ACCENT,
+            fontSize: 'clamp(0.55rem, 1.3cqh, 0.66rem)',
+            fontWeight: 800,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          Facts
+        </Typography>
+        <Typography
+          component="span"
+          sx={{
+            color: PAPER.meta,
+            fontSize: 'clamp(0.55rem, 1.3cqh, 0.66rem)',
+            fontWeight: 600,
+            fontVariantNumeric: 'tabular-nums',
+            flexShrink: 0,
+          }}
+        >
+          {unlocked.length}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(4px, 0.8cqh, 6px)',
+          pr: 'clamp(2px, 0.5cqmin, 5px)',
+        }}
+      >
+        {items.length === 0 ? (
+          <Box
+            sx={{
+              border: `1px dashed ${PAPER.hairline}`,
+              borderRadius: 'clamp(6px, 1.2cqmin, 10px)',
+              p: 'clamp(6px, 1.2cqmin, 10px)',
+              color: PAPER.faded,
+              fontSize: 'clamp(0.6rem, 1.35cqh, 0.7rem)',
+              fontStyle: 'italic',
+              lineHeight: 1.35,
+              textAlign: 'center',
+            }}
           >
-            <Box
-              sx={{
-                px: 'clamp(10px, 2cqmin, 16px)',
-                py: 'clamp(5px, 1cqh, 8px)',
-                borderRadius: 'clamp(8px, 1.6cqmin, 14px)',
-                background: PAPER.surface,
-                border: `1.5px solid ${u.color}55`,
-                borderLeft: `3px solid ${u.color}`,
-                boxShadow: `0 6px 16px ${u.color}22, 0 1px 2px rgba(31,27,20,0.06)`,
-                lineHeight: 1.35,
-                textAlign: 'left',
-              }}
-            >
-              <Box
-                component="span"
-                sx={{
-                  color: u.color,
-                  fontWeight: 800,
-                  letterSpacing: '-0.005em',
-                  fontSize: 'clamp(0.7rem, 1.55cqh, 0.82rem)',
-                  fontFamily: EMOJI_FONT,
-                  mr: 0.6,
-                }}
+            Match a pair to unlock its fact here.
+          </Box>
+        ) : (
+          <AnimatePresence initial={false}>
+            {items.map(u => (
+              <motion.div
+                key={u.pairId}
+                layout
+                initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
               >
-                {u.emoji} {u.label}
-              </Box>
-              <Box component="span" sx={{ color: PAPER.faded, mr: 0.6 }}>—</Box>
-              <Box
-                component="span"
-                sx={{
-                  color: PAPER.ink,
-                  fontSize: 'clamp(0.7rem, 1.5cqh, 0.82rem)',
-                  fontWeight: 500,
-                }}
-              >
-                {u.fact}
-              </Box>
-            </Box>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+                <Box
+                  sx={{
+                    px: 'clamp(7px, 1.4cqmin, 10px)',
+                    py: 'clamp(5px, 1cqh, 8px)',
+                    borderRadius: 'clamp(7px, 1.4cqmin, 11px)',
+                    background: PAPER.surface,
+                    border: `1px solid ${u.color}33`,
+                    borderLeft: `3px solid ${u.color}`,
+                    boxShadow: '0 1px 2px rgba(31,27,20,0.04)',
+                    lineHeight: 1.3,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'clamp(4px, 0.8cqmin, 6px)',
+                      mb: 'clamp(2px, 0.4cqh, 3px)',
+                    }}
+                  >
+                    <Box component="span" aria-hidden sx={{ fontFamily: EMOJI_FONT, fontSize: 'clamp(0.78rem, 1.7cqh, 0.95rem)', lineHeight: 1 }}>
+                      {u.emoji}
+                    </Box>
+                    <Typography
+                      component="span"
+                      sx={{
+                        color: u.color,
+                        fontSize: 'clamp(0.65rem, 1.45cqh, 0.78rem)',
+                        fontWeight: 800,
+                        letterSpacing: '-0.005em',
+                        lineHeight: 1.15,
+                      }}
+                    >
+                      {u.label}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    sx={{
+                      color: PAPER.ink,
+                      fontSize: 'clamp(0.6rem, 1.35cqh, 0.72rem)',
+                      fontWeight: 500,
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    {u.fact}
+                  </Typography>
+                </Box>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        )}
+      </Box>
     </Box>
   );
 }
@@ -625,68 +696,81 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
         />
       </Box>
 
-      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center', position: 'relative' }}>
-        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-          <Board
-            deck={game.deck}
-            cards={game.cards}
-            onFlip={onFlip}
-            disabled={locked}
-            cols={BOARD_COLS}
-          />
-          {bursts.map(b => (
-            <MatchBurst
-              key={b.id}
-              x={b.x}
-              y={b.y}
-              points={b.points}
-              color={b.color}
-              onDone={() => setBursts(prev => prev.filter(p => p.id !== b.id))}
+      {/* Main play row — board centred between two mirrored fact stacks so
+          each player has a column on their right hand (left of screen for
+          P2, right of screen for P1). The cards are never covered and both
+          players can re-read previously unlocked facts at any time. */}
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 'clamp(8px, 1.6cqmin, 14px)',
+          alignItems: 'stretch',
+        }}
+      >
+        <FactStack unlocked={game.unlocked} flipped />
+
+        <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center', position: 'relative' }}>
+          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Board
+              deck={game.deck}
+              cards={game.cards}
+              onFlip={onFlip}
+              disabled={locked}
+              cols={BOARD_COLS}
             />
-          ))}
-          {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
-          <AnimatePresence>
-            {studying && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 35,
-                  pointerEvents: 'none',
-                }}
-              >
-                <Box
-                  sx={{
-                    px: 2,
-                    py: 0.7,
-                    borderRadius: 999,
-                    background: ACCENT,
-                    color: '#FFFFFF',
-                    fontSize: 'clamp(0.7rem, 1.6cqh, 0.82rem)',
-                    fontWeight: 800,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    boxShadow: `0 6px 18px ${ACCENT}55`,
+            {bursts.map(b => (
+              <MatchBurst
+                key={b.id}
+                x={b.x}
+                y={b.y}
+                points={b.points}
+                color={b.color}
+                onDone={() => setBursts(prev => prev.filter(p => p.id !== b.id))}
+              />
+            ))}
+            {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
+            <AnimatePresence>
+              {studying && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 35,
+                    pointerEvents: 'none',
                   }}
                 >
-                  Memorise the board…
-                </Box>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Dual-mirrored fact stacks. One column at each end of the board,
-              oriented for that player, so neither has to read upside down.
-              Each match adds a card to both stacks and previous facts stay so
-              players can re-read them later in the round. */}
-          <FactStack unlocked={game.unlocked} anchor="top" flipped />
-          <FactStack unlocked={game.unlocked} anchor="bottom" />
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 0.7,
+                      borderRadius: 999,
+                      background: ACCENT,
+                      color: '#FFFFFF',
+                      fontSize: 'clamp(0.7rem, 1.6cqh, 0.82rem)',
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      boxShadow: `0 6px 18px ${ACCENT}55`,
+                    }}
+                  >
+                    Memorise the board…
+                  </Box>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Box>
         </Box>
+
+        <FactStack unlocked={game.unlocked} />
       </Box>
 
       <Box sx={{ flexShrink: 0 }}>
