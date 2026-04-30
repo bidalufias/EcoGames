@@ -636,13 +636,21 @@ export default function RecycleRushGame() {
           <Typography sx={{ fontSize: 11, color: '#8892B0', letterSpacing: '0.12em', mb: 1, fontWeight: 700 }}>
             NOW FALLING
           </Typography>
-          {activeWasteItem ? (
+          {activeWasteItem ? (() => {
+            const trajectoryBin = BINS[activeWasteItem.col];
+            const isCorrectLane = trajectoryBin?.id === activeWasteItem.waste.bin;
+            return (
             <Box sx={{
               width: '100%',
               borderRadius: 2,
-              background: 'linear-gradient(180deg, #FFFFFF, #F5F7FA)',
-              border: '1px solid #E8EDF2',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              background: isCorrectLane
+                ? 'linear-gradient(180deg, #E8F5E9, #C8E6C9)'
+                : 'linear-gradient(180deg, #FFFFFF, #F5F7FA)',
+              border: isCorrectLane ? '2px solid #4CAF50' : '1px solid #E8EDF2',
+              boxShadow: isCorrectLane
+                ? '0 4px 12px rgba(76,175,80,0.30)'
+                : '0 2px 6px rgba(0,0,0,0.05)',
+              transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
               p: 1.5,
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               gap: 0.6,
@@ -660,24 +668,34 @@ export default function RecycleRushGame() {
               <Typography sx={{ fontSize: 14, fontWeight: 800, color: '#1A2332', textAlign: 'center', lineHeight: 1.2 }}>
                 {activeWasteItem.waste.name}
               </Typography>
-              {(() => {
-                const trajectoryBin = BINS[activeWasteItem.col];
-                return trajectoryBin ? (
-                  <Box sx={{ mt: 0.6, textAlign: 'center' }}>
-                    <Typography sx={{ fontSize: 10, color: '#8892B0', letterSpacing: '0.08em', fontWeight: 700 }}>
-                      LANE {activeWasteItem.col + 1} →
-                    </Typography>
-                    <Typography sx={{ fontSize: 12, fontWeight: 700, color: trajectoryBin.color, mt: 0.2 }}>
-                      {trajectoryBin.emoji} {trajectoryBin.name}
-                    </Typography>
-                  </Box>
-                ) : null;
-              })()}
+              {trajectoryBin && (
+                <Box sx={{ mt: 0.6, textAlign: 'center' }}>
+                  <Typography sx={{
+                    fontSize: 10,
+                    color: isCorrectLane ? '#2E7D32' : '#8892B0',
+                    letterSpacing: '0.08em',
+                    fontWeight: 700,
+                  }}>
+                    {isCorrectLane
+                      ? `✓ CORRECT LANE`
+                      : `LANE ${activeWasteItem.col + 1} →`}
+                  </Typography>
+                  <Typography sx={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: isCorrectLane ? '#2E7D32' : trajectoryBin.color,
+                    mt: 0.2,
+                  }}>
+                    {trajectoryBin.emoji} {trajectoryBin.name}
+                  </Typography>
+                </Box>
+              )}
               <Typography sx={{ fontSize: 10, color: '#8892B0', mt: 0.6, textAlign: 'center', lineHeight: 1.4 }}>
                 Tap a bin or press <b>1–5</b> · arrows nudge ←→
               </Typography>
             </Box>
-          ) : (
+            );
+          })() : (
             <Box sx={{
               width: '100%',
               borderRadius: 2,
