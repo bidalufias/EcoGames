@@ -43,6 +43,15 @@ type Mistake = {
 
 type FloatScore = { id: number; text: string; color: string; col: number; row: number };
 
+type UnlockedFact = {
+  type: string;            // dedup key — never list the same item twice
+  emoji: string;
+  name: string;
+  bin: typeof BINS[number];
+  text: string;
+  source: 'streak' | 'mistake';
+};
+
 type Screen = 'intro' | 'playing' | 'gameover' | 'leaderboard';
 
 export default function RecycleRushGame() {
@@ -58,7 +67,10 @@ export default function RecycleRushGame() {
   const [sorted, setSorted] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [mistakeLog, setMistakeLog] = useState<Mistake[]>([]);
-  const [fact, setFact] = useState<{ text: string; tone: 'good' | 'bad' } | null>(null);
+  // Cumulative list of unlocked "Did you know?" facts. Each fact is a
+  // teaching moment — earned via a 5-streak or revealed after a wrong
+  // sort — that stays visible in the side panel for the rest of the run.
+  const [unlockedFacts, setUnlockedFacts] = useState<UnlockedFact[]>([]);
   const [floats, setFloats] = useState<FloatScore[]>([]);
   const [flash, setFlash] = useState<'good' | 'bad' | null>(null);
   const [slowMoUntil, setSlowMoUntil] = useState(0);
@@ -88,6 +100,26 @@ export default function RecycleRushGame() {
   const triggerFlash = useCallback((tone: 'good' | 'bad') => {
     setFlash(tone);
     setTimeout(() => setFlash(null), 220);
+  }, []);
+
+  // Append (or move-to-top) an unlocked fact for an item. Dedup by waste
+  // type so the panel never repeats — each item type teaches once.
+  const recordFact = useCallback((
+    item: WasteFalling,
+    correctBin: typeof BINS[number],
+    source: 'streak' | 'mistake',
+  ) => {
+    setUnlockedFacts(prev => {
+      const without = prev.filter(f => f.type !== item.waste.type);
+      return [{
+        type: item.waste.type,
+        emoji: item.waste.emoji,
+        name: item.waste.name,
+        bin: correctBin,
+        text: item.waste.fact,
+        source,
+      }, ...without];
+    });
   }, []);
 
   const spawnItem = useCallback(() => {
@@ -135,8 +167,7 @@ export default function RecycleRushGame() {
         sfxLevelUp(); haptic([0, 30, 50, 30]);
       }
       if (nextStreak % 5 === 0) {
-        setFact({ text: `💡 ${item.waste.fact}`, tone: 'good' });
-        setTimeout(() => setFact(null), 3000);
+        recordFact(item, correctBin, 'streak');
       }
     } else {
       setLives(l => l - 1);
@@ -149,11 +180,8 @@ export default function RecycleRushGame() {
       pushFloat(`✗ ${correctBin.emoji}`, '#E74C3C', item.col, item.row);
       triggerFlash('bad');
       sfxWrong(); haptic([30, 40, 30]);
-      setFact({
-        text: `${item.waste.emoji} ${item.waste.name} → ${correctBin.emoji} ${correctBin.name} · ${item.waste.fact}`,
-        tone: 'bad',
-      });
-      setTimeout(() => setFact(null), 2600);
+      // Wrong sorts also unlock the fact — so missed items still teach.
+      recordFact(item, correctBin, 'mistake');
     }
   }, [pushFloat, triggerFlash]);
 
@@ -191,7 +219,7 @@ export default function RecycleRushGame() {
 
   const startGame = useCallback(() => {
     setScore(0); setLives(5); setLevel(0); setStreak(0); setSorted(0); setMistakes(0);
-    setItems([]); setNextId(0); setFact(null); setMistakeLog([]);
+    setItems([]); setNextId(0); setMistakeLog([]); setUnlockedFacts([]);
     setSelectedItemId(null);
     setSlowMoUntil(0); setAutoSortLeft(0);
     setScreen('playing');
@@ -889,76 +917,81 @@ export default function RecycleRushGame() {
         </Box>
         </Box>
 
-        {/* Right panel — fact card. Anchored alongside the playfield so
-            it never covers the drop zones; streak facts are orange,
-            mistake facts are red, and a quick Bin Guide fills the
-            placeholder until the first fact arrives. */}
+        {/* Right panel — cumulative "Did you know?" list. New facts are
+            added to the top each time the player hits a 5-streak or
+            mis-sorts; older facts stay below for the player to read at
+            their own pace. Dedup'd by item type so each entry teaches
+            once. */}
         <Box sx={{
           flex: '0 0 auto',
-          width: 'clamp(170px, 22cqw, 260px)',
+          width: 'clamp(180px, 22cqw, 280px)',
           minWidth: 0,
           display: 'flex', flexDirection: 'column',
           pt: 1,
           gap: 1,
+          minHeight: 0,
         }}>
-          <Typography sx={{ fontSize: 11, color: '#8892B0', letterSpacing: '0.12em', fontWeight: 700 }}>
+          <Typography sx={{ fontSize: 11, color: '#8892B0', letterSpacing: '0.12em', fontWeight: 700, flexShrink: 0 }}>
             DID YOU KNOW?
           </Typography>
-          <AnimatePresence mode="wait">
-            {fact ? (
-              <motion.div
-                key={fact.text}
-                initial={{ opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 16 }}
-                transition={{ duration: 0.22 }}
-              >
-                <Box sx={{
-                  px: 1.6, py: 1.2, borderRadius: 2,
-                  background: fact.tone === 'good' ? '#FF8C42E6' : '#C0392BE6',
-                  boxShadow: '0 6px 18px rgba(0,0,0,0.16)',
-                }}>
-                  <Typography sx={{ fontSize: 12, color: '#FFFFFF', fontWeight: 600, lineHeight: 1.45 }}>
-                    {fact.text}
-                  </Typography>
-                </Box>
-              </motion.div>
+          <Box sx={{
+            flex: 1, minHeight: 0,
+            overflowY: 'auto',
+            display: 'flex', flexDirection: 'column', gap: 0.8,
+            pr: 0.4,
+          }}>
+            {unlockedFacts.length === 0 ? (
+              <Box sx={{
+                borderRadius: 2,
+                background: '#FFFFFF',
+                border: '1px dashed #D4DBE5',
+                p: 1.6,
+                textAlign: 'center',
+              }}>
+                <Typography sx={{ fontSize: 11, color: '#8892B0', lineHeight: 1.5, fontStyle: 'italic' }}>
+                  Sort 5 in a row to unlock your first fact — or learn from a miss.
+                </Typography>
+              </Box>
             ) : (
-              <motion.div
-                key="default"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.22 }}
-              >
-                <Box sx={{
-                  borderRadius: 2,
-                  background: '#FFFFFF',
-                  border: '1px solid #E8EDF2',
-                  p: 1.4,
-                }}>
-                  <Typography sx={{ fontSize: 11, fontWeight: 700, color: '#1A2332', mb: 0.8, letterSpacing: '0.04em' }}>
-                    BIN GUIDE
-                  </Typography>
-                  {BINS.map(bin => (
-                    <Box key={bin.id} sx={{
-                      display: 'flex', alignItems: 'center', gap: 0.8,
-                      py: 0.4,
-                      borderTop: '1px solid #F2F4F8',
+              <AnimatePresence initial={false}>
+                {unlockedFacts.map(f => (
+                  <motion.div
+                    key={f.type}
+                    layout
+                    initial={{ opacity: 0, x: 16, scale: 0.96 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ duration: 0.28, ease: 'easeOut' }}
+                  >
+                    <Box sx={{
+                      borderRadius: 2,
+                      background: '#FFFFFF',
+                      borderLeft: `3px solid ${f.bin.color}`,
+                      border: '1px solid #E8EDF2',
+                      borderLeftWidth: 3,
+                      p: 1.2,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                     }}>
-                      <Box component="span" sx={{ fontSize: 18 }}>{bin.emoji}</Box>
-                      <Typography sx={{ fontSize: 11, fontWeight: 700, color: bin.color }}>
-                        {bin.name}
+                      <Box sx={{
+                        display: 'flex', alignItems: 'center', gap: 0.6,
+                        mb: 0.5,
+                      }}>
+                        <Box component="span" sx={{ fontSize: 16, lineHeight: 1 }}>{f.emoji}</Box>
+                        <Typography sx={{ fontSize: 11, fontWeight: 800, color: '#1A2332', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {f.name}
+                        </Typography>
+                        <Typography sx={{ fontSize: 10, fontWeight: 700, color: f.bin.color, letterSpacing: '0.02em' }}>
+                          {f.bin.emoji}
+                        </Typography>
+                      </Box>
+                      <Typography sx={{ fontSize: 11, color: '#5A6A7E', lineHeight: 1.45 }}>
+                        {f.text}
                       </Typography>
                     </Box>
-                  ))}
-                  <Typography sx={{ fontSize: 10, color: '#8892B0', mt: 1, textAlign: 'center', fontStyle: 'italic' }}>
-                    Sort 5 in a row for a fact
-                  </Typography>
-                </Box>
-              </motion.div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             )}
-          </AnimatePresence>
+          </Box>
         </Box>
       </Box>
     </Box>
