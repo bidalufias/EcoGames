@@ -58,20 +58,25 @@ export const WASTE_ITEMS = [
   { type: 'tv',        emoji: '📺', name: 'Old TV',          bin: 'ewaste',    fact: 'Old CRT TVs contain lead — never put them in the bin' },
 ];
 
-// Tetris-style ramp: level 1 has a single slow item at a time so new
-// players can read each emoji and plan a sort. Speed, spawn rate, and
-// the cap on simultaneous items all rise together.
+// Tetris-style ramp with smaller per-level deltas so progression feels
+// fair even with a 5-sort-per-round cadence. The spawn loop also enforces
+// a "halfway gate" — no new item until the previous one has cleared the
+// upper half of the playfield — so spawn rate naturally tracks fall speed.
 //   speed         — base fall speed before preset / FALL_STEP
-//   spawnInterval — ms between spawns (presets multiply this)
+//   spawnInterval — minimum ms between spawns (presets multiply this)
 //   maxConcurrent — hard cap on falling waste items (power-ups exempt)
 //   types         — how many waste types are in the random pool
 export const DIFFICULTY_LEVELS = [
-  { speed: 1.0, spawnInterval: 2400, maxConcurrent: 1, types: 5 },   // Level 1: one of each bin
-  { speed: 1.3, spawnInterval: 1900, maxConcurrent: 2, types: 12 },  // Level 2
-  { speed: 1.6, spawnInterval: 1500, maxConcurrent: 3, types: 20 },  // Level 3
-  { speed: 2.0, spawnInterval: 1100, maxConcurrent: 4, types: 28 },  // Level 4
-  { speed: 2.4, spawnInterval: 850,  maxConcurrent: 5, types: 35 },  // Level 5: full pool of 35 items
+  { speed: 1.0, spawnInterval: 2200, maxConcurrent: 1, types: 5 },   // Level 1
+  { speed: 1.2, spawnInterval: 1900, maxConcurrent: 2, types: 10 },  // Level 2
+  { speed: 1.4, spawnInterval: 1600, maxConcurrent: 2, types: 18 },  // Level 3
+  { speed: 1.7, spawnInterval: 1400, maxConcurrent: 3, types: 25 },  // Level 4
+  { speed: 2.0, spawnInterval: 1200, maxConcurrent: 3, types: 30 },  // Level 5
+  { speed: 2.3, spawnInterval: 1000, maxConcurrent: 4, types: 35 },  // Level 6: full pool
 ];
+
+// Items per "round" — sort this many to bump up a level.
+export const SORTS_PER_LEVEL = 5;
 
 export const POWER_UPS = [
   { id: 'heart', emoji: '❤️', name: 'Extra Life', desc: 'Restore one life' },

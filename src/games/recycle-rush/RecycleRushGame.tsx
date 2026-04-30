@@ -6,8 +6,11 @@ import {
   CELL_W, CELL_H, ITEM_SIZE, MISS_ROW, FALL_STEP,
   PLAYFIELD_W_PX, PLAYFIELD_H_PX, BIN_TRAY_H,
   SPEED_PRESETS, comboMultiplier, randomPowerUp,
+  SORTS_PER_LEVEL,
   type SpeedKey, type PowerUp,
 } from './data';
+
+const MAX_LEVEL_IDX = DIFFICULTY_LEVELS.length - 1;
 import EcoButton from '../../components/EcoButton';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
 import BackToHome from '../../components/BackToHome';
@@ -162,8 +165,8 @@ export default function RecycleRushGame() {
       pushFloat(`+${earned}${mul > 1 ? ` ×${mul}` : ''}`, '#4CAF50', item.col, item.row);
       triggerFlash('good');
       sfxCorrect(); haptic(20);
-      if ((stateRef.current.sorted + 1) % 10 === 0) {
-        setLevel(l => Math.min(l + 1, 4));
+      if ((stateRef.current.sorted + 1) % SORTS_PER_LEVEL === 0) {
+        setLevel(l => Math.min(l + 1, MAX_LEVEL_IDX));
         sfxLevelUp(); haptic([0, 30, 50, 30]);
       }
       if (nextStreak % 5 === 0) {
@@ -230,7 +233,7 @@ export default function RecycleRushGame() {
   // moves items between lanes during the fall; landing is automatic.
   useEffect(() => {
     if (screen !== 'playing') return;
-    const diff = DIFFICULTY_LEVELS[Math.min(level, 4)];
+    const diff = DIFFICULTY_LEVELS[Math.min(level, MAX_LEVEL_IDX)];
     const adjustedInterval = diff.spawnInterval * speedPreset.spawnMul; // ms
     let spawnTimerMs = 0;
     const interval = setInterval(() => {
@@ -246,14 +249,19 @@ export default function RecycleRushGame() {
       }
       spawnTimerMs += 16;
       if (spawnTimerMs >= adjustedInterval) {
-        // Cap waste only — power-ups are bonus drops and exempt from the cap.
+        // Spawn requires three things: minimum interval elapsed (above),
+        // below the per-level concurrent cap, and the upper half of the
+        // playfield clear of waste — the "halfway gate" — so two items
+        // never bunch up at the top with no time to read either of them.
         const wasteOnScreen = remaining.filter(i => i.kind === 'waste').length;
-        if (wasteOnScreen < diff.maxConcurrent) {
+        const upperHalfBusy = remaining.some(i => i.kind === 'waste' && i.row < MISS_ROW * 0.5);
+        if (wasteOnScreen < diff.maxConcurrent && !upperHalfBusy) {
           spawnTimerMs = 0;
           spawnItem();
         }
-        // If the cap is full we leave the timer at threshold; the next
-        // landing frees a slot and the very next tick spawns immediately.
+        // If the cap is full or the upper half is busy, we leave the
+        // timer at threshold; the very next tick that clears the gate
+        // will spawn immediately.
       }
     }, 16);
     return () => clearInterval(interval);
