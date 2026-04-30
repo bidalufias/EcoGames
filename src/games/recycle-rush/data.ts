@@ -29,12 +29,19 @@ export const WASTE_ITEMS = [
   { type: 'cable', emoji: '🔌', name: 'Cable', bin: 'ewaste', fact: 'E-waste contains valuable metals like gold, silver, and copper' },
 ];
 
+// Tetris-style ramp: level 1 has a single slow item at a time so new
+// players can read each emoji and plan a sort. Speed, spawn rate, and
+// the cap on simultaneous items all rise together.
+//   speed         — base fall speed before preset / FALL_STEP
+//   spawnInterval — ms between spawns (presets multiply this)
+//   maxConcurrent — hard cap on falling waste items (power-ups exempt)
+//   types         — how many waste types are in the random pool
 export const DIFFICULTY_LEVELS = [
-  { speed: 1.5, spawnRate: 180, types: 4 },   // Level 1
-  { speed: 1.8, spawnRate: 150, types: 6 },   // Level 2
-  { speed: 2.2, spawnRate: 125, types: 8 },   // Level 3
-  { speed: 2.6, spawnRate: 105, types: 10 },  // Level 4
-  { speed: 3.0, spawnRate: 88,  types: 12 },  // Level 5
+  { speed: 1.0, spawnInterval: 2400, maxConcurrent: 1, types: 4 },   // Level 1
+  { speed: 1.3, spawnInterval: 1900, maxConcurrent: 2, types: 6 },   // Level 2
+  { speed: 1.6, spawnInterval: 1500, maxConcurrent: 3, types: 8 },   // Level 3
+  { speed: 2.0, spawnInterval: 1100, maxConcurrent: 4, types: 10 },  // Level 4
+  { speed: 2.4, spawnInterval: 850,  maxConcurrent: 5, types: 12 },  // Level 5
 ];
 
 export const POWER_UPS = [
@@ -49,10 +56,12 @@ export function randomPowerUp(): PowerUp {
   return POWER_UPS[Math.floor(Math.random() * POWER_UPS.length)];
 }
 
+// speedMul scales fall speed. spawnMul scales the spawn interval (so
+// values > 1 mean LONGER waits between spawns, i.e. easier).
 export const SPEED_PRESETS = {
-  chill:  { id: 'chill',  label: 'Chill',  emoji: '🧘', speedMul: 0.5, spawnMul: 1.5 },
-  normal: { id: 'normal', label: 'Normal', emoji: '⚡', speedMul: 0.8, spawnMul: 1.1 },
-  rush:   { id: 'rush',   label: 'Rush',   emoji: '🔥', speedMul: 1.2, spawnMul: 0.85 },
+  chill:  { id: 'chill',  label: 'Chill',  emoji: '🧘', speedMul: 0.6, spawnMul: 1.4 },
+  normal: { id: 'normal', label: 'Normal', emoji: '⚡', speedMul: 1.0, spawnMul: 1.0 },
+  rush:   { id: 'rush',   label: 'Rush',   emoji: '🔥', speedMul: 1.4, spawnMul: 0.8 },
 } as const;
 
 export type SpeedKey = keyof typeof SPEED_PRESETS;

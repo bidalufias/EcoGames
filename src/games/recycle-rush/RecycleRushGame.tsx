@@ -177,13 +177,15 @@ export default function RecycleRushGame() {
     setScreen('playing');
   }, []);
 
-  // Main game loop — falling items + spawn cadence. Slow-mo halves the
-  // per-tick fall step (and only the fall step, so spawn rate is unaffected).
+  // Main game loop — falling items + spawn cadence. Tetris-style ramp:
+  // a hard cap on simultaneous waste items keeps level 1 readable, and
+  // every level raises both the cap and the cadence. Slow-mo halves the
+  // per-tick fall step but doesn't slow spawns.
   useEffect(() => {
     if (screen !== 'playing') return;
     const diff = DIFFICULTY_LEVELS[Math.min(level, 4)];
-    const adjustedSpawn = diff.spawnRate * speedPreset.spawnMul;
-    let spawnTimer = 0;
+    const adjustedInterval = diff.spawnInterval * speedPreset.spawnMul; // ms
+    let spawnTimerMs = 0;
     const interval = setInterval(() => {
       const slow = Date.now() < stateRef.current.slowMoUntil ? 0.5 : 1;
       setItems(prev => {
@@ -195,10 +197,16 @@ export default function RecycleRushGame() {
         }
         return updated.filter(i => i.row < MISS_ROW);
       });
-      spawnTimer++;
-      if (spawnTimer >= adjustedSpawn / 16) {
-        spawnTimer = 0;
-        spawnItem();
+      spawnTimerMs += 16;
+      if (spawnTimerMs >= adjustedInterval) {
+        // Cap waste only — power-ups are bonus drops and exempt from the cap.
+        const wasteOnScreen = stateRef.current.items.filter(i => i.kind === 'waste').length;
+        if (wasteOnScreen < diff.maxConcurrent) {
+          spawnTimerMs = 0;
+          spawnItem();
+        }
+        // If the cap is full we leave spawnTimerMs at threshold; the next
+        // sort frees a slot and the very next tick spawns immediately.
       }
     }, 16);
     return () => clearInterval(interval);
@@ -550,6 +558,20 @@ export default function RecycleRushGame() {
               zIndex: 1,
             }} />
           )}
+
+          {/* Column trails — faint vertical hints behind every column with
+              a falling waste item, so the player can quickly read which bin
+              each item is heading toward. */}
+          {Array.from(new Set(items.filter(i => i.kind === 'waste').map(i => i.col))).map(col => (
+            <Box key={`trail-${col}`} sx={{
+              position: 'absolute',
+              left: col * CELL_W, top: 0,
+              width: CELL_W, height: '100%',
+              background: 'linear-gradient(180deg, rgba(255,140,66,0) 0%, rgba(255,140,66,0.04) 60%, rgba(255,140,66,0.10) 100%)',
+              pointerEvents: 'none',
+              zIndex: 1,
+            }} />
+          ))}
           <AnimatePresence>
             {items.map(item => {
               const isSelected = item.kind === 'waste' && selectedItemId === item.id;
@@ -573,18 +595,35 @@ export default function RecycleRushGame() {
                   <Box
                     onClick={() => handleItemClick(item)}
                     sx={{
-                      width: '100%', height: '100%', borderRadius: 2,
+                      width: '100%', height: '100%',
+                      borderRadius: '50%',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 38, cursor: 'pointer',
+                      // Always show a card background so light-coloured emoji
+                      // (newspaper, styrofoam, etc) don't disappear into the
+                      // white playfield. Selection / power-up overrides.
                       background: isPower
-                        ? 'radial-gradient(circle, #9C27B025, #9C27B005 70%)'
-                        : isSelected ? '#FF8C4220' : (selectedBin ? '#F8F9FB' : 'transparent'),
+                        ? 'radial-gradient(circle, #9C27B030, #9C27B008 70%)'
+                        : isSelected
+                          ? 'linear-gradient(180deg, #FFF5EE, #FFE9DA)'
+                          : 'linear-gradient(180deg, #FFFFFF, #F2F4F8)',
                       border: isPower
                         ? '2px solid #9C27B0'
-                        : isSelected ? '2px solid #FF8C42' : (selectedBin ? '1px solid #E8EDF2' : 'none'),
-                      boxShadow: isPower ? '0 0 12px rgba(156,39,176,0.4)' : 'none',
+                        : isSelected
+                          ? '2px solid #FF8C42'
+                          : '2px solid rgba(26, 35, 50, 0.10)',
+                      boxShadow: isPower
+                        ? '0 0 14px rgba(156,39,176,0.45)'
+                        : isSelected
+                          ? '0 6px 14px rgba(255,140,66,0.30)'
+                          : '0 4px 10px rgba(0,0,0,0.10), inset 0 -2px 0 rgba(0,0,0,0.04)',
                       transition: 'all 0.15s',
-                      '&:hover': { background: isPower ? 'radial-gradient(circle, #9C27B040, #9C27B010 70%)' : '#F0F3F7', transform: 'scale(1.1)' },
+                      '&:hover': {
+                        transform: 'scale(1.08)',
+                        boxShadow: isPower
+                          ? '0 0 18px rgba(156,39,176,0.6)'
+                          : '0 8px 16px rgba(0,0,0,0.16)',
+                      },
                     }}
                     title={title}
                   >
