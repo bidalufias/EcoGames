@@ -126,7 +126,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
           <LeaderboardPanel gameId="climate-2048" playerName={playerName} />
         </Box>
         <Box sx={{ mt: 3, display: 'flex', gap: 1.5 }}>
-          <EcoButton onClick={() => { setShowLeaderboard(false); newGame(); }}>Play again</EcoButton>
+          <EcoButton onClick={() => { setShowLeaderboard(false); newGame(); }}>↻ Play Again</EcoButton>
           <EcoButton variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
         </Box>
       </Box>
@@ -163,7 +163,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
           track={track}
         />
         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', flexShrink: 0 }}>
-          <EcoButton size="small" onClick={newGame}>New Game</EcoButton>
+          <EcoButton size="small" onClick={newGame}>↻ New Game</EcoButton>
         </Box>
 
         {/* Board area — fills the remaining height; Board self-caps to a square. */}
@@ -229,7 +229,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
                 <EcoButton size="small" onClick={submitScore}>🏆 Submit</EcoButton>
               </Box>
               <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <EcoButton size="small" onClick={newGame}>New Game</EcoButton>
+                <EcoButton size="small" onClick={newGame}>↻ New Game</EcoButton>
                 <EcoButton size="small" variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
               </Box>
             </Box>

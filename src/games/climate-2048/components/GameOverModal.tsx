@@ -93,7 +93,7 @@ export default function GameOverModal({
             <EcoButton onClick={onKeepGoing}>Keep going</EcoButton>
           )}
           <EcoButton onClick={onNewGame} variant={won ? 'secondary' : 'primary'}>
-            New Game
+            ↻ New Game
           </EcoButton>
           {onLeaderboard && (
             <EcoButton variant="secondary" onClick={onLeaderboard}>🏆 Leaderboard</EcoButton>

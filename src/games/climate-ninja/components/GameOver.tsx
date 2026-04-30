@@ -65,7 +65,7 @@ export default function GameOver({ players, playerNames, onPlayAgain, onViewLead
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
-        <EcoButton onClick={onPlayAgain}>Play Again</EcoButton>
+        <EcoButton onClick={onPlayAgain}>↻ Play Again</EcoButton>
         <EcoButton onClick={onViewLeaderboard} variant="secondary">Leaderboard</EcoButton>
       </Box>
     </Box>

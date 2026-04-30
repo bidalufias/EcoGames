@@ -293,7 +293,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
         </Box>
 
         <Box sx={{ mt: 4, display: 'flex', gap: 1.5 }}>
-          <EcoButton onClick={startMatch} size="large">Start match</EcoButton>
+          <EcoButton onClick={startMatch} size="large">Start Match 🏁</EcoButton>
           <EcoButton variant="ghost" onClick={onChangeMode}>← Back</EcoButton>
         </Box>
       </Box>
@@ -335,7 +335,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <EcoButton size="small" onClick={startMatch}>Rematch</EcoButton>
+          <EcoButton size="small" onClick={startMatch}>↻ Rematch</EcoButton>
           <EcoButton size="small" variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
         </Box>
       </Box>
@@ -438,7 +438,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
                 P1 score <Box component="span" sx={{ fontWeight: 800 }}>{p1.state.score.toLocaleString()}</Box> · P2 score <Box component="span" sx={{ fontWeight: 800 }}>{p2.state.score.toLocaleString()}</Box>
               </Typography>
               <Box sx={{ mt: 2.4, display: 'flex', gap: 1.2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <EcoButton onClick={startMatch}>Rematch</EcoButton>
+                <EcoButton onClick={startMatch}>↻ Rematch</EcoButton>
                 <EcoButton variant="secondary" onClick={() => setPhase('setup')}>Change target</EcoButton>
                 <EcoButton variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
               </Box>

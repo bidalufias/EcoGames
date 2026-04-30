@@ -476,7 +476,7 @@ export default function RecycleRushGame() {
           <LeaderboardPanel gameId="recycle-rush" playerName={playerName} />
         </Box>
         <Box sx={{ mt: 4 }}>
-          <EcoButton onClick={startGame}>Play Again</EcoButton>
+          <EcoButton onClick={startGame}>↻ Play Again</EcoButton>
         </Box>
       </Box>
       </>
@@ -553,7 +553,7 @@ export default function RecycleRushGame() {
             }}>🏆 Leaderboard</EcoButton>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <EcoButton onClick={startGame}>Play Again</EcoButton>
+            <EcoButton onClick={startGame}>↻ Play Again</EcoButton>
             <EcoButton onClick={() => setScreen('intro')} variant="secondary">Menu</EcoButton>
           </Box>
         </Box>

@@ -227,7 +227,7 @@ export default function GreenDefenceGame() {
           <LeaderboardPanel gameId="green-defence" playerName={playerName} />
         </Box>
         <Box sx={{ mt: 4 }}>
-          <EcoButton onClick={startGame}>Play Again</EcoButton>
+          <EcoButton onClick={startGame}>↻ Play Again</EcoButton>
         </Box>
       </Box>
     );
@@ -274,7 +274,7 @@ export default function GreenDefenceGame() {
             }}>🏆 Leaderboard</EcoButton>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <EcoButton onClick={startGame}>Play Again</EcoButton>
+            <EcoButton onClick={startGame}>↻ Play Again</EcoButton>
             <EcoButton onClick={() => setScreen('intro')} variant="secondary">Info</EcoButton>
           </Box>
         </Box>

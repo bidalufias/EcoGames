@@ -175,7 +175,7 @@ function ActionRow({
           </Box>
         </PaperButton>
         <PaperButton onClick={onNewGame} ariaLabel="Start a new game">
-          <Box component="span" aria-hidden>↻</Box> New
+          <Box component="span" aria-hidden>↻</Box> New Game
         </PaperButton>
         <PaperButton variant="ghost" onClick={onExit} ariaLabel="Back to Eco Memory main menu">
           <Box component="span" aria-hidden>↩</Box> Menu

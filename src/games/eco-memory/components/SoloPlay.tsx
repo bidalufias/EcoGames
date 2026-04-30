@@ -254,8 +254,8 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
           <LeaderboardPanel gameId="eco-memory" playerName={playerName} />
         </Box>
         <Box sx={{ mt: 'clamp(10px, 2cqh, 18px)', display: 'flex', gap: 1.5, justifyContent: 'center' }}>
-          <PaperButton variant="solid" onClick={startNewGame}>Play again</PaperButton>
-          <PaperButton onClick={onExit}>Menu</PaperButton>
+          <PaperButton variant="solid" onClick={startNewGame}>↻ Play Again</PaperButton>
+          <PaperButton onClick={onExit}>↩ Menu</PaperButton>
         </Box>
       </PaperShell>
     );
@@ -424,7 +424,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
             <PaperButton variant="solid" onClick={submitScore}>Submit ★</PaperButton>
           </Box>
           <Box sx={{ display: 'flex', gap: 1.2, justifyContent: 'center' }}>
-            <PaperButton onClick={startNewGame}>↻ Play again</PaperButton>
+            <PaperButton onClick={startNewGame}>↻ Play Again</PaperButton>
             <PaperButton variant="ghost" onClick={onExit}>↩ Menu</PaperButton>
           </Box>
         </Box>
@@ -477,7 +477,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
           <Box component="span" aria-hidden sx={{ fontFamily: EMOJI_FONT }}>{muted ? '🔇' : '🔊'}</Box>
         </PaperButton>
         <PaperButton onClick={startNewGame} ariaLabel="Start a new game">
-          <Box component="span" aria-hidden>↻</Box> New game
+          <Box component="span" aria-hidden>↻</Box> New Game
         </PaperButton>
       </Box>
 
