@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EcoButton from '../../../components/EcoButton';
 import Board from './Board';
+import { FactStack } from './SoloPlay';
 import {
   applyMove,
   highestValue,
@@ -12,7 +13,7 @@ import {
   type Direction,
   type IdGen,
 } from '../engine';
-import { BOARD_SIZE, paletteFor, stageFor, type TechTrack } from '../data';
+import { BOARD_SIZE, paletteFor, stageFor, type Stage, type TechTrack } from '../data';
 
 interface ChallengePlayProps {
   track: TechTrack;
@@ -27,11 +28,38 @@ interface PlayerSlot {
   idGen: IdGen;
   stuck: boolean;
   reachedTarget: boolean;
+  // Stages whose tile values have appeared on this player's board, in the
+  // order they were first seen. Drives the side fact stack so each player
+  // accumulates their own tech reading list.
+  unlocked: Stage[];
 }
 
 function freshSlot(): PlayerSlot {
   const idGen = makeIdGen();
-  return { state: startBoard(BOARD_SIZE, idGen), idGen, stuck: false, reachedTarget: false };
+  return {
+    state: startBoard(BOARD_SIZE, idGen),
+    idGen,
+    stuck: false,
+    reachedTarget: false,
+    unlocked: [],
+  };
+}
+
+function withUnlockedFor(slot: PlayerSlot, track: TechTrack): PlayerSlot {
+  // Push any new tile-value stages onto this slot's unlocked list, ascending
+  // by value so a single move that spawns + merges logs low-to-high (which
+  // becomes top-to-bottom newest-first when the FactStack reverses).
+  const have = new Set(slot.unlocked.map(s => s.value));
+  const additions: Stage[] = [];
+  for (const t of slot.state.tiles) {
+    if (!have.has(t.value)) {
+      have.add(t.value);
+      additions.push(stageFor(track, t.value));
+    }
+  }
+  if (additions.length === 0) return slot;
+  additions.sort((a, b) => a.value - b.value);
+  return { ...slot, unlocked: [...slot.unlocked, ...additions] };
 }
 
 interface PlayerColumnProps {
@@ -111,36 +139,53 @@ function PlayerColumn({ label, controls, accent, slot, track, target, onMove, wi
         </Box>
       </Box>
 
-      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
-        {/* Square wrapper sized exactly like the board, so the overlay below
-            tracks the board's bounds rather than the leftover grid cell. */}
-        <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', maxWidth: '100%', maxHeight: '100%' }}>
-          <Board
-            state={slot.state}
-            track={track}
-            onMove={onMove}
-            disabled={slot.stuck || !!winnerLabel}
-            invertGestures={flipped}
-          />
+      {/* Play row: persistent fact stack on the outer edge, board on the inner
+          edge next to the VS divider. Each column carries its own rotation so
+          the stack reads upright for whichever player owns this side of the
+          tabletop. */}
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 'clamp(8px, 1.6cqmin, 14px)',
+          alignItems: 'stretch',
+        }}
+      >
+        <FactStack unlocked={slot.unlocked} />
+        <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+          {/* Square wrapper sized exactly like the board, so the overlay below
+              tracks the board's bounds rather than the leftover grid cell. */}
+          <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', maxWidth: '100%', maxHeight: '100%' }}>
+            <Board
+              state={slot.state}
+              track={track}
+              onMove={onMove}
+              disabled={slot.stuck || !!winnerLabel}
+              invertGestures={flipped}
+            />
 
-          {(slot.reachedTarget || slot.stuck) && !winnerLabel && (
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                background: slot.reachedTarget ? 'rgba(13, 155, 74, 0.45)' : 'rgba(118, 110, 101, 0.4)',
-                borderRadius: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 25,
-              }}
-            >
-              <Typography sx={{ color: '#FFFFFF', fontWeight: 900, fontSize: 'clamp(1rem, 4cqi, 1.6rem)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
-                {slot.reachedTarget ? `Reached ${target}!` : 'No moves left'}
-              </Typography>
-            </Box>
-          )}
+            {(slot.reachedTarget || slot.stuck) && !winnerLabel && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: slot.reachedTarget ? 'rgba(13, 155, 74, 0.45)' : 'rgba(118, 110, 101, 0.4)',
+                  borderRadius: 'inherit',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 25,
+                }}
+              >
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 900, fontSize: 'clamp(1rem, 4cqi, 1.6rem)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
+                  {slot.reachedTarget ? `Reached ${target}!` : 'No moves left'}
+                </Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -193,12 +238,15 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
         if (!result.moved) return prev;
         const reached = !prev.reachedTarget && highestValue(result.state) >= target;
         const stuck = result.state.over && !reached;
-        const next: PlayerSlot = {
-          ...prev,
-          state: result.state,
-          reachedTarget: reached,
-          stuck,
-        };
+        const next: PlayerSlot = withUnlockedFor(
+          {
+            ...prev,
+            state: result.state,
+            reachedTarget: reached,
+            stuck,
+          },
+          track,
+        );
         // Defer final-state check to next tick so React batching doesn't fight us
         if (reached || stuck) {
           queueMicrotask(() => finishIfDecided(next, otherRef, player));
@@ -206,8 +254,16 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
         return next;
       });
     },
-    [p1, p2, target, finishIfDecided],
+    [p1, p2, target, track, finishIfDecided],
   );
+
+  // Seed each fresh slot's unlocked list with the two starter tiles' stages
+  // so the side stack isn't empty on the first move.
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    setP1(prev => withUnlockedFor(prev, track));
+    setP2(prev => withUnlockedFor(prev, track));
+  }, [phase, track]);
 
   // Single keyboard listener routes to whichever player owns the key.
   useEffect(() => {
@@ -336,7 +392,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <EcoButton size="small" onClick={startMatch}>Rematch</EcoButton>
-          <EcoButton size="small" variant="ghost" onClick={onChangeMode}>Change mode</EcoButton>
+          <EcoButton size="small" variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
         </Box>
       </Box>
 
@@ -440,7 +496,7 @@ export default function ChallengePlay({ track, onChangeMode }: ChallengePlayProp
               <Box sx={{ mt: 2.4, display: 'flex', gap: 1.2, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <EcoButton onClick={startMatch}>Rematch</EcoButton>
                 <EcoButton variant="secondary" onClick={() => setPhase('setup')}>Change target</EcoButton>
-                <EcoButton variant="ghost" onClick={onChangeMode}>Change mode</EcoButton>
+                <EcoButton variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
               </Box>
             </motion.div>
           </Box>
