@@ -177,81 +177,99 @@ function ActionRow({
         <PaperButton onClick={onNewGame} ariaLabel="Start a new game">
           <Box component="span" aria-hidden>↻</Box> New
         </PaperButton>
-        <PaperButton variant="ghost" onClick={onExit} ariaLabel="Change mode and difficulty">
-          <Box component="span" aria-hidden>↩</Box> Modes
+        <PaperButton variant="ghost" onClick={onExit} ariaLabel="Back to Eco Memory main menu">
+          <Box component="span" aria-hidden>↩</Box> Menu
         </PaperButton>
       </Box>
     </Box>
   );
 }
 
-interface FactRibbonProps {
-  fact: string;
-  accent: string;
+interface FactStackProps {
+  unlocked: GameState['unlocked'];
   anchor: 'top' | 'bottom';
   flipped?: boolean;
 }
 
 /**
- * One half of the dual fact ribbon. Anchored to the top or bottom edge of the
- * board area so cards aren't obscured; the `flipped` variant rotates 180° so
- * the player on the far side reads it upright.
+ * Per-player fact stack. Anchored to the edge of the board area on the side
+ * the player is sitting at, so newly unlocked facts pile up next to that
+ * player's HUD instead of disappearing on a timer. The `flipped` variant
+ * rotates 180° for the player on the far side of a tabletop iPad. Limited to
+ * the last few entries with an inner scroll to keep cards visible.
  */
-function FactRibbon({ fact, accent, anchor, flipped }: FactRibbonProps) {
+function FactStack({ unlocked, anchor, flipped }: FactStackProps) {
+  // Newest first so it lands closest to the player's HUD on either side.
+  const items = unlocked.slice().reverse();
   return (
-    <motion.div
-      initial={{ opacity: 0, y: anchor === 'top' ? -10 : 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: anchor === 'top' ? -6 : 6 }}
-      transition={{ duration: 0.26, ease: 'easeOut' }}
-      style={{
+    <Box
+      sx={{
         position: 'absolute',
         left: '50%',
         [anchor]: 'clamp(2px, 0.8cqh, 8px)',
         transform: `translateX(-50%) ${flipped ? 'rotate(180deg)' : ''}`.trim(),
+        transformOrigin: 'center',
         zIndex: 50,
-        pointerEvents: 'none',
-        maxWidth: 'min(520px, 86%)',
+        pointerEvents: 'auto',
+        width: 'min(520px, 86%)',
+        maxHeight: 'clamp(80px, 20cqh, 160px)',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'clamp(4px, 0.8cqh, 6px)',
       }}
     >
-      <Box
-        sx={{
-          px: 'clamp(12px, 2.2cqmin, 18px)',
-          py: 'clamp(6px, 1.2cqh, 9px)',
-          borderRadius: 'clamp(10px, 2cqmin, 16px)',
-          background: PAPER.surface,
-          border: `1.5px solid ${accent}55`,
-          boxShadow: `0 8px 22px ${accent}22, 0 1px 2px rgba(31,27,20,0.06)`,
-          textAlign: 'center',
-          lineHeight: 1.4,
-        }}
-      >
-        <Box
-          component="span"
-          sx={{
-            color: accent,
-            fontWeight: 800,
-            letterSpacing: '0.04em',
-            mr: 0.6,
-            fontSize: 'clamp(0.66rem, 1.5cqh, 0.78rem)',
-            textTransform: 'uppercase',
-          }}
-        >
-          Fact
-        </Box>
-        <Box component="span" sx={{ color: PAPER.faded, mr: 0.6 }}>—</Box>
-        <Box
-          component="span"
-          sx={{
-            color: PAPER.ink,
-            fontSize: 'clamp(0.74rem, 1.6cqh, 0.88rem)',
-            fontWeight: 500,
-          }}
-        >
-          {fact}
-        </Box>
-      </Box>
-    </motion.div>
+      <AnimatePresence initial={false}>
+        {items.map(u => (
+          <motion.div
+            key={u.pairId}
+            layout
+            initial={{ opacity: 0, y: anchor === 'top' ? -8 : 8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Box
+              sx={{
+                px: 'clamp(10px, 2cqmin, 16px)',
+                py: 'clamp(5px, 1cqh, 8px)',
+                borderRadius: 'clamp(8px, 1.6cqmin, 14px)',
+                background: PAPER.surface,
+                border: `1.5px solid ${u.color}55`,
+                borderLeft: `3px solid ${u.color}`,
+                boxShadow: `0 6px 16px ${u.color}22, 0 1px 2px rgba(31,27,20,0.06)`,
+                lineHeight: 1.35,
+                textAlign: 'left',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  color: u.color,
+                  fontWeight: 800,
+                  letterSpacing: '-0.005em',
+                  fontSize: 'clamp(0.7rem, 1.55cqh, 0.82rem)',
+                  fontFamily: EMOJI_FONT,
+                  mr: 0.6,
+                }}
+              >
+                {u.emoji} {u.label}
+              </Box>
+              <Box component="span" sx={{ color: PAPER.faded, mr: 0.6 }}>—</Box>
+              <Box
+                component="span"
+                sx={{
+                  color: PAPER.ink,
+                  fontSize: 'clamp(0.7rem, 1.5cqh, 0.82rem)',
+                  fontWeight: 500,
+                }}
+              >
+                {u.fact}
+              </Box>
+            </Box>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </Box>
   );
 }
 
@@ -273,11 +291,9 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
   const [showConfetti, setShowConfetti] = useState(false);
   const [finished, setFinished] = useState(false);
   const [muted, setMuted] = useState(() => audio.isMuted());
-  const [fact, setFact] = useState<string | null>(null);
   const [studying, setStudying] = useState(studyMode);
 
   const totalPairs = pairs.length;
-  const factTimer = useRef<number | null>(null);
   const burstIdRef = useRef(0);
   // Derived: input is locked during the study reveal or while a flipped pair
   // is being resolved.
@@ -313,9 +329,6 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
             };
             return next;
           });
-          setFact(result.completedPair.fact);
-          if (factTimer.current) window.clearTimeout(factTimer.current);
-          factTimer.current = window.setTimeout(() => setFact(null), 3000);
           const aIdx = prev.deck.findIndex(c => c.id === aId);
           const bIdx = prev.deck.findIndex(c => c.id === bId);
           const cellCenter = (idx: number) => ({
@@ -350,13 +363,6 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
     return () => window.clearTimeout(timer);
   }, [game.flippedIds, game.deck, totalPairs, current, BOARD_COLS, BOARD_ROWS]);
 
-  useEffect(
-    () => () => {
-      if (factTimer.current) window.clearTimeout(factTimer.current);
-    },
-    [],
-  );
-
   const startNewGame = useCallback(() => {
     const fresh = startGame(pairs);
     setGame(studyMode ? revealAll(fresh, true) : fresh);
@@ -369,7 +375,6 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
     setBursts([]);
     setShowConfetti(false);
     setFinished(false);
-    setFact(null);
   }, [pairs, studyMode]);
 
   const onFlip = useCallback(
@@ -408,7 +413,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
           color: PAPER.ink,
           display: 'flex',
           flexDirection: 'column',
-          pt: 'clamp(46px, 9cqh, 74px)',
+          pt: 'clamp(14px, 2.8cqh, 26px)',
           pb: 'clamp(12px, 2.4cqh, 22px)',
           px: 'clamp(16px, 3.5cqw, 44px)',
           gap: 'clamp(8px, 1.6cqh, 14px)',
@@ -567,7 +572,7 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
 
         <Box sx={{ display: 'flex', gap: 1.2, justifyContent: 'center', flexShrink: 0 }}>
           <PaperButton variant="solid" onClick={startNewGame}>↻ Rematch</PaperButton>
-          <PaperButton onClick={onExit}>↩ Change mode</PaperButton>
+          <PaperButton onClick={onExit}>↩ Menu</PaperButton>
         </Box>
       </Box>
     );
@@ -585,8 +590,9 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
         color: PAPER.ink,
         display: 'flex',
         flexDirection: 'column',
-        // Reserve top corners for App.tsx's BackToHome and MgtcLogo.
-        pt: 'clamp(46px, 9cqh, 74px)',
+        // EcoMemoryGame hides the global BackToHome/MgtcLogo header during
+        // play, so the top action row sits flush at the top.
+        pt: 'clamp(8px, 1.6cqh, 14px)',
         pb: 'clamp(8px, 1.6cqh, 14px)',
         px: 'clamp(16px, 3.5cqw, 44px)',
         gap: 'clamp(6px, 1.2cqh, 10px)',
@@ -674,30 +680,12 @@ export default function VersusPlay({ difficulty, studyMode, onExit }: VersusPlay
             )}
           </AnimatePresence>
 
-          {/* Dual-mirrored fact ribbon. One copy hangs at each end of the
-              board, oriented for that player, so neither has to read upside
-              down. The current scorer's accent colours both. */}
-          <AnimatePresence>
-            {fact && (
-              <FactRibbon
-                key={`p2-${fact}`}
-                fact={fact}
-                accent={PLAYERS[current].accent}
-                anchor="top"
-                flipped
-              />
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {fact && (
-              <FactRibbon
-                key={`p1-${fact}`}
-                fact={fact}
-                accent={PLAYERS[current].accent}
-                anchor="bottom"
-              />
-            )}
-          </AnimatePresence>
+          {/* Dual-mirrored fact stacks. One column at each end of the board,
+              oriented for that player, so neither has to read upside down.
+              Each match adds a card to both stacks and previous facts stay so
+              players can re-read them later in the round. */}
+          <FactStack unlocked={game.unlocked} anchor="top" flipped />
+          <FactStack unlocked={game.unlocked} anchor="bottom" />
         </Box>
       </Box>
 

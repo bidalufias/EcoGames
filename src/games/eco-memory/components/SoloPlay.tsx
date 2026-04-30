@@ -114,7 +114,6 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
     return studyMode ? revealAll(fresh, true) : fresh;
   });
   const [scoreDelta, setScoreDelta] = useState<number | undefined>(undefined);
-  const [fact, setFact] = useState<string | null>(null);
   const [best, setBest] = useState(0);
   const [playerName, setPlayerName] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -124,7 +123,6 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
   const [studying, setStudying] = useState(studyMode);
 
   const totalPairs = pairs.length;
-  const factTimer = useRef<number | null>(null);
   const burstIdRef = useRef(0);
   // Derived: input is locked while two cards are mid-reveal or study
   // mode is still showing the deck.
@@ -165,9 +163,6 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         const result = resolveTurn(prev, totalPairs);
         if (result.delta !== 0) setScoreDelta(result.delta);
         if (result.matched && result.completedPair) {
-          setFact(result.completedPair.fact);
-          if (factTimer.current) window.clearTimeout(factTimer.current);
-          factTimer.current = window.setTimeout(() => setFact(null), 3000);
           const aIdx = prev.deck.findIndex(c => c.id === aId);
           const bIdx = prev.deck.findIndex(c => c.id === bId);
           const cellCenter = (idx: number) => ({
@@ -201,19 +196,11 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
     return () => window.clearTimeout(timer);
   }, [game.flippedIds, game.deck, totalPairs, BOARD_COLS, BOARD_ROWS]);
 
-  useEffect(
-    () => () => {
-      if (factTimer.current) window.clearTimeout(factTimer.current);
-    },
-    [],
-  );
-
   const startNewGame = useCallback(() => {
     const fresh = startGame(pairs);
     setGame(studyMode ? revealAll(fresh, true) : fresh);
     setStudying(studyMode);
     setScoreDelta(undefined);
-    setFact(null);
     setSubmitted(false);
     setBursts([]);
     setShowConfetti(false);
@@ -266,7 +253,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         </Box>
         <Box sx={{ mt: 'clamp(10px, 2cqh, 18px)', display: 'flex', gap: 1.5, justifyContent: 'center' }}>
           <PaperButton variant="solid" onClick={startNewGame}>Play again</PaperButton>
-          <PaperButton onClick={onExit}>Change mode</PaperButton>
+          <PaperButton onClick={onExit}>Menu</PaperButton>
         </Box>
       </PaperShell>
     );
@@ -436,7 +423,7 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
           </Box>
           <Box sx={{ display: 'flex', gap: 1.2, justifyContent: 'center' }}>
             <PaperButton onClick={startNewGame}>↻ Play again</PaperButton>
-            <PaperButton variant="ghost" onClick={onExit}>↩ Change mode</PaperButton>
+            <PaperButton variant="ghost" onClick={onExit}>↩ Menu</PaperButton>
           </Box>
         </Box>
       </PaperShell>
@@ -455,8 +442,9 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         color: PAPER.ink,
         display: 'flex',
         flexDirection: 'column',
-        // Reserve room at top for App.tsx's BackToHome (left) and MgtcLogo (right).
-        pt: 'clamp(46px, 9cqh, 74px)',
+        // EcoMemoryGame hides the global BackToHome/MgtcLogo header during
+        // play, so the action row sits flush at the top.
+        pt: 'clamp(10px, 2cqh, 18px)',
         pb: 'clamp(10px, 2cqh, 18px)',
         px: 'clamp(16px, 3.5cqw, 44px)',
         gap: 'clamp(8px, 1.6cqh, 14px)',
@@ -464,8 +452,9 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         position: 'relative',
       }}
     >
-      {/* Action row — mute + restart + change mode, right-aligned. Sits in the
-          horizontal corridor between BackToHome and MgtcLogo. */}
+      {/* Action row — mute + restart + menu, right-aligned. The Menu button is
+          the only path back to ModeSelect now that the global header is hidden
+          mid-game. */}
       <Box
         sx={{
           display: 'flex',
@@ -484,8 +473,8 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         <PaperButton onClick={startNewGame} ariaLabel="Start a new game">
           <Box component="span" aria-hidden>↻</Box> New game
         </PaperButton>
-        <PaperButton variant="ghost" onClick={onExit} ariaLabel="Change mode and difficulty">
-          <Box component="span" aria-hidden>↩</Box> Change mode
+        <PaperButton variant="ghost" onClick={onExit} ariaLabel="Back to Eco Memory main menu">
+          <Box component="span" aria-hidden>↩</Box> Menu
         </PaperButton>
       </Box>
 
@@ -501,102 +490,225 @@ export default function SoloPlay({ difficulty, studyMode, onExit }: SoloPlayProp
         scoreDelta={scoreDelta}
       />
 
-      {/* Board — fills the remaining vertical space, centered. */}
-      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
-        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-          <Board
-            deck={game.deck}
-            cards={game.cards}
-            onFlip={onFlip}
-            disabled={locked}
-            cols={BOARD_COLS}
-          />
-          {bursts.map(b => (
-            <MatchBurst
-              key={b.id}
-              x={b.x}
-              y={b.y}
-              points={b.points}
-              color={b.color}
-              onDone={() => setBursts(prev => prev.filter(p => p.id !== b.id))}
+      {/* Main play area — board on the left, persistent fact stack on the
+          right. Putting facts in the empty corridor next to the board means
+          they don't cover any cards and the player can re-read them later. */}
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 'clamp(10px, 2cqmin, 18px)',
+          alignItems: 'stretch',
+        }}
+      >
+        <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, display: 'grid', placeItems: 'center' }}>
+          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Board
+              deck={game.deck}
+              cards={game.cards}
+              onFlip={onFlip}
+              disabled={locked}
+              cols={BOARD_COLS}
             />
-          ))}
-          {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
-          <AnimatePresence>
-            {studying && (
+            {bursts.map(b => (
+              <MatchBurst
+                key={b.id}
+                x={b.x}
+                y={b.y}
+                points={b.points}
+                color={b.color}
+                onDone={() => setBursts(prev => prev.filter(p => p.id !== b.id))}
+              />
+            ))}
+            {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
+            <AnimatePresence>
+              {studying && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 35,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 0.7,
+                      borderRadius: 999,
+                      background: ACCENT,
+                      color: '#FFFFFF',
+                      fontSize: 'clamp(0.7rem, 1.6cqh, 0.82rem)',
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      boxShadow: `0 6px 18px ${ACCENT}55`,
+                    }}
+                  >
+                    Memorise the board…
+                  </Box>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Box>
+        </Box>
+
+        <FactStack unlocked={game.unlocked} />
+      </Box>
+    </Box>
+  );
+}
+
+interface FactStackProps {
+  unlocked: GameState['unlocked'];
+}
+
+/**
+ * Stacked fact panel that lives next to the board. Each completed pair adds a
+ * card to the top of the stack and stays there for the rest of the round, so a
+ * player who wants to re-read an earlier fact can scroll back to it instead of
+ * losing the ribbon to a timeout.
+ */
+function FactStack({ unlocked }: FactStackProps) {
+  const items = unlocked.slice().reverse();
+  return (
+    <Box
+      sx={{
+        flexShrink: 0,
+        width: 'clamp(180px, 22cqw, 280px)',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 1,
+          mb: 'clamp(4px, 0.8cqh, 7px)',
+          flexShrink: 0,
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            color: ACCENT,
+            fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+            fontWeight: 800,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Facts unlocked
+        </Typography>
+        <Typography
+          component="span"
+          sx={{
+            color: PAPER.meta,
+            fontSize: 'clamp(0.6rem, 1.4cqh, 0.72rem)',
+            fontWeight: 600,
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {unlocked.length}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(5px, 1cqh, 8px)',
+          pr: 'clamp(2px, 0.6cqmin, 6px)',
+        }}
+      >
+        {items.length === 0 ? (
+          <Box
+            sx={{
+              border: `1px dashed ${PAPER.hairline}`,
+              borderRadius: 'clamp(8px, 1.6cqmin, 12px)',
+              p: 'clamp(8px, 1.6cqmin, 12px)',
+              color: PAPER.faded,
+              fontSize: 'clamp(0.7rem, 1.5cqh, 0.78rem)',
+              fontStyle: 'italic',
+              lineHeight: 1.4,
+              textAlign: 'center',
+            }}
+          >
+            Match a pair to unlock its fact here.
+          </Box>
+        ) : (
+          <AnimatePresence initial={false}>
+            {items.map(u => (
               <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  zIndex: 35,
-                  pointerEvents: 'none',
-                }}
+                key={u.pairId}
+                layout
+                initial={{ opacity: 0, y: -10, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
               >
                 <Box
                   sx={{
-                    px: 2,
-                    py: 0.7,
-                    borderRadius: 999,
-                    background: ACCENT,
-                    color: '#FFFFFF',
-                    fontSize: 'clamp(0.7rem, 1.6cqh, 0.82rem)',
-                    fontWeight: 800,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    boxShadow: `0 6px 18px ${ACCENT}55`,
+                    px: 'clamp(8px, 1.6cqmin, 12px)',
+                    py: 'clamp(6px, 1.2cqh, 10px)',
+                    borderRadius: 'clamp(8px, 1.6cqmin, 12px)',
+                    background: PAPER.surface,
+                    border: `1px solid ${u.color}33`,
+                    borderLeft: `3px solid ${u.color}`,
+                    boxShadow: '0 1px 2px rgba(31,27,20,0.04)',
                   }}
                 >
-                  Memorise the board…
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'clamp(5px, 1cqmin, 8px)',
+                      mb: 'clamp(2px, 0.5cqh, 4px)',
+                    }}
+                  >
+                    <Box component="span" aria-hidden sx={{ fontFamily: EMOJI_FONT, fontSize: 'clamp(0.85rem, 1.9cqh, 1.05rem)', lineHeight: 1 }}>
+                      {u.emoji}
+                    </Box>
+                    <Typography
+                      component="span"
+                      sx={{
+                        color: u.color,
+                        fontSize: 'clamp(0.72rem, 1.6cqh, 0.84rem)',
+                        fontWeight: 800,
+                        letterSpacing: '-0.005em',
+                        lineHeight: 1.15,
+                      }}
+                    >
+                      {u.label}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    sx={{
+                      color: PAPER.ink,
+                      fontSize: 'clamp(0.66rem, 1.45cqh, 0.76rem)',
+                      fontWeight: 500,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {u.fact}
+                  </Typography>
                 </Box>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
-        </Box>
-      </Box>
-
-      {/* Fact ribbon — slides in along the bottom on each match. */}
-      <AnimatePresence>
-        {fact && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            style={{
-              position: 'absolute',
-              bottom: 'clamp(14px, 3cqh, 28px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 50,
-              maxWidth: 'min(560px, 80%)',
-            }}
-          >
-            <Box
-              sx={{
-                px: 'clamp(12px, 2.4cqmin, 20px)',
-                py: 'clamp(6px, 1.4cqh, 11px)',
-                borderRadius: 'clamp(8px, 1.6cqmin, 14px)',
-                background: PAPER.surface,
-                border: `1px solid ${ACCENT}33`,
-                boxShadow: `0 8px 24px ${ACCENT}22, 0 1px 2px rgba(31,27,20,0.06)`,
-                textAlign: 'center',
-              }}
-            >
-              <Box component="span" sx={{ color: ACCENT, fontWeight: 800, mr: 0.6, letterSpacing: '0.04em' }}>
-                Fact —
-              </Box>
-              <Box component="span" sx={{ color: PAPER.ink, fontSize: 'clamp(0.74rem, 1.6cqh, 0.86rem)', fontWeight: 500 }}>
-                {fact}
-              </Box>
-            </Box>
-          </motion.div>
         )}
-      </AnimatePresence>
+      </Box>
     </Box>
   );
 }
@@ -619,7 +731,7 @@ function PaperShell({ children }: { children: React.ReactNode }) {
         color: PAPER.ink,
         display: 'flex',
         flexDirection: 'column',
-        pt: 'clamp(46px, 9cqh, 74px)',
+        pt: 'clamp(14px, 2.8cqh, 26px)',
         pb: 'clamp(12px, 2.4cqh, 22px)',
         px: 'clamp(16px, 3.5cqw, 44px)',
         gap: 'clamp(8px, 1.6cqh, 14px)',

@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import { Suspense, lazy } from 'react';
 import { ecoTheme } from './theme/ecoTheme';
 import BackToHome from './components/BackToHome';
+import MgtcLogo from './components/MgtcLogo';
 import LandingPage from './pages/LandingPage';
 import GamePage from './pages/GamePage';
 
@@ -16,35 +17,18 @@ const Climate2048Game = lazy(() => import('./games/climate-2048/Climate2048Game'
 
 const loadingStyle = { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' } as const;
 
-function MgtcLogo() {
-  return (
-    <Box
-      component="img"
-      src="/mgtc-logo.png"
-      alt="MGTC"
-      sx={{
-        position: 'absolute',
-        top: 'clamp(10px, 2.5cqh, 24px)',
-        right: 'clamp(12px, 3cqw, 32px)',
-        height: 'clamp(22px, 5cqh, 36px)',
-        width: 'auto',
-        zIndex: 9999,
-        opacity: 0.85,
-        transition: 'opacity 0.2s',
-        '&:hover': { opacity: 1 },
-      }}
-    />
-  );
-}
-
 function AppLayout() {
   const location = useLocation();
   const isGamePage = location.pathname.startsWith('/games/');
+  // Eco Memory renders its own header on the main menu and hides it during
+  // play, so suppress the global header for that route entirely.
+  const isEcoMemory = location.pathname === '/games/eco-memory';
+  const showGlobalHeader = isGamePage && !isEcoMemory;
 
   return (
     <>
-      {isGamePage && <MgtcLogo />}
-      {isGamePage && <BackToHome />}
+      {showGlobalHeader && <MgtcLogo />}
+      {showGlobalHeader && <BackToHome />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/games/climate-ninja" element={
