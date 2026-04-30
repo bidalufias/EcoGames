@@ -20,10 +20,12 @@ const loadingStyle = { width: '100%', height: '100%', display: 'flex', alignItem
 function AppLayout() {
   const location = useLocation();
   const isGamePage = location.pathname.startsWith('/games/');
-  // Eco Memory renders its own header on the main menu and hides it during
-  // play, so suppress the global header for that route entirely.
-  const isEcoMemory = location.pathname === '/games/eco-memory';
-  const showGlobalHeader = isGamePage && !isEcoMemory;
+  // Eco Memory and Climate 2048 render their own header on the menu screens
+  // and hide it during play, so suppress the global header for those routes.
+  const ownsHeader =
+    location.pathname === '/games/eco-memory' ||
+    location.pathname === '/games/climate-2048';
+  const showGlobalHeader = isGamePage && !ownsHeader;
 
   return (
     <>

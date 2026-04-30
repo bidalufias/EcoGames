@@ -99,7 +99,7 @@ export default function GameOverModal({
             <EcoButton variant="secondary" onClick={onLeaderboard}>🏆 Leaderboard</EcoButton>
           )}
           {onChangeMode && (
-            <EcoButton variant="ghost" onClick={onChangeMode}>Change mode</EcoButton>
+            <EcoButton variant="ghost" onClick={onChangeMode}>Menu</EcoButton>
           )}
         </Box>
       </motion.div>
