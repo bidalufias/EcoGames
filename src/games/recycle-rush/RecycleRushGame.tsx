@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   BINS, WASTE_ITEMS, randomWaste, DIFFICULTY_LEVELS, PLAYFIELD_W,
   CELL_W, CELL_H, ITEM_SIZE, MISS_ROW, FALL_STEP,
-  PLAYFIELD_W_PX, PLAYFIELD_H_PX,
+  PLAYFIELD_W_PX, PLAYFIELD_H_PX, BIN_TRAY_H,
   SPEED_PRESETS, comboMultiplier, randomPowerUp,
   type SpeedKey, type PowerUp,
 } from './data';
@@ -15,7 +15,9 @@ import MgtcLogo from '../../components/MgtcLogo';
 import { useFitScale } from '../../lib/useFitScale';
 import { sfxCorrect, sfxWrong, sfxLevelUp, sfxPowerUp, sfxGameOver, haptic } from './audio';
 
-const PLAYFIELD_NATURAL = { w: PLAYFIELD_W_PX, h: PLAYFIELD_H_PX };
+// Natural-pixel size of the combined playfield + bin tray. Both live
+// inside one scaled container so the bins are exactly under the lanes.
+const STAGE_NATURAL = { w: PLAYFIELD_W_PX, h: PLAYFIELD_H_PX + BIN_TRAY_H };
 const POWERUP_CHANCE = 0.07;       // post-level-1 spawn replaces waste with a power-up
 const SLOWMO_DURATION_MS = 5000;
 const AUTOSORT_BURST = 3;
@@ -48,7 +50,6 @@ export default function RecycleRushGame() {
   const [speedKey, setSpeedKey] = useState<SpeedKey>('normal');
   const [playerName, setPlayerName] = useState('');
   const [items, setItems] = useState<FallingItem[]>([]);
-  const [selectedBin, setSelectedBin] = useState<string | null>(null);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
@@ -65,15 +66,15 @@ export default function RecycleRushGame() {
   const [nextId, setNextId] = useState(0);
   const gameRef = useRef<HTMLDivElement>(null);
   const floatIdRef = useRef(0);
-  const { parentRef: fitRef, scale: fitScale } = useFitScale(PLAYFIELD_NATURAL);
+  const { parentRef: fitRef, scale: fitScale } = useFitScale(STAGE_NATURAL);
   const stateRef = useRef({
     score, lives, level, streak, sorted, mistakes, items,
-    selectedBin, selectedItemId, nextId, slowMoUntil, autoSortLeft,
+    selectedItemId, nextId, slowMoUntil, autoSortLeft,
   });
 
   stateRef.current = {
     score, lives, level, streak, sorted, mistakes, items,
-    selectedBin, selectedItemId, nextId, slowMoUntil, autoSortLeft,
+    selectedItemId, nextId, slowMoUntil, autoSortLeft,
   };
 
   const speedPreset = SPEED_PRESETS[speedKey];
@@ -112,8 +113,13 @@ export default function RecycleRushGame() {
     }
   }, [speedPreset]);
 
-  const checkAnswer = useCallback((item: WasteFalling, binId: string) => {
-    const correct = item.waste.bin === binId;
+  // Resolves a waste item once it has landed in its current lane. The bin
+  // it lands in is determined purely by item.col → BINS[col]. The player
+  // moves items between lanes during the fall; landing is automatic.
+  const resolveLanding = useCallback((item: WasteFalling) => {
+    const chosen = BINS[item.col];
+    const correctBin = BINS.find(b => b.id === item.waste.bin)!;
+    const correct = chosen?.id === item.waste.bin;
     if (correct) {
       const nextStreak = stateRef.current.streak + 1;
       const mul = comboMultiplier(nextStreak);
@@ -133,30 +139,44 @@ export default function RecycleRushGame() {
         setTimeout(() => setFact(null), 3000);
       }
     } else {
-      const chosen = BINS.find(b => b.id === binId)!;
-      const correctBin = BINS.find(b => b.id === item.waste.bin)!;
       setLives(l => l - 1);
       setStreak(0);
       setMistakes(m => m + 1);
       setMistakeLog(log => [
         ...log,
-        { itemEmoji: item.waste.emoji, itemName: item.waste.name, correct: correctBin, chosen },
+        { itemEmoji: item.waste.emoji, itemName: item.waste.name, correct: correctBin, chosen: chosen ?? correctBin },
       ].slice(-10));
       pushFloat(`✗ ${correctBin.emoji}`, '#E74C3C', item.col, item.row);
       triggerFlash('bad');
       sfxWrong(); haptic([30, 40, 30]);
-      // On wrong sorts, surface the correct bin + a relevant fact so the
-      // mistake becomes a learning moment instead of just a lost life.
       setFact({
         text: `${item.waste.emoji} ${item.waste.name} → ${correctBin.emoji} ${correctBin.name} · ${item.waste.fact}`,
         tone: 'bad',
       });
       setTimeout(() => setFact(null), 2600);
     }
-    setItems(prev => prev.filter(i => i.id !== item.id));
-    setSelectedBin(null);
-    setSelectedItemId(null);
   }, [pushFloat, triggerFlash]);
+
+  // Move a single waste item to the chosen lane. If no item is selected,
+  // the lowest waste item (most urgent) is moved.
+  const moveToLane = useCallback((targetCol: number) => {
+    const items = stateRef.current.items;
+    const selectedId = stateRef.current.selectedItemId;
+    let target: WasteFalling | undefined;
+    if (selectedId != null) {
+      const it = items.find(i => i.id === selectedId);
+      if (it && it.kind === 'waste') target = it;
+    }
+    if (!target) {
+      target = items
+        .filter((i): i is WasteFalling => i.kind === 'waste')
+        .sort((a, b) => b.row - a.row)[0];
+    }
+    if (!target) return;
+    const id = target.id;
+    setItems(prev => prev.map(i => (i.id === id ? { ...i, col: targetCol } : i)));
+    setSelectedItemId(null);
+  }, []);
 
   const activatePowerUp = useCallback((item: PowerUpFalling) => {
     const p = item.power;
@@ -172,15 +192,14 @@ export default function RecycleRushGame() {
   const startGame = useCallback(() => {
     setScore(0); setLives(5); setLevel(0); setStreak(0); setSorted(0); setMistakes(0);
     setItems([]); setNextId(0); setFact(null); setMistakeLog([]);
-    setSelectedBin(null); setSelectedItemId(null);
+    setSelectedItemId(null);
     setSlowMoUntil(0); setAutoSortLeft(0);
     setScreen('playing');
   }, []);
 
-  // Main game loop — falling items + spawn cadence. Tetris-style ramp:
-  // a hard cap on simultaneous waste items keeps level 1 readable, and
-  // every level raises both the cap and the cadence. Slow-mo halves the
-  // per-tick fall step but doesn't slow spawns.
+  // Main game loop — falling items + spawn cadence. Items resolve on
+  // landing using their CURRENT lane (item.col) → BINS[col]. The player
+  // moves items between lanes during the fall; landing is automatic.
   useEffect(() => {
     if (screen !== 'playing') return;
     const diff = DIFFICULTY_LEVELS[Math.min(level, 4)];
@@ -188,33 +207,33 @@ export default function RecycleRushGame() {
     let spawnTimerMs = 0;
     const interval = setInterval(() => {
       const slow = Date.now() < stateRef.current.slowMoUntil ? 0.5 : 1;
-      setItems(prev => {
-        const updated = prev.map(item => ({ ...item, row: item.row + item.speed * FALL_STEP * slow }));
-        const wasteMissed = updated.filter(i => i.row >= MISS_ROW && i.kind === 'waste').length;
-        if (wasteMissed > 0) {
-          setLives(l => Math.max(0, l - wasteMissed));
-          setStreak(0);
-        }
-        return updated.filter(i => i.row < MISS_ROW);
-      });
+      const prev = stateRef.current.items;
+      const updated = prev.map(item => ({ ...item, row: item.row + item.speed * FALL_STEP * slow }));
+      const landed = updated.filter(i => i.row >= MISS_ROW);
+      const remaining = updated.filter(i => i.row < MISS_ROW);
+      setItems(remaining);
+      for (const item of landed) {
+        // Power-ups silently disappear if not collected — no penalty.
+        if (item.kind === 'waste') resolveLanding(item);
+      }
       spawnTimerMs += 16;
       if (spawnTimerMs >= adjustedInterval) {
         // Cap waste only — power-ups are bonus drops and exempt from the cap.
-        const wasteOnScreen = stateRef.current.items.filter(i => i.kind === 'waste').length;
+        const wasteOnScreen = remaining.filter(i => i.kind === 'waste').length;
         if (wasteOnScreen < diff.maxConcurrent) {
           spawnTimerMs = 0;
           spawnItem();
         }
-        // If the cap is full we leave spawnTimerMs at threshold; the next
-        // sort frees a slot and the very next tick spawns immediately.
+        // If the cap is full we leave the timer at threshold; the next
+        // landing frees a slot and the very next tick spawns immediately.
       }
     }, 16);
     return () => clearInterval(interval);
-  }, [screen, level, spawnItem, speedPreset]);
+  }, [screen, level, spawnItem, speedPreset, resolveLanding]);
 
-  // Magnet power-up: auto-sort the lowest waste item every 600ms until the
-  // burst is exhausted. Reads items from the ref so the interval doesn't
-  // restart on every fall-tick state update.
+  // Magnet power-up: every 600ms, snap the lowest waste item to its
+  // correct lane so it resolves cleanly when it lands. Reads items via
+  // stateRef so the interval doesn't restart on every fall-tick.
   useEffect(() => {
     if (screen !== 'playing' || autoSortLeft <= 0) return;
     const tick = () => {
@@ -222,31 +241,56 @@ export default function RecycleRushGame() {
         .filter((i): i is WasteFalling => i.kind === 'waste')
         .sort((a, b) => b.row - a.row)[0];
       if (lowest) {
-        checkAnswer(lowest, lowest.waste.bin);
+        const correctCol = BINS.findIndex(b => b.id === lowest.waste.bin);
+        if (correctCol >= 0) {
+          setItems(prev => prev.map(i =>
+            i.id === lowest.id ? { ...i, col: correctCol } : i,
+          ));
+        }
         setAutoSortLeft(n => Math.max(0, n - 1));
       }
     };
     const t = setInterval(tick, 600);
     return () => clearInterval(t);
-  }, [screen, autoSortLeft, checkAnswer]);
+  }, [screen, autoSortLeft]);
 
-  // Keyboard 1-5: instantly sort the lowest waste item into that bin.
+  // Keyboard 1-5 / Arrow keys: 1-5 moves the active item to that lane;
+  // ←/→ nudge the active item one lane left or right.
   useEffect(() => {
     if (screen !== 'playing') return;
     const handler = (e: KeyboardEvent) => {
-      const idx = ['1', '2', '3', '4', '5'].indexOf(e.key);
-      if (idx === -1) return;
-      const bin = BINS[idx];
-      if (!bin) return;
-      e.preventDefault();
-      const lowest = stateRef.current.items
-        .filter((i): i is WasteFalling => i.kind === 'waste')
-        .sort((a, b) => b.row - a.row)[0];
-      if (lowest) checkAnswer(lowest, bin.id);
+      const numIdx = ['1', '2', '3', '4', '5'].indexOf(e.key);
+      if (numIdx !== -1) {
+        e.preventDefault();
+        moveToLane(numIdx);
+        return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const dir = e.key === 'ArrowLeft' ? -1 : 1;
+        // Pick the active waste item: explicit selection > lowest.
+        const items = stateRef.current.items;
+        const selectedId = stateRef.current.selectedItemId;
+        let target: WasteFalling | undefined;
+        if (selectedId != null) {
+          const it = items.find(i => i.id === selectedId);
+          if (it && it.kind === 'waste') target = it;
+        }
+        if (!target) {
+          target = items
+            .filter((i): i is WasteFalling => i.kind === 'waste')
+            .sort((a, b) => b.row - a.row)[0];
+        }
+        if (!target) return;
+        const next = Math.max(0, Math.min(PLAYFIELD_W - 1, target.col + dir));
+        if (next === target.col) return;
+        const id = target.id;
+        setItems(prev => prev.map(i => (i.id === id ? { ...i, col: next } : i)));
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [screen, checkAnswer]);
+  }, [screen, moveToLane]);
 
   useEffect(() => {
     if (screen === 'playing' && lives <= 0) {
@@ -255,31 +299,22 @@ export default function RecycleRushGame() {
     }
   }, [lives, screen]);
 
-  // Click on an item: power-ups activate immediately; for waste, either
-  // sort with the current bin selection or stage the item for a follow-up
-  // bin tap (so users can pick item-first or bin-first interchangeably).
+  // Click on an item: power-ups activate immediately; waste items just
+  // toggle their selection state (next bin click moves THIS item rather
+  // than the lowest one).
   const handleItemClick = useCallback((item: FallingItem) => {
     if (item.kind === 'powerup') {
       activatePowerUp(item);
       return;
     }
-    if (selectedBin) {
-      checkAnswer(item, selectedBin);
-      return;
-    }
     setSelectedItemId(prev => (prev === item.id ? null : item.id));
-  }, [selectedBin, checkAnswer, activatePowerUp]);
+  }, [activatePowerUp]);
 
-  const handleBinClick = useCallback((binId: string) => {
-    if (selectedItemId != null) {
-      const it = stateRef.current.items.find(i => i.id === selectedItemId);
-      if (it && it.kind === 'waste') {
-        checkAnswer(it, binId);
-        return;
-      }
-    }
-    setSelectedBin(prev => (prev === binId ? null : binId));
-  }, [selectedItemId, checkAnswer]);
+  // Click a bin: move the active item (selected, else lowest) into that
+  // bin's lane. The item finishes falling and resolves on landing.
+  const handleBinClick = useCallback((binIdx: number) => {
+    moveToLane(binIdx);
+  }, [moveToLane]);
 
   const slowMoActive = slowMoUntil > Date.now();
   const slowMoSecondsLeft = Math.max(0, Math.ceil((slowMoUntil - Date.now()) / 1000));
@@ -292,6 +327,20 @@ export default function RecycleRushGame() {
   }, [slowMoActive]);
 
   const multiplier = comboMultiplier(streak);
+
+  // The "active" waste item is the one a bin click / 1–5 / arrow key will
+  // act on next: explicit selection wins, else the lowest (most urgent).
+  // We highlight the bin under its lane so the destination is obvious.
+  const activeWasteItem: WasteFalling | undefined = (() => {
+    if (selectedItemId != null) {
+      const it = items.find(i => i.id === selectedItemId);
+      if (it && it.kind === 'waste') return it;
+    }
+    return items
+      .filter((i): i is WasteFalling => i.kind === 'waste')
+      .sort((a, b) => b.row - a.row)[0];
+  })();
+  const activeCol = activeWasteItem?.col ?? -1;
 
   // --- Intro ---
   if (screen === 'intro') {
@@ -331,10 +380,12 @@ export default function RecycleRushGame() {
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#5A6A7E', mb: 2, maxWidth: 520, textAlign: 'center' }}>
-          Tap a bin then tap an item — or press <b>1–5</b> to throw the lowest item.
-          Catch power-ups (❤️ ⏱️ 🧲), build streaks for combo multipliers,
-          and sort 10 items to level up.
+        <Typography sx={{ color: '#5A6A7E', mb: 2, maxWidth: 540, textAlign: 'center' }}>
+          Each bin sits under one of 5 lanes. Items fall in random lanes —
+          tap a bin (or press <b>1–5</b>, or use <b>← →</b>) to slide the
+          active item into the right lane before it lands. Catch power-ups
+          (❤️ ⏱️ 🧲), build streaks for combo multipliers, and sort 10 items
+          to level up.
         </Typography>
 
         <Box sx={{ mb: 2.5, textAlign: 'center' }}>
@@ -533,212 +584,227 @@ export default function RecycleRushGame() {
         )}
       </Box>
 
-      {/* Playfield wrapper — fills remaining space; the natural-pixel
-          playfield below is auto-scaled to fit. */}
+      {/* Stage — playfield + bin tray live inside one natural-pixel
+          container that scales as a unit, so each bin is exactly under
+          its lane and falling items drop straight into the right slot. */}
       <Box
         ref={fitRef}
         sx={{ flex: 1, minHeight: 0, minWidth: 0, width: '100%', display: 'grid', placeItems: 'center' }}
       >
         <Box sx={{
-          position: 'relative',
-          width: PLAYFIELD_NATURAL.w,
-          height: PLAYFIELD_NATURAL.h,
-          background: '#FFFFFF', borderRadius: 2,
-          border: '1px solid #E8EDF2',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-          overflow: 'hidden',
+          width: STAGE_NATURAL.w,
+          height: STAGE_NATURAL.h,
           transform: `scale(${fitScale})`,
           transformOrigin: 'center center',
+          display: 'flex',
+          flexDirection: 'column',
         }}>
-          {/* Slow-mo blue tint sits behind everything */}
-          {slowMoActive && (
-            <Box sx={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: 'linear-gradient(180deg, rgba(63,134,224,0.08), rgba(63,134,224,0.02))',
-              zIndex: 1,
-            }} />
-          )}
+          {/* Playfield */}
+          <Box sx={{
+            position: 'relative',
+            width: PLAYFIELD_W_PX,
+            height: PLAYFIELD_H_PX,
+            background: '#FFFFFF',
+            borderRadius: '12px 12px 0 0',
+            borderTop: '1px solid #E8EDF2',
+            borderLeft: '1px solid #E8EDF2',
+            borderRight: '1px solid #E8EDF2',
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
+            overflow: 'hidden',
+          }}>
+            {/* Slow-mo blue tint sits behind everything */}
+            {slowMoActive && (
+              <Box sx={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                background: 'linear-gradient(180deg, rgba(63,134,224,0.08), rgba(63,134,224,0.02))',
+                zIndex: 1,
+              }} />
+            )}
 
-          {/* Column trails — faint vertical hints behind every column with
-              a falling waste item, so the player can quickly read which bin
-              each item is heading toward. */}
-          {Array.from(new Set(items.filter(i => i.kind === 'waste').map(i => i.col))).map(col => (
-            <Box key={`trail-${col}`} sx={{
-              position: 'absolute',
-              left: col * CELL_W, top: 0,
-              width: CELL_W, height: '100%',
-              background: 'linear-gradient(180deg, rgba(255,140,66,0) 0%, rgba(255,140,66,0.04) 60%, rgba(255,140,66,0.10) 100%)',
-              pointerEvents: 'none',
-              zIndex: 1,
-            }} />
-          ))}
-          <AnimatePresence>
-            {items.map(item => {
-              const isSelected = item.kind === 'waste' && selectedItemId === item.id;
-              const isPower = item.kind === 'powerup';
-              const emoji = isPower ? item.power.emoji : item.waste.emoji;
-              const title = isPower ? `${item.power.name} — ${item.power.desc}` : item.waste.name;
-              return (
-                <motion.div key={item.id}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: isPower ? [1, 1.08, 1] : 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={isPower ? { scale: { repeat: Infinity, duration: 1.2 } } : undefined}
+            {/* Column trails — faint vertical hints behind every column
+                with a falling waste item, so trajectory is readable. */}
+            {Array.from(new Set(items.filter(i => i.kind === 'waste').map(i => i.col))).map(col => (
+              <Box key={`trail-${col}`} sx={{
+                position: 'absolute',
+                left: col * CELL_W, top: 0,
+                width: CELL_W, height: '100%',
+                background: 'linear-gradient(180deg, rgba(255,140,66,0) 0%, rgba(255,140,66,0.04) 60%, rgba(255,140,66,0.10) 100%)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }} />
+            ))}
+
+            <AnimatePresence>
+              {items.map(item => {
+                const isSelected = item.kind === 'waste' && selectedItemId === item.id;
+                const isActive = activeWasteItem?.id === item.id;
+                const isPower = item.kind === 'powerup';
+                const emoji = isPower ? item.power.emoji : item.waste.emoji;
+                const title = isPower ? `${item.power.name} — ${item.power.desc}` : item.waste.name;
+                const left = item.col * CELL_W + (CELL_W - ITEM_SIZE) / 2;
+                return (
+                  <motion.div key={item.id}
+                    initial={{ opacity: 0, scale: 0.5, left }}
+                    animate={{
+                      opacity: 1,
+                      scale: isPower ? [1, 1.08, 1] : 1,
+                      left,
+                    }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{
+                      scale: isPower ? { repeat: Infinity, duration: 1.2 } : { duration: 0.15 },
+                      left: { duration: 0.22, ease: 'easeOut' },
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: item.row * CELL_H,
+                      width: ITEM_SIZE, height: ITEM_SIZE,
+                      zIndex: 2,
+                    }}
+                  >
+                    <Box
+                      onClick={() => handleItemClick(item)}
+                      sx={{
+                        width: '100%', height: '100%',
+                        borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 38, cursor: 'pointer',
+                        background: isPower
+                          ? 'radial-gradient(circle, #9C27B030, #9C27B008 70%)'
+                          : isSelected
+                            ? 'linear-gradient(180deg, #FFF5EE, #FFE9DA)'
+                            : 'linear-gradient(180deg, #FFFFFF, #F2F4F8)',
+                        border: isPower
+                          ? '2px solid #9C27B0'
+                          : isSelected
+                            ? '2px solid #FF8C42'
+                            : isActive
+                              ? '2px solid #FF8C4280'
+                              : '2px solid rgba(26, 35, 50, 0.10)',
+                        boxShadow: isPower
+                          ? '0 0 14px rgba(156,39,176,0.45)'
+                          : isSelected
+                            ? '0 6px 14px rgba(255,140,66,0.30)'
+                            : '0 4px 10px rgba(0,0,0,0.10), inset 0 -2px 0 rgba(0,0,0,0.04)',
+                        transition: 'all 0.15s',
+                        '&:hover': {
+                          transform: 'scale(1.08)',
+                          boxShadow: isPower
+                            ? '0 0 18px rgba(156,39,176,0.6)'
+                            : '0 8px 16px rgba(0,0,0,0.16)',
+                        },
+                      }}
+                      title={title}
+                    >
+                      {emoji}
+                    </Box>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Floating "+15 ×1.5" score popups */}
+            <AnimatePresence>
+              {floats.map(f => (
+                <motion.div key={f.id}
+                  initial={{ opacity: 0, y: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, y: -34, scale: 1 }}
+                  exit={{ opacity: 0, y: -56 }}
+                  transition={{ duration: 0.7, ease: 'easeOut' }}
                   style={{
                     position: 'absolute',
-                    left: item.col * CELL_W + (CELL_W - ITEM_SIZE) / 2,
-                    top: item.row * CELL_H,
-                    width: ITEM_SIZE, height: ITEM_SIZE,
-                    zIndex: 2,
+                    left: f.col * CELL_W + (CELL_W - ITEM_SIZE) / 2,
+                    top: f.row * CELL_H,
+                    width: ITEM_SIZE,
+                    textAlign: 'center',
+                    pointerEvents: 'none',
+                    fontWeight: 800,
+                    color: f.color,
+                    textShadow: '0 1px 2px rgba(255,255,255,0.8)',
+                    fontSize: 14,
+                    zIndex: 5,
                   }}
                 >
-                  <Box
-                    onClick={() => handleItemClick(item)}
-                    sx={{
-                      width: '100%', height: '100%',
-                      borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 38, cursor: 'pointer',
-                      // Always show a card background so light-coloured emoji
-                      // (newspaper, styrofoam, etc) don't disappear into the
-                      // white playfield. Selection / power-up overrides.
-                      background: isPower
-                        ? 'radial-gradient(circle, #9C27B030, #9C27B008 70%)'
-                        : isSelected
-                          ? 'linear-gradient(180deg, #FFF5EE, #FFE9DA)'
-                          : 'linear-gradient(180deg, #FFFFFF, #F2F4F8)',
-                      border: isPower
-                        ? '2px solid #9C27B0'
-                        : isSelected
-                          ? '2px solid #FF8C42'
-                          : '2px solid rgba(26, 35, 50, 0.10)',
-                      boxShadow: isPower
-                        ? '0 0 14px rgba(156,39,176,0.45)'
-                        : isSelected
-                          ? '0 6px 14px rgba(255,140,66,0.30)'
-                          : '0 4px 10px rgba(0,0,0,0.10), inset 0 -2px 0 rgba(0,0,0,0.04)',
-                      transition: 'all 0.15s',
-                      '&:hover': {
-                        transform: 'scale(1.08)',
-                        boxShadow: isPower
-                          ? '0 0 18px rgba(156,39,176,0.6)'
-                          : '0 8px 16px rgba(0,0,0,0.16)',
-                      },
-                    }}
-                    title={title}
-                  >
-                    {emoji}
-                  </Box>
+                  {f.text}
                 </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Brief tint flash on every sort — green = correct, red = wrong */}
+            <AnimatePresence>
+              {flash && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{
+                    position: 'absolute', inset: 0,
+                    background: flash === 'good' ? 'rgba(76,175,80,0.18)' : 'rgba(231,76,60,0.22)',
+                    pointerEvents: 'none',
+                    zIndex: 4,
+                  }}
+                />
+              )}
+            </AnimatePresence>
+          </Box>
+
+          {/* Bin tray — exactly aligned to the 5 lanes above. The lane
+              under the active item is highlighted so the player can see
+              where the item will land if untouched. */}
+          <Box sx={{
+            position: 'relative',
+            width: PLAYFIELD_W_PX,
+            height: BIN_TRAY_H,
+            display: 'grid',
+            gridTemplateColumns: `repeat(${PLAYFIELD_W}, 1fr)`,
+            background: 'linear-gradient(180deg, #F5F7FA, #E2E7EE)',
+            border: '1px solid #E8EDF2',
+            borderTop: '2px solid #D4DBE5',
+            borderRadius: '0 0 12px 12px',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
+          }}>
+            {BINS.map((bin, idx) => {
+              const isActiveLane = activeCol === idx;
+              return (
+                <Box
+                  key={bin.id}
+                  onClick={() => handleBinClick(idx)}
+                  sx={{
+                    position: 'relative',
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer',
+                    borderLeft: idx === 0 ? 'none' : '1px solid rgba(0,0,0,0.06)',
+                    background: isActiveLane
+                      ? `linear-gradient(180deg, ${bin.color}30, ${bin.color}12)`
+                      : 'transparent',
+                    transition: 'background 0.18s',
+                    '&:hover': { background: `linear-gradient(180deg, ${bin.color}30, ${bin.color}12)` },
+                  }}
+                >
+                  <Box sx={{
+                    position: 'absolute', top: 4, left: 4,
+                    width: 18, height: 18, borderRadius: '50%',
+                    background: '#1A2332', color: '#FFFFFF',
+                    fontSize: 11, fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
+                  }}>
+                    {idx + 1}
+                  </Box>
+                  <Typography sx={{ fontSize: 30, lineHeight: 1 }}>{bin.emoji}</Typography>
+                  <Typography sx={{
+                    fontSize: 12, fontWeight: 700, color: bin.color,
+                    mt: 0.5, letterSpacing: '0.02em', textAlign: 'center', px: 0.4,
+                  }}>
+                    {bin.name}
+                  </Typography>
+                </Box>
               );
             })}
-          </AnimatePresence>
-
-          {/* Floating "+15 ×1.5" score popups, anchored to where the sort happened */}
-          <AnimatePresence>
-            {floats.map(f => (
-              <motion.div key={f.id}
-                initial={{ opacity: 0, y: 0, scale: 0.7 }}
-                animate={{ opacity: 1, y: -34, scale: 1 }}
-                exit={{ opacity: 0, y: -56 }}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
-                style={{
-                  position: 'absolute',
-                  left: f.col * CELL_W + (CELL_W - ITEM_SIZE) / 2,
-                  top: f.row * CELL_H,
-                  width: ITEM_SIZE,
-                  textAlign: 'center',
-                  pointerEvents: 'none',
-                  fontWeight: 800,
-                  color: f.color,
-                  textShadow: '0 1px 2px rgba(255,255,255,0.8)',
-                  fontSize: 14,
-                  zIndex: 5,
-                }}
-              >
-                {f.text}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {/* Brief tint flash on every sort — green = correct, red = wrong */}
-          <AnimatePresence>
-            {flash && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: flash === 'good' ? 'rgba(76,175,80,0.18)' : 'rgba(231,76,60,0.22)',
-                  pointerEvents: 'none',
-                  zIndex: 4,
-                }}
-              />
-            )}
-          </AnimatePresence>
+          </Box>
         </Box>
-      </Box>
-
-      {/* Bin tray — sits below the playfield so falling waste visually
-          drops "into" the right bin. Numeric badges show the keyboard
-          shortcut; bin names show during level 1 to teach the mapping. */}
-      <Box sx={{
-        display: 'flex',
-        gap: 'clamp(6px, 1.4cqw, 14px)',
-        justifyContent: 'center',
-        flexShrink: 0,
-        width: '100%', maxWidth: 640,
-        px: 'clamp(4px, 1cqw, 12px)',
-        pt: 1.2,
-      }}>
-        {BINS.map((bin, idx) => {
-          const showLabel = level === 0;
-          const active = selectedBin === bin.id;
-          return (
-            <Box
-              key={bin.id}
-              onClick={() => handleBinClick(bin.id)}
-              sx={{
-                position: 'relative',
-                flex: '1 1 0', maxWidth: 120,
-                px: 'clamp(6px, 1.2cqw, 14px)',
-                py: 'clamp(8px, 1.4cqh, 14px)',
-                borderRadius: 2, cursor: 'pointer',
-                background: active
-                  ? `linear-gradient(180deg, ${bin.color}25, ${bin.color}10)`
-                  : 'linear-gradient(180deg, #FFFFFF, #F5F7FA)',
-                border: `2px solid ${active ? bin.color : '#E8EDF2'}`,
-                boxShadow: active
-                  ? `0 4px 12px ${bin.color}33, inset 0 -2px 0 ${bin.color}40`
-                  : '0 2px 4px rgba(0,0,0,0.04), inset 0 -2px 0 #E8EDF2',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                '&:hover': { borderColor: bin.color, transform: 'translateY(-1px)' },
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute', top: -8, left: -8,
-                  width: 20, height: 20, borderRadius: '50%',
-                  background: '#1A2332', color: '#FFFFFF',
-                  fontSize: 12, fontWeight: 700,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
-                }}
-              >
-                {idx + 1}
-              </Box>
-              <Typography sx={{ fontSize: 'clamp(20px, 3.4cqh, 28px)', lineHeight: 1 }}>{bin.emoji}</Typography>
-              {showLabel && (
-                <Typography sx={{ fontSize: 11, fontWeight: 700, color: bin.color, mt: 0.4, letterSpacing: '0.02em' }}>
-                  {bin.name}
-                </Typography>
-              )}
-            </Box>
-          );
-        })}
       </Box>
 
       {/* Fact — green tint on streak milestones, red tint on wrong sorts.
