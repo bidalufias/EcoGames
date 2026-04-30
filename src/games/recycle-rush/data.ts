@@ -17,7 +17,7 @@ export const WASTE_ITEMS = [
   // Round 1 — one of each bin
   { type: 'plastic',   emoji: '🥤', name: 'Plastic Bottle',  bin: 'recycle',   fact: 'Only 9% of all plastic ever made has been recycled' },
   { type: 'food',      emoji: '🍌', name: 'Banana Peel',     bin: 'compost',   fact: 'Food waste in landfills produces methane — compost instead!' },
-  { type: 'styrofoam', emoji: '📦', name: 'Styrofoam',       bin: 'landfill',  fact: 'Styrofoam takes 500+ years to decompose' },
+  { type: 'foam-cup',  emoji: '🥡', name: 'Foam Container',  bin: 'landfill',  fact: 'Polystyrene foam takes 500+ years to decompose' },
   { type: 'battery',   emoji: '🔋', name: 'Battery',         bin: 'hazardous', fact: 'One battery can pollute 600,000 liters of water' },
   { type: 'phone',     emoji: '📱', name: 'Old Phone',       bin: 'ewaste',    fact: 'E-waste is the fastest growing waste stream globally' },
   // Round 2 — second of each bin
@@ -44,6 +44,18 @@ export const WASTE_ITEMS = [
   { type: 'bandage',   emoji: '🩹', name: 'Used Bandage',    bin: 'landfill',  fact: 'Used bandages can’t be recycled — wrap and bin them' },
   { type: 'lab',       emoji: '🧪', name: 'Lab Chemical',    bin: 'hazardous', fact: 'Lab chemicals must go to a certified hazardous waste facility' },
   { type: 'headphones',emoji: '🎧', name: 'Headphones',      bin: 'ewaste',    fact: 'Headphones mix metal, plastic, and circuitry — drop at e-waste' },
+  // Round 6
+  { type: 'cardboard', emoji: '📦', name: 'Cardboard Box',   bin: 'recycle',   fact: 'Cardboard fibres can be recycled up to 7 times' },
+  { type: 'coffee',    emoji: '☕', name: 'Coffee Grounds',   bin: 'compost',   fact: 'Coffee grounds add nitrogen and improve compost drainage' },
+  { type: 'toothbrush',emoji: '🪥', name: 'Toothbrush',      bin: 'landfill',  fact: 'Plastic toothbrushes take 400+ years to decompose' },
+  { type: 'nailpolish',emoji: '💅', name: 'Nail Polish',     bin: 'hazardous', fact: 'Nail polish contains solvents that pollute waterways' },
+  { type: 'mouse',     emoji: '🖱️', name: 'Computer Mouse',  bin: 'ewaste',    fact: 'Computer peripherals are 95% recyclable when properly recovered' },
+  // Round 7
+  { type: 'bag',       emoji: '🛍️', name: 'Plastic Bag',     bin: 'recycle',   fact: 'Plastic bags need store drop-off — they jam curbside machines' },
+  { type: 'bread',     emoji: '🍞', name: 'Stale Bread',     bin: 'compost',   fact: 'Stale bread breaks down quickly — compost it, don\'t bin it' },
+  { type: 'receipt',   emoji: '🧾', name: 'Receipt',         bin: 'landfill',  fact: 'Thermal receipts contain BPA and can\'t be recycled' },
+  { type: 'thermo',    emoji: '🌡️', name: 'Thermometer',    bin: 'hazardous', fact: 'Old mercury thermometers need special hazmat disposal' },
+  { type: 'tv',        emoji: '📺', name: 'Old TV',          bin: 'ewaste',    fact: 'Old CRT TVs contain lead — never put them in the bin' },
 ];
 
 // Tetris-style ramp: level 1 has a single slow item at a time so new
@@ -55,10 +67,10 @@ export const WASTE_ITEMS = [
 //   types         — how many waste types are in the random pool
 export const DIFFICULTY_LEVELS = [
   { speed: 1.0, spawnInterval: 2400, maxConcurrent: 1, types: 5 },   // Level 1: one of each bin
-  { speed: 1.3, spawnInterval: 1900, maxConcurrent: 2, types: 10 },  // Level 2: two of each
-  { speed: 1.6, spawnInterval: 1500, maxConcurrent: 3, types: 15 },  // Level 3: three of each
-  { speed: 2.0, spawnInterval: 1100, maxConcurrent: 4, types: 20 },  // Level 4: four of each
-  { speed: 2.4, spawnInterval: 850,  maxConcurrent: 5, types: 25 },  // Level 5: full pool
+  { speed: 1.3, spawnInterval: 1900, maxConcurrent: 2, types: 12 },  // Level 2
+  { speed: 1.6, spawnInterval: 1500, maxConcurrent: 3, types: 20 },  // Level 3
+  { speed: 2.0, spawnInterval: 1100, maxConcurrent: 4, types: 28 },  // Level 4
+  { speed: 2.4, spawnInterval: 850,  maxConcurrent: 5, types: 35 },  // Level 5: full pool of 35 items
 ];
 
 export const POWER_UPS = [
