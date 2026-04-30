@@ -37,6 +37,34 @@ export const DIFFICULTY_LEVELS = [
   { speed: 4, spawnRate: 55, types: 12 },    // Level 5
 ];
 
+export const POWER_UPS = [
+  { id: 'heart', emoji: '❤️', name: 'Extra Life', desc: 'Restore one life' },
+  { id: 'slowmo', emoji: '⏱️', name: 'Slow Motion', desc: 'Half speed for 5s' },
+  { id: 'magnet', emoji: '🧲', name: 'Auto-Sort', desc: 'Auto-sort next 3 items' },
+] as const;
+
+export type PowerUp = typeof POWER_UPS[number];
+
+export function randomPowerUp(): PowerUp {
+  return POWER_UPS[Math.floor(Math.random() * POWER_UPS.length)];
+}
+
+export const SPEED_PRESETS = {
+  chill:  { id: 'chill',  label: 'Chill',  emoji: '🧘', speedMul: 0.7, spawnMul: 1.4 },
+  normal: { id: 'normal', label: 'Normal', emoji: '⚡', speedMul: 1.0, spawnMul: 1.0 },
+  rush:   { id: 'rush',   label: 'Rush',   emoji: '🔥', speedMul: 1.4, spawnMul: 0.7 },
+} as const;
+
+export type SpeedKey = keyof typeof SPEED_PRESETS;
+
+// Combo multiplier brackets — applied to the base 10-point sort.
+export function comboMultiplier(streak: number): number {
+  if (streak >= 15) return 3;
+  if (streak >= 10) return 2;
+  if (streak >= 5) return 1.5;
+  return 1;
+}
+
 export const PLAYFIELD_W = 5;
 export const PLAYFIELD_H = 12;
 export const CELL_SIZE = 50;
