@@ -565,16 +565,17 @@ export default function RecycleRushGame() {
             </Box>
           </Box>
         )}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 2 }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 2, width: '100%', px: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: 420 }}>
             <input
               value={playerName}
               onChange={e => setPlayerName(e.target.value)}
               placeholder="Your name"
               maxLength={20}
+              aria-label="Your name"
               style={{
-                padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(13,155,74,0.3)',
-                fontSize: '1rem', outline: 'none', width: 160,
+                padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(13,155,74,0.3)',
+                fontSize: '1rem', outline: 'none', flex: '1 1 200px', minWidth: 0, minHeight: 44, boxSizing: 'border-box',
               }}
             />
             <EcoButton onClick={async () => {
@@ -585,7 +586,7 @@ export default function RecycleRushGame() {
               setScreen('leaderboard');
             }}>🏆 Leaderboard</EcoButton>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
             <EcoButton onClick={startGame}>↻ Play Again</EcoButton>
             <EcoButton onClick={() => setScreen('intro')} variant="secondary">Menu</EcoButton>
           </Box>

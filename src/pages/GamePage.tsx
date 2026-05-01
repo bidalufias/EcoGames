@@ -19,31 +19,50 @@ export default function GamePage() {
 
   return (
     <Box
+      className="game-screen-stack"
       sx={{
         height: '100%',
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        pt: 10,
+        px: 'clamp(16px, 4cqw, 32px)',
+        py: 'clamp(72px, 8cqh, 120px)',
         overflow: 'hidden',
       }}
     >
-      <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
+      <Container maxWidth="sm" sx={{ textAlign: 'center', px: 0 }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Typography sx={{ fontSize: '4rem', mb: 2 }}>🎮</Typography>
-          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }}>
+          <Typography sx={{ fontSize: 'clamp(2.5rem, 8cqmin, 4rem)', mb: 2 }} aria-hidden>🎮</Typography>
+          <Typography
+            component="h1"
+            sx={{
+              fontWeight: 800,
+              mb: 2,
+              fontSize: 'clamp(1.5rem, 5cqmin, 2.4rem)',
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              color: '#1F1B14',
+              wordBreak: 'break-word',
+            }}
+          >
             {gameName}
           </Typography>
           <Typography
-            variant="h6"
-            sx={{ color: 'text.secondary', mb: 4, lineHeight: 1.7 }}
+            sx={{
+              color: '#5B5247',
+              mb: 4,
+              lineHeight: 1.6,
+              fontSize: 'clamp(0.95rem, 2.4cqmin, 1.1rem)',
+              maxWidth: 480,
+              mx: 'auto',
+            }}
           >
-            This game is coming soon! We're working hard to bring you an amazing experience.
+            This game is coming soon. We're working on bringing you the next round.
           </Typography>
           <EcoButton variant="primary" size="large" onClick={() => navigate('/')}>
             ← Back to Games

@@ -13,9 +13,9 @@ interface EcoButtonProps {
 }
 
 const sizeMap = {
-  small: { py: 0.75, px: 2, fontSize: '0.85rem', minWidth: 80 },
-  medium: { py: 1.25, px: 3, fontSize: '1rem', minWidth: 120 },
-  large: { py: 1.5, px: 4, fontSize: '1.1rem', minWidth: 160 },
+  small: { py: 0.75, px: 2, fontSize: '0.85rem', minWidth: 80, minHeight: 44 },
+  medium: { py: 1.25, px: 3, fontSize: '1rem', minWidth: 120, minHeight: 48 },
+  large: { py: 1.5, px: 4, fontSize: '1.1rem', minWidth: 160, minHeight: 52 },
 };
 
 export default function EcoButton({
@@ -91,6 +91,7 @@ export default function EcoButton({
           px: sz.px,
           fontSize: sz.fontSize,
           minWidth: sz.minWidth,
+          minHeight: sz.minHeight,
           fontWeight: 600,
           textTransform: 'none',
           borderRadius: '12px',

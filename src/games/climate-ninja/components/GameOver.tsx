@@ -34,37 +34,57 @@ export default function GameOver({ players, playerNames, onPlayAgain, onViewLead
 
       <Box sx={{
         width: '100%', maxWidth: 500, borderRadius: 3, overflow: 'hidden',
-        background: '#FFFFFF', backdropFilter: 'blur(16px)',
+        background: '#FFFFFF',
         border: '1px solid rgba(13,155,74,0.15)',
       }}>
-        <Box sx={{ display: 'flex', p: 2, borderBottom: '1px solid #E8EDF2' }}>
-          <Typography sx={{ flex: 1, fontWeight: 700, color: '#5A6A7E' }}>Player</Typography>
-          <Typography sx={{ width: 80, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Score</Typography>
-          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Sliced</Typography>
-          <Typography sx={{ width: 60, textAlign: 'center', fontWeight: 700, color: '#5A6A7E' }}>Combo</Typography>
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) 72px 56px 56px',
+          gap: 1,
+          px: { xs: 1.5, sm: 2 }, py: 1.5,
+          borderBottom: '1px solid #E8EDF2',
+          fontSize: { xs: '0.72rem', sm: '0.8rem' },
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}>
+          <Typography sx={{ fontWeight: 800, color: '#5A6A7E', fontSize: 'inherit' }}>Player</Typography>
+          <Typography sx={{ textAlign: 'right', fontWeight: 800, color: '#5A6A7E', fontSize: 'inherit' }}>Score</Typography>
+          <Typography sx={{ textAlign: 'right', fontWeight: 800, color: '#5A6A7E', fontSize: 'inherit' }}>Sliced</Typography>
+          <Typography sx={{ textAlign: 'right', fontWeight: 800, color: '#5A6A7E', fontSize: 'inherit' }}>Combo</Typography>
         </Box>
         {sorted.map((p, idx) => (
           <Box key={p.id} sx={{
-            display: 'flex', p: 2, alignItems: 'center',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) 72px 56px 56px',
+            gap: 1,
+            px: { xs: 1.5, sm: 2 }, py: 1.5,
+            alignItems: 'center',
             background: p === winner ? 'rgba(13,155,74,0.1)' : 'transparent',
           }}>
-            <Typography sx={{ flex: 1, fontWeight: 700, color: PLAYER_COLORS[p.id] || '#1A2332' }}>
+            <Typography sx={{
+              fontWeight: 700,
+              color: PLAYER_COLORS[p.id] || '#1A2332',
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
               {idx === 0 ? '🏆 ' : ''}{playerNames[p.id] || `Player ${p.id + 1}`}
             </Typography>
-            <Typography sx={{ width: 80, textAlign: 'center', fontWeight: 700 }}>
+            <Typography sx={{ textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
               {p.score.toLocaleString()}
             </Typography>
-            <Typography sx={{ width: 60, textAlign: 'center', color: '#5A6A7E' }}>
+            <Typography sx={{ textAlign: 'right', color: '#5A6A7E', fontVariantNumeric: 'tabular-nums' }}>
               {p.itemsSliced}
             </Typography>
-            <Typography sx={{ width: 60, textAlign: 'center', color: '#5A6A7E' }}>
-              {p.maxCombo}x
+            <Typography sx={{ textAlign: 'right', color: '#5A6A7E', fontVariantNumeric: 'tabular-nums' }}>
+              {p.maxCombo}×
             </Typography>
           </Box>
         ))}
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
+      <Box sx={{ display: 'flex', gap: 2, mt: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
         <EcoButton onClick={onPlayAgain}>↻ Play Again</EcoButton>
         <EcoButton onClick={onViewLeaderboard} variant="secondary">Leaderboard</EcoButton>
       </Box>
