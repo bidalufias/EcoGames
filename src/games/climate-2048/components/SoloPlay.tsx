@@ -147,7 +147,8 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
         overflow: 'hidden',
         '@media (orientation: portrait) and (max-width: 1024px)': {
           px: '12px',
-          pt: '64px',
+          pt: '60px',
+          pb: '8px',
         },
       }}
     >
@@ -168,7 +169,7 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
         mt: 'clamp(28px, 5cqh, 44px)',
         '@media (orientation: portrait) and (max-width: 1024px)': {
           mt: 0,
-          gap: 1,
+          gap: 0.8,
         },
       }}>
         <HUD
@@ -179,7 +180,18 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
           scoreDelta={scoreDelta}
           track={track}
         />
-        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', flexShrink: 0 }}>
+        {/* Restart button — own row on landscape so the HUD stays clean,
+            but tucked inline (and condensed) on portrait so we don't burn
+            another 50px of vertical space. */}
+        <Box sx={{
+          display: 'flex',
+          gap: 1,
+          justifyContent: 'flex-end',
+          flexShrink: 0,
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            mt: -0.5,
+          },
+        }}>
           <EcoButton size="small" onClick={newGame}>↻ New Game</EcoButton>
         </Box>
 
@@ -262,6 +274,9 @@ export default function SoloPlay({ track, onChangeMode }: SoloPlayProps) {
             textAlign: 'center',
             lineHeight: 1.4,
             flexShrink: 0,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              display: 'none',
+            },
           }}
         >
           <Box component="span" sx={{ fontWeight: 800 }}>How to play:</Box> swipe, arrow keys or WASD to slide tiles. Matching techs merge into the next stage.

@@ -102,6 +102,11 @@ export default function HUD({ title, subtitle, score, best, scoreDelta, track, c
             lineHeight: 1,
             color: '#776E65',
             letterSpacing: '-0.02em',
+            // Portrait phones: shrink the title so the board gets the
+            // dominant share of vertical space.
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '1.25rem',
+            },
           }}
         >
           {title}
@@ -113,6 +118,9 @@ export default function HUD({ title, subtitle, score, best, scoreDelta, track, c
             color: '#776E65',
             opacity: 0.85,
             lineHeight: 1.3,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              display: 'none',
+            },
           }}
         >
           {subtitle}
@@ -132,6 +140,10 @@ export default function HUD({ title, subtitle, score, best, scoreDelta, track, c
             fontWeight: 800,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              mt: 0.3,
+              fontSize: '0.62rem',
+            },
           }}
         >
           <Box component="span">{track.emoji}</Box>
