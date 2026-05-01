@@ -132,25 +132,57 @@ export default function CarbonCrushGame() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Typography variant="h3" component="h1" sx={{
             color: '#1565C0', fontWeight: 800, mb: 2,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '1.7rem', mb: 1,
+            },
           }} align="center">
             💎 Carbon Crush
           </Typography>
-          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 3 }} align="center">
+          <Typography variant="h6" sx={{
+            color: '#5A6A7E', mb: 3,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.85rem', mb: 1.5, lineHeight: 1.35,
+            },
+          }} align="center">
             Match dirty tech to phase it out. Every match brings us closer to clean energy!
           </Typography>
         </motion.div>
 
-        <Box sx={{ maxWidth: 700, mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#E74C3C' }}>🏭 Match to Phase Out:</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3 }}>
+        <Box sx={{
+          maxWidth: 700, mb: 4,
+          '@media (orientation: portrait) and (max-width: 1024px)': { mb: 1.5 },
+        }}>
+          <Typography variant="h6" sx={{
+            mb: 2, color: '#E74C3C',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.9rem', mb: 1,
+            },
+          }}>🏭 Match to Phase Out:</Typography>
+          <Box sx={{
+            display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 3,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              gap: 0.6, mb: 1.2,
+              fontSize: '0.78rem',
+            },
+          }}>
             {DIRTY_TECH.map(t => (
               <Box key={t.type} sx={{ px: 1.5, py: 0.5, borderRadius: 2, background: '#E74C3C10', border: '1px solid #E74C3C25' }}>
                 {t.emoji} {t.name}
               </Box>
             ))}
           </Box>
-          <Typography variant="h6" sx={{ mb: 2, color: '#8BC53F' }}>⚡ Replaced By:</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+          <Typography variant="h6" sx={{
+            mb: 2, color: '#8BC53F',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.9rem', mb: 1,
+            },
+          }}>⚡ Replaced By:</Typography>
+          <Box sx={{
+            display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              gap: 0.6, fontSize: '0.78rem',
+            },
+          }}>
             {CLEAN_TECH.map(t => (
               <Box key={t.type} sx={{ px: 1.5, py: 0.5, borderRadius: 2, background: '#8BC53F10', border: '1px solid #8BC53F25' }}>
                 {t.emoji} {t.name}
@@ -159,7 +191,12 @@ export default function CarbonCrushGame() {
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 500, textAlign: 'center' }}>
+        <Typography sx={{
+          color: '#5A6A7E', mb: 3, maxWidth: 500, textAlign: 'center',
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            display: 'none',
+          },
+        }}>
           Swap adjacent tiles to match 3 or more! Score enough and dirty tiles transition to clean tech.
           You have 30 moves — make them count!
         </Typography>

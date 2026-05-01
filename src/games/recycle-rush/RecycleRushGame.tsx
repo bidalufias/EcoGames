@@ -393,31 +393,64 @@ export default function RecycleRushGame() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Typography variant="h3" component="h1" sx={{
             color: '#C2410C', fontWeight: 800, mb: 2,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '1.7rem', mb: 0.8,
+            },
           }} align="center">
             📦 Recycle Rush
           </Typography>
-          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 4 }} align="center">
+          <Typography variant="h6" sx={{
+            color: '#5A6A7E', mb: 4,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.85rem', mb: 1.5, lineHeight: 1.35,
+            },
+          }} align="center">
             Sort waste at lightning speed. Learn what goes where!
           </Typography>
         </motion.div>
 
-        <Box sx={{ maxWidth: 600, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#1A2332' }}>🎯 The Bins:</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center' }}>
+        <Box sx={{
+          maxWidth: 600, mb: 3,
+          '@media (orientation: portrait) and (max-width: 1024px)': { mb: 1.5 },
+        }}>
+          <Typography variant="h6" sx={{
+            mb: 2, color: '#1A2332',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.9rem', mb: 1,
+            },
+          }}>🎯 The Bins:</Typography>
+          <Box sx={{
+            display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center',
+            '@media (orientation: portrait) and (max-width: 1024px)': { gap: 0.8 },
+          }}>
             {BINS.map(bin => (
               <Box key={bin.id} sx={{
                 px: 2, py: 1, borderRadius: 2,
                 background: `${bin.color}10`, border: `1px solid ${bin.color}30`,
                 textAlign: 'center',
+                '@media (orientation: portrait) and (max-width: 1024px)': {
+                  px: 1.2, py: 0.5,
+                },
               }}>
-                <Typography sx={{ fontSize: 28 }}>{bin.emoji}</Typography>
-                <Typography sx={{ fontWeight: 700, color: bin.color, fontSize: 13 }}>{bin.name}</Typography>
+                <Typography sx={{
+                  fontSize: 28,
+                  '@media (orientation: portrait) and (max-width: 1024px)': { fontSize: 20 },
+                }}>{bin.emoji}</Typography>
+                <Typography sx={{
+                  fontWeight: 700, color: bin.color, fontSize: 13,
+                  '@media (orientation: portrait) and (max-width: 1024px)': { fontSize: 11 },
+                }}>{bin.name}</Typography>
               </Box>
             ))}
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#5A6A7E', mb: 2, maxWidth: 540, textAlign: 'center' }}>
+        <Typography sx={{
+          color: '#5A6A7E', mb: 2, maxWidth: 540, textAlign: 'center',
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            display: 'none',
+          },
+        }}>
           Each bin sits under one of 5 lanes. Items fall in random lanes —
           tap a bin (or press <b>1–5</b>, or use <b>← →</b>) to slide the
           active item into the right lane before it lands. Catch power-ups

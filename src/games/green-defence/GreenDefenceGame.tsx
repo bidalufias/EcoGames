@@ -180,23 +180,50 @@ export default function GreenDefenceGame() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Typography variant="h3" component="h1" sx={{
             color: '#0F766E', fontWeight: 800, mb: 2,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '1.7rem', mb: 0.8,
+            },
           }} align="center">
             🛡️ Green Defence
           </Typography>
-          <Typography variant="h6" sx={{ color: '#5A6A7E', mb: 4 }} align="center">
+          <Typography variant="h6" sx={{
+            color: '#5A6A7E', mb: 4,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.85rem', mb: 1.5, lineHeight: 1.35,
+            },
+          }} align="center">
             Deploy clean tech to stop pollution waves. Reach Net Zero by 2050!
           </Typography>
         </motion.div>
 
-        <Box sx={{ maxWidth: 600, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#8BC53F' }}>⚡ Your Towers:</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center', mb: 3 }}>
+        <Box sx={{
+          maxWidth: 600, mb: 3,
+          '@media (orientation: portrait) and (max-width: 1024px)': { mb: 1.5 },
+        }}>
+          <Typography variant="h6" sx={{
+            mb: 2, color: '#8BC53F',
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              fontSize: '0.9rem', mb: 1,
+            },
+          }}>⚡ Your Towers:</Typography>
+          <Box sx={{
+            display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center', mb: 3,
+            '@media (orientation: portrait) and (max-width: 1024px)': {
+              gap: 0.8, mb: 1,
+            },
+          }}>
             {TOWER_TYPES.map(t => (
               <Box key={t.type} sx={{
                 px: 1.5, py: 1, borderRadius: 2, textAlign: 'center', minWidth: 90,
                 background: `${t.color}10`, border: `1px solid ${t.color}25`,
+                '@media (orientation: portrait) and (max-width: 1024px)': {
+                  minWidth: 64, px: 0.8, py: 0.5,
+                },
               }}>
-                <Typography sx={{ fontSize: 28 }}>{t.emoji}</Typography>
+                <Typography sx={{
+                  fontSize: 28,
+                  '@media (orientation: portrait) and (max-width: 1024px)': { fontSize: 20 },
+                }}>{t.emoji}</Typography>
                 <Typography sx={{ fontSize: 11, fontWeight: 700, color: t.color }}>{t.name}</Typography>
                 <Typography sx={{ fontSize: 10, color: '#5A6A7E' }}>💰 {t.cost}</Typography>
               </Box>
@@ -204,7 +231,12 @@ export default function GreenDefenceGame() {
           </Box>
         </Box>
 
-        <Typography sx={{ color: '#5A6A7E', mb: 3, maxWidth: 450, textAlign: 'center' }}>
+        <Typography sx={{
+          color: '#5A6A7E', mb: 3, maxWidth: 450, textAlign: 'center',
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            display: 'none',
+          },
+        }}>
           Select a tower type, then click the grid to place it. Enemies follow the path — place towers alongside!
           Survive 10 waves to win. Earn budget by defeating enemies.
         </Typography>

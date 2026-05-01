@@ -20,15 +20,28 @@ export default function IntroScreen({ onStart }: Props) {
     <Box className="game-screen-stack" sx={{
       height: '100%', bgcolor: '#FAFBFC', color: '#1A2332',
       overflowY: 'auto', px: { xs: 2, md: 4 }, py: 4,
+      // Portrait phones: leave space at the bottom for the sticky
+      // Start CTA so the last GHG card isn't covered.
+      '@media (orientation: portrait) and (max-width: 1024px)': {
+        pb: '88px',
+      },
     }}>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Typography variant="h3" component="h1" align="center" sx={{
           color: '#15803D',
           fontWeight: 800, mb: 1,
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            fontSize: '1.7rem',
+          },
         }}>
           🥷 Climate Ninja
         </Typography>
-        <Typography variant="h5" align="center" sx={{ color: '#5A6A7E', mb: 4 }}>
+        <Typography variant="h5" align="center" sx={{
+          color: '#5A6A7E', mb: 4,
+          '@media (orientation: portrait) and (max-width: 1024px)': {
+            fontSize: '0.95rem', mb: 2,
+          },
+        }}>
           Know Your Enemy: The 7 Greenhouse Gases
         </Typography>
       </motion.div>
@@ -91,11 +104,44 @@ export default function IntroScreen({ onStart }: Props) {
         </Box>
       </Box>
 
-      <Box sx={{ textAlign: 'center', mt: 5, mb: 4 }}>
+      <Box sx={{
+        textAlign: 'center', mt: 5, mb: 4,
+        '@media (orientation: portrait) and (max-width: 1024px)': {
+          // Portrait: hide the inline CTA; the sticky bottom bar carries
+          // it instead so it's always reachable while scanning the cards.
+          display: 'none',
+        },
+      }}>
         <Typography variant="body1" sx={{ color: '#5A6A7E', mb: 3 }}>
           Swipe the <Box component="strong" sx={{ color: '#E74C3C' }}>greenhouse gases</Box>!
           Avoid the <Box component="strong" sx={{ color: '#8BC53F' }}>clean tech</Box>! ⚠️
         </Typography>
+        <EcoButton onClick={onStart} size="large">
+          Start Mission 🚀
+        </EcoButton>
+      </Box>
+
+      {/* Sticky bottom CTA on portrait phones: the 7 GHG cards push the
+          inline Start button below the fold by ~1700px, so pin a copy of
+          it to the bottom of the viewport so the player can always tap
+          'Start Mission' without scrolling. */}
+      <Box sx={{
+        display: 'none',
+        '@media (orientation: portrait) and (max-width: 1024px)': {
+          display: 'flex',
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          padding: '10px 16px calc(10px + env(safe-area-inset-bottom, 0px))',
+          background: 'rgba(250, 251, 252, 0.94)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          borderTop: '1px solid #E8EDF2',
+          justifyContent: 'center',
+          zIndex: 50,
+        },
+      }}>
         <EcoButton onClick={onStart} size="large">
           Start Mission 🚀
         </EcoButton>
