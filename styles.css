@@ -1,0 +1,533 @@
+:root {
+  color-scheme: light;
+  --paper: #fffaf0;
+  --paper-deep: #f4ead6;
+  --ink: #23332b;
+  --muted: #5d705f;
+  --leaf: #4f9b5b;
+  --river: #3b8eb4;
+  --sun: #efb840;
+  --coral: #dd7460;
+  --shadow: 0 14px 32px rgba(45, 70, 54, 0.16);
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(120deg, rgba(255, 250, 240, 0.92), rgba(233, 246, 239, 0.9)),
+    radial-gradient(circle at 12% 20%, rgba(239, 184, 64, 0.18), transparent 28%),
+    radial-gradient(circle at 92% 75%, rgba(59, 142, 180, 0.16), transparent 34%),
+    var(--paper);
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(56, 82, 62, 0.17);
+  background: rgba(255, 250, 240, 0.84);
+  backdrop-filter: blur(10px);
+}
+
+.brand,
+.current-game {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.game-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-game {
+  white-space: nowrap;
+}
+
+.menu-button {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  background: transparent;
+  box-shadow: none;
+}
+
+.menu-button span {
+  display: block;
+  width: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--ink);
+}
+
+.menu-button:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+
+.game-list {
+  position: absolute;
+  z-index: 10;
+  inset: calc(100% + 8px) 0 auto auto;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid rgba(62, 98, 72, 0.26);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 240, 0.98);
+  box-shadow: var(--shadow);
+}
+
+.game-list button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink);
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  background: rgba(121, 177, 101, 0.16);
+}
+
+.game {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px clamp(8px, 2vw, 18px) clamp(8px, 1.7vw, 16px);
+  gap: 8px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 28px;
+  min-height: 28px;
+  padding: 0 14px;
+  border-top: 1px solid rgba(56, 82, 62, 0.16);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(255, 250, 240, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.control-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 2.1vw, 1.55rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.mode-picker {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid rgba(62, 98, 72, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.mode-picker label {
+  min-width: 0;
+  cursor: pointer;
+}
+
+.mode-picker input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+.mode-picker span {
+  display: block;
+  min-width: 64px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.mode-picker input:checked + span {
+  color: #173121;
+  background: linear-gradient(135deg, rgba(239, 184, 64, 0.75), rgba(113, 177, 103, 0.78));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stats strong {
+  color: var(--ink);
+}
+
+.reset {
+  min-width: 54px;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: 999px;
+  color: #173121;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 0 0 1px rgba(62, 98, 72, 0.27);
+}
+
+.board-wrap {
+  position: relative;
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  place-items: center;
+}
+
+.board {
+  --cols: 4;
+  --rows: 2;
+  --board-ratio: 8 / 3;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  width: auto;
+  height: 100%;
+  aspect-ratio: var(--board-ratio);
+  max-width: 100%;
+  max-height: 100%;
+  gap: clamp(8px, 1.35vmin, 16px);
+  padding: 0;
+}
+
+.card {
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 3;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  perspective: 700px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+.card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  transform-style: preserve-3d;
+  transition: transform 260ms ease;
+}
+
+.card.is-flipped .card-inner,
+.card.is-matched .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(68, 94, 76, 0.22);
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  box-shadow: var(--shadow);
+}
+
+.card-back {
+  background-image: url("assets/eco-card-back.png");
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+.card-back::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255, 250, 240, 0.7);
+  border-radius: 6px;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(246, 236, 215, 0.9)),
+    var(--paper);
+}
+
+.art-card,
+.definition-card {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.art-card {
+  display: block;
+  background: var(--paper);
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+}
+
+.art-label {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  min-height: clamp(28px, 5.8vmin, 58px);
+  place-items: center;
+  padding: clamp(5px, 0.9vmin, 10px);
+  color: #183224;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.68rem, 1.1vmin, 1rem);
+  font-weight: 850;
+  line-height: 1.02;
+  text-align: center;
+  overflow-wrap: anywhere;
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 0 -1px 0 rgba(68, 94, 76, 0.16);
+}
+
+.definition-card {
+  display: grid;
+  align-content: center;
+  gap: clamp(8px, 1vmin, 13px);
+  padding: clamp(10px, 1.8vmin, 18px);
+  color: #1f3b2b;
+  text-align: center;
+  background:
+    linear-gradient(rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.92)),
+    radial-gradient(circle at 50% 16%, rgba(239, 184, 64, 0.18), transparent 42%),
+    radial-gradient(circle at 20% 85%, rgba(79, 155, 91, 0.2), transparent 36%),
+    var(--paper);
+}
+
+.term-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.86rem, 1.45vmin, 1.18rem);
+  font-weight: 900;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.term-description {
+  color: #475f4e;
+  font-size: clamp(0.68rem, 1.05vmin, 0.92rem);
+  font-weight: 750;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+}
+
+.board[data-mode="hard"] .term-title {
+  font-size: clamp(0.58rem, 1.05vmin, 0.9rem);
+}
+
+.board[data-mode="hard"] .term-description {
+  font-size: clamp(0.48rem, 0.82vmin, 0.72rem);
+  line-height: 1.18;
+}
+
+.card.is-matched {
+  cursor: default;
+}
+
+.card.is-matched .card-face {
+  border-color: rgba(79, 155, 91, 0.62);
+  box-shadow: 0 0 0 2px rgba(122, 184, 103, 0.28), var(--shadow);
+}
+
+.win-message {
+  position: absolute;
+  inset: auto auto 12px 50%;
+  transform: translateX(-50%);
+  max-width: min(92vw, 560px);
+  padding: 8px 13px;
+  border: 1px solid rgba(62, 98, 72, 0.24);
+  border-radius: 999px;
+  color: #173121;
+  font-weight: 850;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(255, 250, 240, 0.92);
+  box-shadow: var(--shadow);
+  transition: opacity 180ms ease;
+}
+
+.win-message.show {
+  opacity: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 780px) {
+  .topbar {
+    height: 40px;
+    gap: 8px;
+  }
+
+  .game {
+    padding: 6px 7px 7px;
+    gap: 6px;
+  }
+
+  .control-strip {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .control-strip h1 {
+    display: none;
+  }
+
+  .mode-picker,
+  .stats {
+    width: 100%;
+  }
+
+  .mode-picker span {
+    min-width: 0;
+    padding: 5px 7px;
+  }
+
+  .stats {
+    justify-content: space-between;
+    gap: 5px;
+    font-size: 0.77rem;
+  }
+
+  .reset {
+    min-width: 48px;
+    padding: 5px 9px;
+  }
+
+  .board {
+    width: min(100%, calc(100vw - 14px));
+    height: auto;
+  }
+
+  .board[data-mode="hard"] {
+    width: auto;
+    height: 100%;
+    max-width: calc(100vw - 14px);
+  }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+  .topbar {
+    height: 36px;
+  }
+
+  .game {
+    padding-top: 5px;
+  }
+
+  .control-strip {
+    grid-template-columns: minmax(110px, 1fr) auto auto;
+  }
+
+  .control-strip h1 {
+    display: none;
+  }
+
+  .mode-picker span,
+  .reset {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}

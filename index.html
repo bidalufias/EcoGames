@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EcoGames - Eco Memory</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="EcoGames home">EcoGames</a>
+        <div class="game-menu">
+          <span class="current-game">Eco Memory</span>
+          <button class="menu-button" id="gameMenuButton" type="button" aria-label="Game list" aria-expanded="false" aria-controls="gameMenuList">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+          <div class="game-list" id="gameMenuList" role="menu" hidden>
+            <button type="button" role="menuitem" aria-current="page">Eco Memory</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="game" aria-labelledby="game-title">
+        <section class="control-strip" aria-label="Game controls">
+          <div>
+            <h1 id="game-title">Find each matching term and picture.</h1>
+          </div>
+
+          <fieldset class="mode-picker" aria-label="Difficulty">
+            <legend class="sr-only">Difficulty</legend>
+            <label>
+              <input type="radio" name="mode" value="easy" checked>
+              <span>Easy</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="medium">
+              <span>Medium</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="hard">
+              <span>Hard</span>
+            </label>
+          </fieldset>
+
+          <div class="stats" aria-live="polite">
+            <span><strong id="moves">0</strong> moves</span>
+            <span><strong id="matches">0</strong>/<strong id="totalPairs">4</strong> pairs</span>
+            <button class="reset" id="reset" type="button">New</button>
+          </div>
+        </section>
+
+        <section class="board-wrap" aria-label="Memory card board">
+          <div class="board" id="board"></div>
+          <div class="win-message" id="winMessage" role="status" aria-live="polite"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>MGTC @2026</span>
+        <span>Learn through play.</span>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
