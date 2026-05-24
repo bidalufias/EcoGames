@@ -10,7 +10,7 @@ const concepts = [
     sprite: 1,
   },
   {
-    term: "Greenhouse Gases (GHG)",
+    term: "Green­house Gases (GHG)",
     detail: "Heat-trapping gases such as carbon dioxide and methane.",
     sprite: 2,
   },
@@ -25,17 +25,17 @@ const concepts = [
     sprite: 4,
   },
   {
-    term: "Sustainability",
+    term: "Sus­tain­abil­ity",
     detail: "Using resources responsibly so future generations can thrive.",
     sprite: 5,
   },
   {
-    term: "Renewable Energy",
+    term: "Re­new­able Energy",
     detail: "Energy from natural sources like solar, wind, and hydropower.",
     sprite: 6,
   },
   {
-    term: "Energy Efficiency",
+    term: "Energy Ef­fi­cien­cy",
     detail: "Using less energy while achieving the same outcome.",
     sprite: 7,
   },
@@ -45,22 +45,22 @@ const concepts = [
     sprite: 8,
   },
   {
-    term: "Deforestation",
+    term: "De­for­es­ta­tion",
     detail: "The clearing of forests, which increases emissions and harms ecosystems.",
     sprite: 9,
   },
   {
-    term: "Biodiversity",
+    term: "Bio­di­ver­si­ty",
     detail: "The variety of plants, animals, and ecosystems that support life on Earth.",
     sprite: 10,
   },
   {
-    term: "Climate Adaptation",
+    term: "Climate Ad­ap­ta­tion",
     detail: "Preparing communities and systems for climate impacts like floods and heatwaves.",
     sprite: 11,
   },
   {
-    term: "Decarbonisation",
+    term: "De­car­bon­i­sa­tion",
     detail: "Reducing carbon emissions across sectors and industries.",
     sprite: 12,
   },
