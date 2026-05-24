@@ -107,6 +107,10 @@ const p1ScoreEl = document.querySelector("#p1Score");
 const p2ScoreEl = document.querySelector("#p2Score");
 const p1PointsEl = document.querySelector("#p1Points");
 const p2PointsEl = document.querySelector("#p2Points");
+const infoButton = document.querySelector("#infoButton");
+const glossary = document.querySelector("#glossary");
+const glossaryClose = document.querySelector("#glossaryClose");
+const glossaryList = document.querySelector("#glossaryList");
 
 let deck = [];
 let openCards = [];
@@ -381,10 +385,61 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeGameMenu();
     gameMenuButton.blur();
+    if (!glossary.hidden) {
+      closeGlossary();
+    }
+  }
+});
+
+function buildGlossary() {
+  const items = concepts.map((concept) => {
+    const li = document.createElement("li");
+    li.className = "glossary-item";
+    const img = `assets/concepts/concept-${String(concept.sprite).padStart(2, "0")}.png`;
+    li.innerHTML = `
+      <img class="glossary-thumb" src="${img}" alt="" aria-hidden="true" draggable="false">
+      <div class="glossary-text">
+        <span class="glossary-term">${concept.term}</span>
+        <span class="glossary-detail">${concept.detail}</span>
+      </div>
+    `;
+    return li;
+  });
+  glossaryList.replaceChildren(...items);
+}
+
+function openGlossary() {
+  glossary.hidden = false;
+  requestAnimationFrame(() => glossary.classList.add("show"));
+  infoButton.setAttribute("aria-expanded", "true");
+  glossaryClose.focus();
+}
+
+function closeGlossary() {
+  glossary.classList.remove("show");
+  glossary.hidden = true;
+  infoButton.setAttribute("aria-expanded", "false");
+  infoButton.blur();
+}
+
+infoButton.addEventListener("click", () => {
+  if (glossary.hidden) {
+    openGlossary();
+  } else {
+    closeGlossary();
+  }
+});
+
+glossaryClose.addEventListener("click", closeGlossary);
+
+glossary.addEventListener("click", (event) => {
+  if (event.target === glossary) {
+    closeGlossary();
   }
 });
 
 resetButton.addEventListener("click", () => startGame());
 addEventListener("resize", () => setBoardGrid(currentMode));
 
+buildGlossary();
 startGame();
