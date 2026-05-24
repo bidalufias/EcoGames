@@ -29,6 +29,18 @@
             <h1 id="game-title">Find each matching term and picture.</h1>
           </div>
 
+          <fieldset class="mode-picker" aria-label="Players">
+            <legend class="sr-only">Players</legend>
+            <label>
+              <input type="radio" name="players" value="solo" checked>
+              <span>Solo</span>
+            </label>
+            <label>
+              <input type="radio" name="players" value="challenge">
+              <span>Challenge</span>
+            </label>
+          </fieldset>
+
           <fieldset class="mode-picker" aria-label="Difficulty">
             <legend class="sr-only">Difficulty</legend>
             <label>
@@ -46,7 +58,17 @@
           </fieldset>
 
           <div class="stats" aria-live="polite">
-            <span><strong id="moves">0</strong> moves</span>
+            <span class="solo-stat"><strong id="moves">0</strong> moves</span>
+            <span class="challenge-stat" hidden>
+              <span class="player-score" id="p1Score" data-player="1">
+                <span class="player-label">P1</span>
+                <strong id="p1Points">0</strong>
+              </span>
+              <span class="player-score" id="p2Score" data-player="2">
+                <span class="player-label">P2</span>
+                <strong id="p2Points">0</strong>
+              </span>
+            </span>
             <span><strong id="matches">0</strong>/<strong id="totalPairs">4</strong> pairs</span>
             <button class="reset" id="reset" type="button">New</button>
           </div>
