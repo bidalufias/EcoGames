@@ -466,26 +466,108 @@ h1 {
   box-shadow: 0 0 0 2px rgba(122, 184, 103, 0.28), var(--shadow);
 }
 
-.win-message {
-  position: absolute;
-  inset: auto auto 12px 50%;
-  transform: translateX(-50%);
-  max-width: min(92vw, 560px);
-  padding: 8px 13px;
-  border: 1px solid rgba(62, 98, 72, 0.24);
-  border-radius: 999px;
-  color: #173121;
-  font-weight: 850;
-  text-align: center;
-  opacity: 0;
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vmin, 36px);
+  z-index: 20;
   pointer-events: none;
-  background: rgba(255, 250, 240, 0.92);
-  box-shadow: var(--shadow);
-  transition: opacity 180ms ease;
+  background: rgba(23, 49, 33, 0);
+  transition: background 220ms ease;
 }
 
-.win-message.show {
+.win-overlay[hidden] {
+  display: none;
+}
+
+.win-overlay.show {
+  background: rgba(23, 49, 33, 0.32);
+}
+
+.win-card {
+  display: grid;
+  gap: clamp(6px, 1vmin, 12px);
+  max-width: min(92vw, 640px);
+  padding: clamp(20px, 4vmin, 40px) clamp(28px, 6vmin, 64px);
+  border: 1px solid rgba(62, 98, 72, 0.28);
+  border-radius: 22px;
+  text-align: center;
+  background:
+    linear-gradient(160deg, rgba(255, 250, 240, 0.98), rgba(246, 236, 215, 0.98)),
+    var(--paper);
+  box-shadow: 0 28px 70px rgba(45, 70, 54, 0.32);
+  opacity: 0;
+  transform: scale(0.85) translateY(8px);
+  transition: opacity 240ms ease, transform 240ms cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.win-overlay.show .win-card {
   opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.win-eyebrow {
+  color: var(--leaf);
+  font-size: clamp(0.78rem, 1.6vmin, 1.05rem);
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.win-title {
+  color: #173121;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.4rem, 3.6vmin, 2.6rem);
+  font-weight: 900;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 19;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -24px;
+  left: var(--x);
+  width: var(--w, 9px);
+  height: calc(var(--w, 9px) * 1.5);
+  border-radius: 2px;
+  background: var(--color, var(--leaf));
+  opacity: 0;
+  animation: confetti-fall var(--duration, 3s) linear var(--delay, 0s) forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0), 105vh, 0) rotate(var(--rotate, 720deg));
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win-card {
+    transition: opacity 120ms ease;
+    transform: none;
+  }
+
+  .confetti-piece {
+    display: none;
+  }
 }
 
 .sr-only {

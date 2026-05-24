@@ -76,8 +76,15 @@
 
         <section class="board-wrap" aria-label="Memory card board">
           <div class="board" id="board"></div>
-          <div class="win-message" id="winMessage" role="status" aria-live="polite"></div>
         </section>
+
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="win-overlay" id="winMessage" role="status" aria-live="polite" hidden>
+          <div class="win-card">
+            <span class="win-eyebrow">Congratulations!</span>
+            <span class="win-title" id="winTitle"></span>
+          </div>
+        </div>
       </main>
 
       <footer class="footer">

@@ -94,6 +94,9 @@ const movesEl = document.querySelector("#moves");
 const matchesEl = document.querySelector("#matches");
 const totalPairsEl = document.querySelector("#totalPairs");
 const winMessage = document.querySelector("#winMessage");
+const winTitle = document.querySelector("#winTitle");
+const confettiEl = document.querySelector("#confetti");
+const confettiColors = ["#4f9b5b", "#3b8eb4", "#efb840", "#dd7460", "#79b167", "#a85ab0"];
 const resetButton = document.querySelector("#reset");
 const gameMenuButton = document.querySelector("#gameMenuButton");
 const gameMenuList = document.querySelector("#gameMenuList");
@@ -244,8 +247,10 @@ function startGame(mode = currentMode) {
   matches = 0;
   activePlayer = 1;
   playerScores = [0, 0];
-  winMessage.textContent = "";
+  winTitle.textContent = "";
+  winMessage.hidden = true;
   winMessage.classList.remove("show");
+  clearConfetti();
   applyPlayModeUI();
   setBoardGrid(mode);
   board.replaceChildren(...deck.map(renderCard));
@@ -304,20 +309,42 @@ function announceWinIfComplete() {
 
   if (playMode === "challenge") {
     const [p1, p2] = playerScores;
-    let result;
     if (p1 === p2) {
-      result = `It's a tie! Both players matched ${p1} pair${p1 === 1 ? "" : "s"}.`;
+      winTitle.textContent = `It's a tie! Both players matched ${p1} pair${p1 === 1 ? "" : "s"}.`;
     } else {
       const winner = p1 > p2 ? 1 : 2;
       const winnerScore = Math.max(p1, p2);
       const loserScore = Math.min(p1, p2);
-      result = `Player ${winner} wins ${winnerScore}-${loserScore}!`;
+      winTitle.textContent = `Player ${winner} wins ${winnerScore}-${loserScore}!`;
     }
-    winMessage.textContent = result;
   } else {
-    winMessage.textContent = `Nice matchwork: ${matches} climate concepts learned in ${moves} moves.`;
+    winTitle.textContent = `Nice matchwork: ${matches} climate concepts learned in ${moves} moves.`;
   }
-  winMessage.classList.add("show");
+  winMessage.hidden = false;
+  requestAnimationFrame(() => winMessage.classList.add("show"));
+  spawnConfetti();
+}
+
+function spawnConfetti(count = 90) {
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    const size = 6 + Math.random() * 7;
+    piece.style.setProperty("--x", `${Math.random() * 100}vw`);
+    piece.style.setProperty("--drift", `${(Math.random() - 0.5) * 240}px`);
+    piece.style.setProperty("--rotate", `${(Math.random() * 4 + 2) * 360}deg`);
+    piece.style.setProperty("--duration", `${2.4 + Math.random() * 2.6}s`);
+    piece.style.setProperty("--delay", `${Math.random() * 0.6}s`);
+    piece.style.setProperty("--color", confettiColors[i % confettiColors.length]);
+    piece.style.setProperty("--w", `${size}px`);
+    frag.appendChild(piece);
+  }
+  confettiEl.replaceChildren(frag);
+}
+
+function clearConfetti() {
+  confettiEl.replaceChildren();
 }
 
 modeInputs.forEach((input) => {
