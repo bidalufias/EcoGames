@@ -29,7 +29,7 @@
             <h1 id="game-title">Find each matching term and picture.</h1>
           </div>
 
-          <fieldset class="mode-picker" aria-label="Players">
+          <fieldset class="mode-picker mode-picker--two" aria-label="Players">
             <legend class="sr-only">Players</legend>
             <label>
               <input type="radio" name="players" value="solo" checked>
@@ -58,7 +58,6 @@
           </fieldset>
 
           <div class="stats" aria-live="polite">
-            <span class="solo-stat"><strong id="moves">0</strong> moves</span>
             <span class="challenge-stat" hidden>
               <span class="player-score" id="p1Score" data-player="1">
                 <span class="player-label">P1</span>
@@ -69,6 +68,7 @@
                 <strong id="p2Points">0</strong>
               </span>
             </span>
+            <span><strong id="moves">0</strong> moves</span>
             <span><strong id="matches">0</strong>/<strong id="totalPairs">4</strong> pairs</span>
             <button class="reset" id="reset" type="button">New</button>
           </div>

@@ -99,7 +99,6 @@ const gameMenuButton = document.querySelector("#gameMenuButton");
 const gameMenuList = document.querySelector("#gameMenuList");
 const modeInputs = [...document.querySelectorAll("input[name='mode']")];
 const playerInputs = [...document.querySelectorAll("input[name='players']")];
-const soloStatEl = document.querySelector(".solo-stat");
 const challengeStatEl = document.querySelector(".challenge-stat");
 const p1ScoreEl = document.querySelector("#p1Score");
 const p2ScoreEl = document.querySelector("#p2Score");
@@ -233,9 +232,7 @@ function updateStats() {
 }
 
 function applyPlayModeUI() {
-  const isChallenge = playMode === "challenge";
-  soloStatEl.hidden = isChallenge;
-  challengeStatEl.hidden = !isChallenge;
+  challengeStatEl.hidden = playMode !== "challenge";
 }
 
 function startGame(mode = currentMode) {
