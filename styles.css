@@ -184,6 +184,10 @@ h1 {
   background: rgba(255, 255, 255, 0.62);
 }
 
+.mode-picker--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .mode-picker label {
   min-width: 0;
   cursor: pointer;
@@ -229,9 +233,12 @@ h1 {
 }
 
 .challenge-stat {
-  display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.challenge-stat:not([hidden]) {
+  display: inline-flex;
 }
 
 .player-score {
