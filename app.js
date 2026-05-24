@@ -98,6 +98,13 @@ const resetButton = document.querySelector("#reset");
 const gameMenuButton = document.querySelector("#gameMenuButton");
 const gameMenuList = document.querySelector("#gameMenuList");
 const modeInputs = [...document.querySelectorAll("input[name='mode']")];
+const playerInputs = [...document.querySelectorAll("input[name='players']")];
+const soloStatEl = document.querySelector(".solo-stat");
+const challengeStatEl = document.querySelector(".challenge-stat");
+const p1ScoreEl = document.querySelector("#p1Score");
+const p2ScoreEl = document.querySelector("#p2Score");
+const p1PointsEl = document.querySelector("#p1Points");
+const p2PointsEl = document.querySelector("#p2Points");
 
 let deck = [];
 let openCards = [];
@@ -105,6 +112,9 @@ let lockBoard = false;
 let moves = 0;
 let matches = 0;
 let currentMode = "easy";
+let playMode = "solo";
+let activePlayer = 1;
+let playerScores = [0, 0];
 
 function shuffle(items) {
   return items
@@ -216,6 +226,16 @@ function updateStats() {
   movesEl.textContent = moves;
   matchesEl.textContent = matches;
   totalPairsEl.textContent = modeSettings[currentMode].pairs;
+  p1PointsEl.textContent = playerScores[0];
+  p2PointsEl.textContent = playerScores[1];
+  p1ScoreEl.classList.toggle("is-active", playMode === "challenge" && activePlayer === 1);
+  p2ScoreEl.classList.toggle("is-active", playMode === "challenge" && activePlayer === 2);
+}
+
+function applyPlayModeUI() {
+  const isChallenge = playMode === "challenge";
+  soloStatEl.hidden = isChallenge;
+  challengeStatEl.hidden = !isChallenge;
 }
 
 function startGame(mode = currentMode) {
@@ -225,8 +245,11 @@ function startGame(mode = currentMode) {
   lockBoard = false;
   moves = 0;
   matches = 0;
+  activePlayer = 1;
+  playerScores = [0, 0];
   winMessage.textContent = "";
   winMessage.classList.remove("show");
+  applyPlayModeUI();
   setBoardGrid(mode);
   board.replaceChildren(...deck.map(renderCard));
   updateStats();
@@ -255,6 +278,9 @@ function handleCardClick(card) {
     first.classList.add("is-matched");
     second.classList.add("is-matched");
     matches += 1;
+    if (playMode === "challenge") {
+      playerScores[activePlayer - 1] += 1;
+    }
     openCards = [];
     lockBoard = false;
     updateStats();
@@ -267,6 +293,10 @@ function handleCardClick(card) {
     second.classList.remove("is-flipped");
     openCards = [];
     lockBoard = false;
+    if (playMode === "challenge") {
+      activePlayer = activePlayer === 1 ? 2 : 1;
+      updateStats();
+    }
   }, 780);
 }
 
@@ -275,12 +305,33 @@ function announceWinIfComplete() {
     return;
   }
 
-  winMessage.textContent = `Nice matchwork: ${matches} climate concepts learned in ${moves} moves.`;
+  if (playMode === "challenge") {
+    const [p1, p2] = playerScores;
+    let result;
+    if (p1 === p2) {
+      result = `It's a tie! Both players matched ${p1} pair${p1 === 1 ? "" : "s"}.`;
+    } else {
+      const winner = p1 > p2 ? 1 : 2;
+      const winnerScore = Math.max(p1, p2);
+      const loserScore = Math.min(p1, p2);
+      result = `Player ${winner} wins ${winnerScore}-${loserScore}!`;
+    }
+    winMessage.textContent = result;
+  } else {
+    winMessage.textContent = `Nice matchwork: ${matches} climate concepts learned in ${moves} moves.`;
+  }
   winMessage.classList.add("show");
 }
 
 modeInputs.forEach((input) => {
   input.addEventListener("change", () => startGame(input.value));
+});
+
+playerInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    playMode = input.value;
+    startGame();
+  });
 });
 
 function closeGameMenu() {

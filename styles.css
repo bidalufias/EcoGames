@@ -158,7 +158,7 @@ input {
 
 .control-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
@@ -226,6 +226,41 @@ h1 {
 
 .stats strong {
   color: var(--ink);
+}
+
+.challenge-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border: 1px solid rgba(62, 98, 72, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.player-score .player-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.player-score.is-active {
+  color: #173121;
+  background: linear-gradient(135deg, rgba(239, 184, 64, 0.85), rgba(113, 177, 103, 0.88));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.player-score.is-active .player-label,
+.player-score.is-active strong {
+  color: #173121;
 }
 
 .reset {
@@ -518,7 +553,7 @@ h1 {
   }
 
   .control-strip {
-    grid-template-columns: minmax(110px, 1fr) auto auto;
+    grid-template-columns: minmax(110px, 1fr) auto auto auto;
   }
 
   .control-strip h1 {
