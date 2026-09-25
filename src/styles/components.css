@@ -1,0 +1,182 @@
+/* ---------- Buttons ---------- */
+.btn {
+  --btn-bg: var(--surface);
+  --btn-fg: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.15s var(--ease),
+    background-color 0.15s,
+    border-color 0.15s;
+  touch-action: manipulation;
+}
+.btn:hover {
+  border-color: var(--muted);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn svg {
+  flex: none;
+}
+.btn--primary {
+  --btn-bg: var(--accent, var(--leaf));
+  --btn-fg: var(--on-accent);
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+.btn--primary:hover {
+  border-color: transparent;
+  filter: brightness(1.05);
+}
+.btn--ghost {
+  --btn-bg: transparent;
+  border-color: transparent;
+}
+.btn--ghost:hover {
+  background: var(--surface-2);
+  border-color: transparent;
+}
+.btn--icon {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+
+/* ---------- Segmented control (radio group) ---------- */
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  gap: 4px;
+  border: 0;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.segmented legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.segmented label {
+  position: relative;
+}
+.segmented input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.segmented span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--muted);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.segmented input:checked + span {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.segmented input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* ---------- Stat pill ---------- */
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat svg {
+  color: var(--muted);
+}
+.stat--active {
+  border-color: var(--accent, var(--leaf));
+  box-shadow: 0 0 0 2px var(--accent, var(--leaf));
+}
+
+/* ---------- Dialog ---------- */
+.dialog {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  overflow: auto;
+}
+.dialog::backdrop {
+  background: rgb(8 20 17 / 0.55);
+  backdrop-filter: blur(3px);
+}
+.dialog[open] {
+  animation: dialog-in 0.3s var(--ease);
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 50;
+  transform: translate(-50%, 20px);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s,
+    transform 0.25s var(--ease);
+}
+.toast--show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.toast strong {
+  font-family: var(--font-display);
+}
