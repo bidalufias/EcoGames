@@ -79,6 +79,19 @@ import {
   Wine,
   X,
   Zap,
+  Soup,
+  Nut,
+  Box,
+  Popcorn,
+  Baby,
+  BatteryCharging,
+  TrainFront,
+  CloudRain,
+  Haze,
+  TreePalm,
+  Droplets,
+  ThermometerSun,
+  ChevronDown,
 } from 'lucide';
 
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
@@ -163,6 +176,19 @@ const ICONS = {
   wine: Wine,
   x: X,
   zap: Zap,
+  soup: Soup,
+  nut: Nut,
+  box: Box,
+  popcorn: Popcorn,
+  baby: Baby,
+  batteryCharging: BatteryCharging,
+  trainFront: TrainFront,
+  cloudRain: CloudRain,
+  haze: Haze,
+  treePalm: TreePalm,
+  droplets: Droplets,
+  thermometerSun: ThermometerSun,
+  chevronDown: ChevronDown,
 } satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;

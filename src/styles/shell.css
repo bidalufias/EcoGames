@@ -907,6 +907,10 @@
   font-size: var(--text-sm);
   font-weight: 650;
 }
+.intro-option .select {
+  flex: 1 1 200px;
+  max-width: 280px;
+}
 /* Not much room: drop the artwork so the rules and Play button stay visible. */
 @container (max-height: 600px) {
   .intro .art--hero {

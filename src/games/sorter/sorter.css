@@ -67,6 +67,12 @@
 .sorter-legend svg {
   flex: none;
 }
+.sorter-legend small {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
 .sorter-note {
   color: var(--muted);
   font-size: var(--text-xs);

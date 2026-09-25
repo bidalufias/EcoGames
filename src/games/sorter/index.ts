@@ -32,11 +32,15 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
           'li',
           { style: `--bin:#${b.color.toString(16).padStart(6, '0')}` },
           icon(b.icon, { size: 16 }),
-          h('span', {}, b.label),
+          h('span', {}, b.label, h('small', { lang: 'ms' }, b.malay)),
         ),
       ),
     ),
-    h('p', { class: 'sorter-note' }, 'Bin rules vary by area, so check what yours accepts.'),
+    h(
+      'p',
+      { class: 'sorter-note' },
+      'Based on Malaysia’s waste separation rules. Collections vary by council, so check yours.',
+    ),
   );
   const intro = renderIntro(ctx.game, {
     options: legend,

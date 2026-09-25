@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hasIcon } from '../ui/icons';
 import { CONCEPTS } from './concepts';
-import { QUESTIONS } from './quiz';
+import { QUESTIONS, QUIZ_TOPICS } from './quiz';
 import { WASTE_ITEMS } from './waste';
 
 // Guards the content rules in docs/CONTENT.md so edits can't silently break games.
@@ -36,6 +36,14 @@ describe('content', () => {
       expect(q.options[q.answer], q.id).toBeTruthy();
       expect(q.explain.length, q.id).toBeGreaterThan(20);
     }
+  });
+
+  it('gives every quiz topic enough questions for its own round', () => {
+    for (const t of QUIZ_TOPICS) {
+      expect(hasIcon(t.icon), t.id).toBe(true);
+      expect(QUESTIONS.filter((q) => q.topic === t.id).length, t.id).toBeGreaterThanOrEqual(8);
+    }
+    expect(QUESTIONS.every((q) => QUIZ_TOPICS.some((t) => t.id === q.topic))).toBe(true);
   });
 
   it('spreads correct quiz answers across positions in the source data', () => {

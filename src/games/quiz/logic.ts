@@ -1,4 +1,4 @@
-import type { QuizQuestion } from '../../content/quiz';
+import type { QuizQuestion, QuizTopicId } from '../../content/quiz';
 import { sample, shuffle, type Rng } from '../../core/random';
 
 export const ROUND_LENGTH = 10;
@@ -18,6 +18,35 @@ export interface AnswerResult {
   correctIndex: number;
   points: number;
   streak: number;
+}
+
+/** The player's topic choice on the start screen. */
+export type TopicChoice = QuizTopicId | 'all';
+
+/**
+ * The questions for a round, in the order they'll be asked. One topic: that topic's
+ * questions, shuffled. All topics: shuffled and interleaved, so a round visits as many
+ * different topics as it can before repeating one.
+ */
+export function pickQuestions(
+  questions: readonly QuizQuestion[],
+  topic: TopicChoice,
+  rng: Rng = Math.random,
+): QuizQuestion[] {
+  if (topic !== 'all')
+    return shuffle(
+      questions.filter((q) => q.topic === topic),
+      rng,
+    );
+  const seen = new Map<QuizTopicId, number>();
+  return shuffle(questions, rng)
+    .map((q) => {
+      const rank = seen.get(q.topic) ?? 0;
+      seen.set(q.topic, rank + 1);
+      return { q, rank };
+    })
+    .sort((a, b) => a.rank - b.rank)
+    .map((x) => x.q);
 }
 
 export function buildRound(
