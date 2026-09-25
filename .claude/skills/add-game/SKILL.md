@@ -16,8 +16,10 @@ Before starting, read `CLAUDE.md`, `docs/DESIGN.md` and `docs/CONTENT.md`.
 
 Pick an id (kebab-case, e.g. `energy-saver`), a CSS prefix (e.g. `energy-`), a category
 (`arcade | puzzle | quiz`, or add one to `CATEGORIES`), an accent
-(`leaf | sky | sun | coral | berry`), a main Lucide icon and 2–3 supporting `art` icons
-for the tile cover.
+(`leaf | sky | sun | coral | berry`), a small Lucide `icon`, and for the cover art a main
+3D `image` plus 2–3 supporting `art` images (from `src/ui/images.ts`; add new ones as
+described in `src/assets/3d/README.md`). Use 3D images for anything the player looks
+at in the game itself, too.
 
 Decide the **phone variant** up front: what changes on a small touch screen (fewer items,
 bigger targets, tap instead of drag, a smaller board)? Use `isCompact()` from
@@ -26,7 +28,7 @@ bigger targets, tap instead of drag, a smaller board)? Use `isCompact()` from
 ## 2. Content first
 
 Put all facts and text in `src/content/<topic>.ts`, with typed data and ids. Follow
-`docs/CONTENT.md`. Add checks to `src/content/content.test.ts` (unique ids, icons exist,
+`docs/CONTENT.md`. Add checks to `src/content/content.test.ts` (unique ids, images exist,
 length limits).
 
 ## 3. Pure rules
@@ -61,7 +63,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance;
 
 ## 5. Register
 
-Add an entry to `GAMES` in `src/games/registry.ts` (`category`, `icon`, `art`, `accent`,
+Add an entry to `GAMES` in `src/games/registry.ts` (`category`, `icon`, `image`, `art`, `accent`,
 `minutes`, `howTo`, optional `howToMobile`, and `load: () => import('./<id>')`). Order the
 entries by what new players should try first. The hub tiles, carousel, categories and
 search pick it up automatically.

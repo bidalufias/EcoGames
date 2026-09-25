@@ -3,8 +3,8 @@
 ## Personality
 
 Clean, refined and playful. It's for all ages, so it's fun without being babyish. The look
-is a white page, compact type, rounded tiles and colourful "cover art" built from one icon
-family. The hub layout is modelled on MSN Play (msn.com/play).
+is a white page, compact type, rounded tiles and colourful "cover art" built from 3D
+object images on each game's accent colour. The hub layout is modelled on MSN Play (msn.com/play).
 
 ## Brand
 
@@ -92,10 +92,15 @@ Use `howToMobile` in the registry when the controls differ on touch screens.
 `.btn` (`--primary`, `--ghost`, `--icon`, `--lg`), `.segmented` radio groups, `.stat`
 pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing new ones.
 
-## Icons
+## Icons and images
 
-Use Lucide only, registered in `src/ui/icons.ts`. Game art is composed from a game's `icon`
-and `art` icons by `gameArt()`.
+- **Icons** (Lucide, `src/ui/icons.ts`) are for UI chrome: buttons, stats, bins,
+  categories and the carousel caption chip.
+- **Images** are 3D object renders from Microsoft's Fluent Emoji set (MIT), stored in
+  `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
+  (`gameArt()` composes a game's `image` and `art` images), Waste Sorter items and Eco
+  Memory cards. Keep to this one set so everything shares a style; see the README in
+  `src/assets/3d` to add one.
 
 ## Motion
 

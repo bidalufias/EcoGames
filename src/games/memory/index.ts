@@ -2,6 +2,7 @@ import { CONCEPTS, type Concept } from '../../content/concepts';
 import { h, haptic, isCompact, prefersReducedMotion, replace } from '../../core/dom';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
+import { image } from '../../ui/images';
 import { renderIntro } from '../../ui/intro';
 import { toast } from '../../ui/toast';
 import {
@@ -192,13 +193,13 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       ? h(
           'span',
           { class: 'mem-card__face mem-card__face--picture' },
-          h('span', { class: 'mem-card__icon' }, icon(c.icon, { size: 40, strokeWidth: 1.75 })),
+          h('span', { class: 'mem-card__icon' }, image(c.image)),
           h('span', { class: 'mem-card__caption' }, c.term),
         )
       : h(
           'span',
           { class: 'mem-card__face mem-card__face--word' },
-          icon(c.icon, { size: 16 }),
+          image(c.image, { size: 22 }),
           h('span', { class: 'mem-card__term' }, c.term),
         );
   }

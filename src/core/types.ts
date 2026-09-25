@@ -1,4 +1,5 @@
 import type { IconName } from '../ui/icons';
+import type { ImageName } from '../ui/images';
 
 /** Everything a game needs from the app shell while it is running. */
 export interface GameContext {
@@ -55,10 +56,12 @@ export interface GameDefinition {
   /** One short line for tiles and the featured banner. */
   tagline: string;
   category: CategoryId;
-  /** Main icon for the tile art. */
+  /** Small UI icon for the game (e.g. the featured banner caption). */
   icon: IconName;
-  /** 2–3 supporting icons scattered around the tile art. */
-  art: IconName[];
+  /** Main 3D image of the cover art. */
+  image: ImageName;
+  /** 2–3 supporting 3D images scattered around the cover art. */
+  art: ImageName[];
   /** CSS colour token name used for the tile and game accent. */
   accent: 'leaf' | 'sky' | 'sun' | 'coral' | 'berry';
   minutes: string;
