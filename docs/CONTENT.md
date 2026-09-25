@@ -10,6 +10,11 @@ All educational text lives in `src/content/`:
 - `quiz.ts`: Eco Quiz topics (`QUIZ_TOPICS`) and questions. Every topic needs at least
   eight questions so it can have a round of its own.
 - `waste.ts`: Waste Sorter items and bins, with each bin's Malay name
+- `river.ts`: River Rescue rubbish, river animals and river facts
+- `energy.ts`: Switch Off! rooms (with Malay names), appliances and energy-saving tips
+- `solar.ts`: Solar Link's solar power facts
+
+Each of these has its own checks in `src/content/<file>.test.ts`.
 
 `src/content/content.test.ts` enforces the structural rules: unique ids, known icons
 and length limits.

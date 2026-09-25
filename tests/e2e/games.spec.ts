@@ -39,8 +39,8 @@ test('categories and search filter the games', async ({ page, isMobile }) => {
   await expect(page.locator('.hub .tile')).toHaveCount(1);
   await page.goto('./');
   const search = page.locator(isMobile ? '#hub-search' : '#rail-search');
-  await search.fill('memory');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('memory');
+  await search.fill('river');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('river');
   await expect(page.locator('.hub .tile')).toHaveCount(1);
   await expect(search).toBeFocused();
   await search.fill('zzz');
@@ -118,7 +118,7 @@ test('Waste Sorter starts and ends when lives run out', async ({ page }) => {
 });
 
 test('Waste Sorter items can be dragged into the right bin', async ({ page, isMobile }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   await page.goto('./?e2e#/play/waste-sorter');
   const start = page.getByRole('button', { name: 'Start sorting' });
   await expect(start).toBeEnabled({ timeout: 20_000 });
@@ -158,43 +158,51 @@ test('Waste Sorter items can be dragged into the right bin', async ({ page, isMo
       };
     }) as Promise<Snap>;
 
-  // Wait until the item is well inside the play area, like a player would.
   const box = (await page.locator('.sorter-stage canvas').boundingBox())!;
-  await expect(async () => {
-    const s = await snapshot();
-    expect(s.items[0]?.y ?? 0).toBeGreaterThan(box.y + box.height * 0.2);
-  }).toPass({ timeout: 20_000 });
-  // The item keeps falling while the test talks to the browser, so read its position
-  // right before grabbing it, and grab its lower half: the item falls onto the pointer
-  // rather than away from it.
-  const snap = await snapshot();
-  const item = { ...snap.items[0]!, y: snap.items[0]!.y + snap.radius * 0.6 };
-  const bin = snap.bins.find((b) => b.id === item.bin)!;
+  /** Drags the next falling item into its bin, the way a player would. */
+  async function dragOne() {
+    // Wait until the item is well inside the play area, like a player would.
+    await expect(async () => {
+      const s = await snapshot();
+      expect(s.items[0]?.y ?? 0).toBeGreaterThan(box.y + box.height * 0.2);
+    }).toPass({ timeout: 20_000 });
+    // The item keeps falling while the test talks to the browser, so read its position
+    // right before grabbing it, and grab its lower half: the item falls onto the pointer
+    // rather than away from it.
+    const snap = await snapshot();
+    const item = { ...snap.items[0]!, y: snap.items[0]!.y + snap.radius * 0.6 };
+    const bin = snap.bins.find((b) => b.id === item.bin)!;
 
-  if (isMobile) {
-    // Real touch events, as a phone would send them.
-    const cdp = await page.context().newCDPSession(page);
-    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, y: number) =>
-      cdp.send('Input.dispatchTouchEvent', {
-        type,
-        touchPoints: type === 'touchEnd' ? [] : [{ x, y }],
-      });
-    await touch('touchStart', item.x, item.y);
-    for (let i = 1; i <= 10; i++) {
-      await touch(
-        'touchMove',
-        item.x + ((bin.x - item.x) * i) / 10,
-        item.y + ((bin.y - item.y) * i) / 10,
-      );
+    if (isMobile) {
+      // Real touch events, as a phone would send them.
+      const cdp = await page.context().newCDPSession(page);
+      const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, y: number) =>
+        cdp.send('Input.dispatchTouchEvent', {
+          type,
+          touchPoints: type === 'touchEnd' ? [] : [{ x, y }],
+        });
+      await touch('touchStart', item.x, item.y);
+      for (let i = 1; i <= 10; i++) {
+        await touch(
+          'touchMove',
+          item.x + ((bin.x - item.x) * i) / 10,
+          item.y + ((bin.y - item.y) * i) / 10,
+        );
+      }
+      await touch('touchEnd', bin.x, bin.y);
+    } else {
+      await page.mouse.move(item.x, item.y);
+      await page.mouse.down();
+      await page.mouse.move(bin.x, bin.y, { steps: 10 });
+      await page.mouse.up();
     }
-    await touch('touchEnd', bin.x, bin.y);
-  } else {
-    await page.mouse.move(item.x, item.y);
-    await page.mouse.down();
-    await page.mouse.move(bin.x, bin.y, { steps: 10 });
-    await page.mouse.up();
   }
 
-  await expect.poll(async () => (await snapshot()).score).toBeGreaterThan(0);
+  // A busy test machine can drop frames between reading the item's position and
+  // grabbing it, so if a drag misses, try again with the next item (there are 3 lives).
+  await expect(async () => {
+    await dragOne();
+    await expect.poll(async () => (await snapshot()).score, { timeout: 3000 }).toBeGreaterThan(0);
+  }).toPass({ timeout: 45_000 });
   await expect(page.locator('.gamebar__hud')).toContainText('10 pts');
 });

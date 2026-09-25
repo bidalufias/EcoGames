@@ -57,6 +57,8 @@ import {
   CloudRain,
   Haze,
   ChevronDown,
+  Power,
+  RotateCw,
 } from 'lucide';
 
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
@@ -119,6 +121,8 @@ const ICONS = {
   cloudRain: CloudRain,
   haze: Haze,
   chevronDown: ChevronDown,
+  power: Power,
+  rotateCw: RotateCw,
 } satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;
