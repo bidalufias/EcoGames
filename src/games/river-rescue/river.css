@@ -1,0 +1,46 @@
+.river {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* The play area fills all the space the game page gives it. */
+.river-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-2);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.river-stage:focus {
+  outline: none;
+}
+.river-stage canvas {
+  touch-action: none;
+}
+
+.river-lives {
+  gap: 3px;
+}
+.river-lives svg {
+  color: var(--muted);
+  opacity: 0.4;
+}
+.river-lives svg.on {
+  color: var(--coral);
+  fill: var(--coral);
+  opacity: 1;
+}
+.river-time {
+  font-variant-numeric: tabular-nums;
+}
+.river-time--low,
+.river-time--low svg {
+  color: var(--coral);
+}
