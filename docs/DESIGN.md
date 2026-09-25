@@ -50,7 +50,8 @@ subtitle), as on MSN Play.
   active item gets a grey fill and an ink bar on the left. Phones and tablets show the
   search field plus category chips instead.
 - **Home:** a light "Need a quick break?" heading, then the **featured block** (a rotating
-  carousel next to a 2×2 grid of tiles plus a "Did you know?" fact card), then
+  carousel of the first three games in `registry.ts`, next to a 2×2 grid of the next three
+  plus a "Did you know?" fact card), then
   **"Pick up where you left off"** (small tiles) and **"Games picked for you"** (large
   tiles).
 - **Tiles:** image-style game "covers" with the title drawn on the art (`ui/art.ts`), and
