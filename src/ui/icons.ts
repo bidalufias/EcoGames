@@ -58,15 +58,7 @@ import {
   Haze,
   ChevronDown,
   Power,
-  PlugZap,
-  Fish,
   RotateCw,
-  Bed,
-  Sofa,
-  CookingPot,
-  Bath,
-  Gauge,
-  LightbulbOff,
 } from 'lucide';
 
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
@@ -130,15 +122,7 @@ const ICONS = {
   haze: Haze,
   chevronDown: ChevronDown,
   power: Power,
-  plugZap: PlugZap,
-  fish: Fish,
   rotateCw: RotateCw,
-  bed: Bed,
-  sofa: Sofa,
-  cookingPot: CookingPot,
-  bath: Bath,
-  gauge: Gauge,
-  lightbulbOff: LightbulbOff,
 } satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;

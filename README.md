@@ -10,6 +10,9 @@ They work on phones, tablets and computers, with touch, mouse or keyboard.
 | **Waste Sorter** | Recycling, food waste, general waste, special drop-offs | Phaser 4   |
 | **Eco Memory**   | Core climate vocabulary (1 or 2 players)                | DOM + CSS  |
 | **Eco Quiz**     | Climate science, energy, nature, everyday actions       | DOM + CSS  |
+| **River Rescue** | How rubbish travels from drains to rivers and the sea   | Phaser 4   |
+| **Switch Off!**  | Saving electricity at home                              | DOM + CSS  |
+| **Solar Link**   | Solar power and the electricity grid                    | DOM + SVG  |
 
 ## Getting started
 

@@ -49,7 +49,8 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
         'span',
         { class: 'stat river-score' },
         icon('star', { size: 14 }),
-        `${state?.score ?? 0} pts`,
+        `${state?.score ?? 0}`,
+        h('span', { class: 'stat__label' }, ' pts'),
       ),
       hearts,
       h(
@@ -60,7 +61,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
         },
         icon('timer', { size: 14 }),
         `${seconds}s`,
-        h('span', { class: 'stat__label' }, 'left'),
+        h('span', { class: 'stat__label' }, ' left'),
       ),
     );
   }

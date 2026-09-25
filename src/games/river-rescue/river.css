@@ -44,3 +44,13 @@
 .river-time--low svg {
   color: var(--coral);
 }
+
+/* The narrowest phones need every pixel for the title. */
+@media (max-width: 360px) {
+  .river-lives {
+    gap: 1px;
+  }
+  .river-time svg {
+    display: none;
+  }
+}

@@ -85,6 +85,12 @@ example:
   opens the start screen.
 - Waste Sorter uses short bin labels, at most two falling items at once, tap-to-sort
   instructions and vibration on mistakes.
+- River Rescue uses bigger items, a slower river, fewer items at once and drag-to-steer,
+  with the boat at 80% of the height so the thumb doesn't cover it.
+- Switch Off! puts each appliance's picture beside its name in a stack, and shows all four
+  rooms in a row on landscape phones.
+- Solar Link keeps 6×6 on Hard (tiles stay 44px+ at 320px), shows only homes and turns in
+  the game bar, and one "New puzzle" button.
 
 Use `howToMobile` in the registry when the controls differ on touch screens.
 
@@ -99,8 +105,9 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
   categories and the carousel caption chip.
 - **Images** are 3D object renders from Microsoft's Fluent Emoji set (MIT), stored in
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
-  (`gameArt()` composes a game's `image` and `art` images), Waste Sorter items and Eco
-  Memory cards. Keep to this one set so everything shares a style; see the README in
+  (`gameArt()` composes a game's `image` and `art` images), and anything the player
+  looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
+  rooms and appliances, and Solar Link's farm and homes. Keep to this one set so everything shares a style; see the README in
   `src/assets/3d` to add one.
 
 ## Motion
