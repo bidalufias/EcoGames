@@ -6,6 +6,9 @@ import { CATEGORIES, GAMES, findCategory, findGame, searchGames } from '../games
 import { gameArt } from './art';
 import { icon } from './icons';
 
+/** How many games the home page carousel rotates through. */
+const FEATURED = 3;
+
 export function categoryLabel(id: CategoryId): string {
   return findCategory(id)?.label ?? '';
 }
@@ -262,7 +265,9 @@ export function renderHub(opts: HubOptions = {}): HubView {
     };
   }
 
-  const featured = carousel(GAMES);
+  // MSN Play style: the carousel features a few games and the grid beside it shows
+  // the next few, so the top of the page shows as many different games as it can.
+  const featured = carousel(GAMES.slice(0, FEATURED));
   const recent = recentGames()
     .map(findGame)
     .filter((g): g is GameDefinition => !!g);
@@ -280,7 +285,12 @@ export function renderHub(opts: HubOptions = {}): HubView {
       'div',
       { class: 'featured' },
       featured.el,
-      h('div', { class: 'featured__grid' }, ...GAMES.map((g) => gameTile(g)), factTile()),
+      h(
+        'div',
+        { class: 'featured__grid' },
+        ...GAMES.slice(FEATURED, FEATURED + 3).map((g) => gameTile(g)),
+        factTile(),
+      ),
     ),
     recent.length > 0 && shelf('Pick up where you left off', recent, 'recent-title', 'sm'),
     shelf('Games picked for you', GAMES, 'all-title', 'md'),
