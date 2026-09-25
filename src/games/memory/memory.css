@@ -1,0 +1,218 @@
+.mem {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mem-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.mem-new {
+  margin-left: auto;
+}
+.mem-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mem-player--0 {
+  --accent: var(--sky);
+}
+.mem-player--1 {
+  --accent: var(--coral);
+}
+
+.mem-board {
+  --cols: 4;
+  --rows: 4;
+  --board-max: 760px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: clamp(8px, 1.6vw, 14px);
+  /* Fit the whole board in the viewport height where possible (cards are 4:5). */
+  max-width: max(
+    min(100%, 520px),
+    min(var(--board-max), (100dvh - 280px) * 0.8 * var(--cols) / var(--rows))
+  );
+  width: 100%;
+  margin: 0 auto;
+}
+.mem-board[data-count='12'] {
+  --rows: 3;
+}
+.mem-board[data-count='24'] {
+  --cols: 6;
+  --board-max: 980px;
+}
+@media (max-width: 640px) {
+  .mem-board {
+    max-width: none;
+  }
+  .mem-board[data-count='24'] {
+    --cols: 4;
+  }
+  /* Phones: players + icon-only "new game" on one row, level below. */
+  .mem-controls {
+    gap: 8px;
+  }
+  .mem-controls .segmented span {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.9rem;
+  }
+  .mem-controls fieldset:first-child {
+    order: 0;
+  }
+  .mem-new {
+    order: 1;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+  .mem-controls fieldset:nth-child(2) {
+    order: 2;
+  }
+  .mem-new__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .mem-stats {
+    gap: 6px;
+  }
+  .mem-stats .stat {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.88rem;
+  }
+}
+
+.mem-card {
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  background: none;
+  perspective: 900px;
+  touch-action: manipulation;
+}
+.mem-card__inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.45s var(--ease);
+}
+.mem-card.is-up .mem-card__inner {
+  transform: rotateY(180deg);
+}
+.mem-card__back,
+.mem-card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.mem-card__back {
+  color: rgb(255 255 255 / 0.9);
+  background:
+    radial-gradient(circle at 30% 25%, rgb(255 255 255 / 0.18) 0 12%, transparent 13%),
+    radial-gradient(circle at 75% 80%, rgb(255 255 255 / 0.12) 0 18%, transparent 19%),
+    linear-gradient(145deg, #2e9e62, #1f7a4a);
+  border: 3px solid rgb(255 255 255 / 0.25);
+  transition: transform 0.15s var(--ease);
+}
+.mem-card:hover:not(.is-up) .mem-card__back {
+  transform: translateY(-3px);
+}
+.mem-card__face {
+  transform: rotateY(180deg);
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  text-align: center;
+}
+.mem-card__icon {
+  display: grid;
+  place-items: center;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.mem-card__icon svg {
+  width: 58%;
+  height: 58%;
+}
+.mem-card__caption {
+  font-size: clamp(0.62rem, 1.4vw, 0.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--muted);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.mem-card__face--word {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.mem-card__face--word svg {
+  color: var(--accent);
+}
+.mem-card__term {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.8rem, 2vw, 1.15rem);
+  line-height: 1.1;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.mem-board[data-count='24'] .mem-card__term {
+  font-size: clamp(0.72rem, 1.6vw, 1rem);
+}
+
+.mem-card.is-matched .mem-card__face {
+  animation: mem-pop 0.4s var(--ease);
+}
+.mem-card.is-matched {
+  cursor: default;
+}
+.mem-board--duo .mem-card.is-matched[data-player='0'] .mem-card__face {
+  box-shadow:
+    0 0 0 3px var(--sky),
+    var(--shadow-sm);
+}
+.mem-board--duo .mem-card.is-matched[data-player='1'] .mem-card__face {
+  box-shadow:
+    0 0 0 3px var(--coral),
+    var(--shadow-sm);
+}
+@keyframes mem-pop {
+  50% {
+    transform: rotateY(180deg) scale(1.07);
+  }
+}
+
+/* Phones held sideways: spread the cards into wide rows so the board fits. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mem-board,
+  .mem-board[data-count='24'] {
+    --cols: 8;
+    max-width: none;
+  }
+  .mem-board[data-count='12'] {
+    --cols: 6;
+  }
+}

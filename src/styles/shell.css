@@ -1,0 +1,428 @@
+/* ---------- App shell ---------- */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.org {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.org-logo {
+  width: auto;
+  height: 40px;
+}
+.org__divider {
+  width: 1px;
+  height: 28px;
+  background: var(--line);
+}
+/* The logo has transparent areas; give it a light plate in dark mode so the navy reads. */
+:root[data-theme='dark'] .org-logo {
+  padding: 3px 6px;
+  border-radius: 8px;
+  background: #fff;
+}
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand-blue), var(--brand-green));
+  color: var(--on-accent);
+  transform: rotate(-6deg);
+}
+.brand__name {
+  color: var(--brand-navy);
+}
+.brand__name span {
+  color: var(--leaf);
+}
+@media (max-width: 380px) {
+  .org-logo {
+    height: 32px;
+  }
+  /* Only drop the leaf mark when the MGTC logo is there to take its place. */
+  .org + .brand .brand__mark {
+    display: none;
+  }
+}
+/* On phones, the header scrolls away on game pages so play gets the whole screen. */
+@media (max-width: 640px), (max-height: 500px) {
+  .shell[data-route='game'] .topbar {
+    position: static;
+  }
+}
+.topbar__actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.view {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px var(--gutter) 40px;
+}
+@media (max-width: 640px) {
+  .view {
+    padding-top: 12px;
+  }
+  .topbar__inner {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+@media (max-height: 500px) {
+  .topbar {
+    position: static;
+  }
+}
+.view:focus {
+  outline: none;
+}
+
+.footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+}
+
+/* ---------- Hub ---------- */
+.hero {
+  display: grid;
+  gap: 16px;
+  padding: 24px 0 32px;
+}
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--leaf-soft);
+  color: var(--leaf);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  max-width: 18ch;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--leaf);
+}
+.hero p {
+  max-width: 52ch;
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+
+.section-title {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.2s;
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+.game-card:focus-visible {
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
+.game-card__art {
+  display: grid;
+  place-items: center;
+  height: 140px;
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 20% 20%, rgb(255 255 255 / 0.35) 0 18%, transparent 19%),
+    radial-gradient(circle at 85% 75%, rgb(255 255 255 / 0.25) 0 22%, transparent 23%),
+    var(--accent);
+  color: var(--on-accent);
+  overflow: hidden;
+}
+.game-card__art svg {
+  width: 72px;
+  height: 72px;
+  transition: transform 0.3s var(--ease);
+}
+.game-card:hover .game-card__art svg {
+  transform: scale(1.1) rotate(-6deg);
+}
+.game-card h3 {
+  font-size: 1.5rem;
+}
+.game-card__tagline {
+  color: var(--muted);
+}
+.game-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.tag--best {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.game-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+.pillar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.pillar__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--accent);
+}
+.pillar h3 {
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+.pillar p {
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+/* ---------- Game page ---------- */
+.game-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.game-page__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.game-page__head h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+.game-page__host {
+  min-height: 320px;
+}
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  color: var(--muted);
+}
+.loading::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  border: 4px solid var(--line);
+  border-top-color: var(--leaf);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Result dialog ---------- */
+.result {
+  display: grid;
+  gap: 18px;
+  padding: 28px 24px 24px;
+  text-align: center;
+}
+.result h2 {
+  font-size: 1.8rem;
+}
+.result__stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  color: var(--line);
+}
+.result__stars svg {
+  width: 44px;
+  height: 44px;
+}
+.result__stars .on {
+  color: var(--sun);
+  fill: var(--sun);
+  animation: star-pop 0.5s var(--ease) both;
+}
+.result__stars .on:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.result__stars .on:nth-child(3) {
+  animation-delay: 0.24s;
+}
+@keyframes star-pop {
+  from {
+    transform: scale(0.2) rotate(-40deg);
+    opacity: 0;
+  }
+}
+.result__score {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.result__best {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px auto 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--sun-soft);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+.result__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.result__learned {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  max-height: 200px;
+  overflow: auto;
+  padding: 12px;
+  margin: 0;
+  list-style: none;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.result__learned-title {
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-align: left;
+  margin-bottom: -10px;
+}
+.result__learned li {
+  font-size: 0.93rem;
+}
+.result__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.result__actions .btn {
+  flex: 1 1 160px;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}

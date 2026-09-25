@@ -1,111 +1,26 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EcoGames - Eco Memory</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>EcoGames · Learn through play</title>
+    <meta
+      name="description"
+      content="Free, quick browser games about climate, energy, nature and waste, for all ages."
+    />
+    <meta name="theme-color" content="#2e9e62" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        var t = JSON.parse(localStorage.getItem('ecogames:theme'));
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <a class="brand" href="#" aria-label="EcoGames home">EcoGames</a>
-        <div class="game-menu">
-          <span class="current-game">Eco Memory</span>
-          <button class="menu-button" id="gameMenuButton" type="button" aria-label="Game list" aria-expanded="false" aria-controls="gameMenuList">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </button>
-          <div class="game-list" id="gameMenuList" role="menu" hidden>
-            <button type="button" role="menuitem" aria-current="page">Eco Memory</button>
-          </div>
-        </div>
-      </header>
-
-      <main class="game" aria-labelledby="game-title">
-        <section class="control-strip" aria-label="Game controls">
-          <div>
-            <h1 id="game-title">Find each matching term and picture.</h1>
-          </div>
-
-          <fieldset class="mode-picker mode-picker--two" aria-label="Players">
-            <legend class="sr-only">Players</legend>
-            <label>
-              <input type="radio" name="players" value="solo" checked>
-              <span>Solo</span>
-            </label>
-            <label>
-              <input type="radio" name="players" value="challenge">
-              <span>Challenge</span>
-            </label>
-          </fieldset>
-
-          <fieldset class="mode-picker" aria-label="Difficulty">
-            <legend class="sr-only">Difficulty</legend>
-            <label>
-              <input type="radio" name="mode" value="easy" checked>
-              <span>Easy</span>
-            </label>
-            <label>
-              <input type="radio" name="mode" value="medium">
-              <span>Medium</span>
-            </label>
-            <label>
-              <input type="radio" name="mode" value="hard">
-              <span>Hard</span>
-            </label>
-          </fieldset>
-
-          <div class="stats" aria-live="polite">
-            <span class="challenge-stat" hidden>
-              <span class="player-score" id="p1Score" data-player="1">
-                <span class="player-label">P1</span>
-                <strong id="p1Points">0</strong>
-              </span>
-              <span class="player-score" id="p2Score" data-player="2">
-                <span class="player-label">P2</span>
-                <strong id="p2Points">0</strong>
-              </span>
-            </span>
-            <span><strong id="moves">0</strong> moves</span>
-            <span><strong id="matches">0</strong>/<strong id="totalPairs">4</strong> pairs</span>
-            <button class="reset" id="reset" type="button">New</button>
-            <button class="info-button" id="infoButton" type="button" aria-label="Glossary of terms" aria-haspopup="dialog" aria-controls="glossary">
-              <span aria-hidden="true">i</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="board-wrap" aria-label="Memory card board">
-          <div class="board" id="board"></div>
-        </section>
-
-        <div class="confetti" id="confetti" aria-hidden="true"></div>
-        <div class="win-overlay" id="winMessage" role="status" aria-live="polite" hidden>
-          <div class="win-card">
-            <span class="win-eyebrow">Congratulations!</span>
-            <span class="win-title" id="winTitle"></span>
-          </div>
-        </div>
-
-        <div class="glossary-overlay" id="glossary" role="dialog" aria-modal="true" aria-labelledby="glossaryTitle" hidden>
-          <div class="glossary-card">
-            <header class="glossary-header">
-              <h2 id="glossaryTitle">Climate Glossary</h2>
-              <button class="glossary-close" id="glossaryClose" type="button" aria-label="Close glossary">&times;</button>
-            </header>
-            <ul class="glossary-list" id="glossaryList"></ul>
-          </div>
-        </div>
-      </main>
-
-      <footer class="footer">
-        <span>MGTC @2026</span>
-        <span>Learn through play.</span>
-      </footer>
-    </div>
-
-    <script src="app.js"></script>
+    <div id="app"></div>
+    <noscript>EcoGames needs JavaScript to run the games.</noscript>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

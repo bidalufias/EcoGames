@@ -1,0 +1,126 @@
+/* Design tokens. All colours in the UI come from here; see docs/DESIGN.md. */
+:root {
+  color-scheme: light;
+
+  --font-display: 'Fredoka Variable', 'Fredoka', ui-rounded, system-ui, sans-serif;
+  --font-body: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* MGTC brand colours (from the MGTC logo). */
+  --brand-blue: #0079c2;
+  --brand-navy: #1c4a8e;
+  --brand-green: #8dc63f;
+
+  --paper: #f6f4ec;
+  --surface: #ffffff;
+  --surface-2: #eeebe0;
+  --ink: #12302a;
+  --muted: #56695f;
+  --line: #e0dccd;
+  --focus: #2f7fd8;
+
+  --leaf: #2e9e62;
+  --leaf-soft: #dcf1e4;
+  --sky: #0079c2;
+  --sky-soft: #dde9f8;
+  --sun: #e9a825;
+  --sun-soft: #fbefd2;
+  --coral: #e2604a;
+  --coral-soft: #fbe2dc;
+  --berry: #7c5ce0;
+  --berry-soft: #e9e3fb;
+
+  --good: #23884f;
+  --bad: #c8412c;
+  --on-accent: #ffffff;
+
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow-sm: 0 1px 2px rgb(18 48 42 / 0.08);
+  --shadow: 0 2px 4px rgb(18 48 42 / 0.06), 0 8px 24px rgb(18 48 42 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(18 48 42 / 0.08), 0 20px 48px rgb(18 48 42 / 0.16);
+
+  --gutter: clamp(16px, 4vw, 32px);
+  --max-width: 1120px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --brand-navy: #8db4ee;
+    --paper: #0d1714;
+    --surface: #15221e;
+    --surface-2: #1c2c27;
+    --ink: #e8f1ec;
+    --muted: #9ab0a6;
+    --line: #273832;
+    --focus: #6aa8f0;
+    --leaf: #4cc184;
+    --leaf-soft: #173a29;
+    --sky: #5a9ff0;
+    --sky-soft: #172b44;
+    --sun: #f2bf4f;
+    --sun-soft: #3a2f14;
+    --coral: #f07f69;
+    --coral-soft: #41221c;
+    --berry: #9d85f0;
+    --berry-soft: #2a2248;
+    --good: #4cc184;
+    --bad: #f07f69;
+    --on-accent: #0d1714;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 20px 48px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-navy: #8db4ee;
+  --paper: #0d1714;
+  --surface: #15221e;
+  --surface-2: #1c2c27;
+  --ink: #e8f1ec;
+  --muted: #9ab0a6;
+  --line: #273832;
+  --focus: #6aa8f0;
+  --leaf: #4cc184;
+  --leaf-soft: #173a29;
+  --sky: #5a9ff0;
+  --sky-soft: #172b44;
+  --sun: #f2bf4f;
+  --sun-soft: #3a2f14;
+  --coral: #f07f69;
+  --coral-soft: #41221c;
+  --berry: #9d85f0;
+  --berry-soft: #2a2248;
+  --good: #4cc184;
+  --bad: #f07f69;
+  --on-accent: #0d1714;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 20px 48px rgb(0 0 0 / 0.5);
+}
+
+/* Per-accent helpers: set --accent / --accent-soft on any element. */
+.accent-leaf {
+  --accent: var(--leaf);
+  --accent-soft: var(--leaf-soft);
+}
+.accent-sky {
+  --accent: var(--sky);
+  --accent-soft: var(--sky-soft);
+}
+.accent-sun {
+  --accent: var(--sun);
+  --accent-soft: var(--sun-soft);
+}
+.accent-coral {
+  --accent: var(--coral);
+  --accent-soft: var(--coral-soft);
+}
+.accent-berry {
+  --accent: var(--berry);
+  --accent-soft: var(--berry-soft);
+}

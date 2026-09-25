@@ -1,57 +1,46 @@
 # EcoGames
 
-EcoGames is a browser-based collection of environmental learning games. The first game is **Eco Memory**, a climate change memory-card game for all ages.
+Quick, free browser games about climate, energy, nature and waste, for all ages.
+They work on phones, tablets and computers, with touch, mouse or keyboard.
 
-## Eco Memory
+## Games
 
-Players match climate terminology cards with their corresponding watercolor illustration cards. The game is designed to fit within a single screen and works across desktop, tablet, and mobile browsers.
+| Game             | What you learn                                          | Built with |
+| ---------------- | ------------------------------------------------------- | ---------- |
+| **Waste Sorter** | Recycling, food waste, general waste, special drop-offs | Phaser 4   |
+| **Eco Memory**   | Core climate vocabulary (1 or 2 players)                | DOM + CSS  |
+| **Eco Quiz**     | Climate science, energy, nature, everyday actions       | DOM + CSS  |
 
-## Game Modes
+## Getting started
 
-- **Easy:** 4 pairs
-- **Medium:** 8 pairs
-- **Hard:** 16 pairs
+Requires Node 22 or later.
 
-## Climate Concepts
-
-1. Climate Change
-2. Global Warming
-3. Greenhouse Gases (GHG)
-4. Carbon Footprint
-5. Recycling
-6. Sustainability
-7. Renewable Energy
-8. Energy Efficiency
-9. Electric Vehicle (EV)
-10. Deforestation
-11. Biodiversity
-12. Climate Adaptation
-13. Decarbonisation
-14. Net Zero
-15. Carbon Credit
-16. Carbon Market
-
-## How To Play Locally
-
-Open `index.html` in a browser.
-
-No build step or server is required.
-
-## Project Structure
-
-```text
-.
-|-- index.html
-|-- styles.css
-|-- app.js
-`-- assets/
-    |-- eco-card-back.png
-    |-- climate-concepts-sheet-v3.png
-    `-- concepts/
+```bash
+npm install
+npm run dev        # http://localhost:5173
 ```
 
-## Credits
+| Command            | What it does                                     |
+| ------------------ | ------------------------------------------------ |
+| `npm run check`    | lint, format check, typecheck, unit tests, build |
+| `npm test`         | unit tests (Vitest)                              |
+| `npm run test:e2e` | end-to-end tests in Chromium, desktop and mobile |
+| `npm run build`    | production build to `dist/`                      |
 
-MGTC @2026
+## Tech
 
-Learn through play.
+- **Vite + TypeScript (strict)**, with no UI framework. A small hash router loads each
+  game on demand.
+- **Phaser 4** for real-time games, loaded only when one is opened.
+- **Lucide** icons, and self-hosted **Fredoka** and **Nunito** fonts.
+- **Vitest** for game rules and content checks. **Playwright** plays every game to the
+  end.
+- **GitHub Actions** runs CI on every PR. **Netlify** builds and hosts the site
+  (`netlify.toml`), deploying production from `main` and a preview for every PR.
+
+## Contributing
+
+- [`CLAUDE.md`](CLAUDE.md): architecture and project rules (for people and AI assistants)
+- [`docs/DESIGN.md`](docs/DESIGN.md): the visual system
+- [`docs/CONTENT.md`](docs/CONTENT.md): how facts are written and checked
+- [`.claude/skills/add-game`](.claude/skills/add-game/SKILL.md): step-by-step guide to adding a game
