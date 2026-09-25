@@ -7,19 +7,44 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-async function openGame(page: Page, title: string) {
+/** Opens a game from the hub and dismisses its start screen. */
+async function openGame(page: Page, title: string, start = 'Play') {
   await page.goto('./');
-  await page.getByRole('link', { name: new RegExp(title) }).click();
+  await page
+    .getByRole('link', { name: new RegExp(`^${title},`) })
+    .first()
+    .click();
   await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
+  const startBtn = page.getByRole('button', { name: start, exact: true });
+  await expect(startBtn).toBeEnabled({ timeout: 20_000 });
+  return startBtn;
 }
 
-test('hub lists every game and navigates back', async ({ page }) => {
+test('hub shows featured games, shelves and navigates back', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('big ideas');
-  await expect(page.locator('.game-card')).toHaveCount(3);
-  await openGame(page, 'Eco Quiz');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Need a quick break?');
+  await expect(page.locator('.carousel__slide')).toHaveCount(3);
+  await expect(page.locator('.featured__grid .tile')).toHaveCount(3);
+  await expect(page.getByRole('heading', { name: 'Games picked for you' })).toBeVisible();
+  const start = await openGame(page, 'Eco Quiz', 'Start quiz');
+  await expect(start).toBeVisible();
   await page.getByRole('link', { name: 'Back to all games' }).click();
-  await expect(page.locator('.game-card')).toHaveCount(3);
+  await expect(page.getByRole('heading', { name: 'Pick up where you left off' })).toBeVisible();
+  await expect(page.locator('.tile-row--sm [data-game="eco-quiz"]')).toBeVisible();
+});
+
+test('categories and search filter the games', async ({ page, isMobile }) => {
+  await page.goto('./#/c/quiz');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Quiz & trivia');
+  await expect(page.locator('.hub .tile')).toHaveCount(1);
+  await page.goto('./');
+  const search = page.locator(isMobile ? '#hub-search' : '#rail-search');
+  await search.fill('memory');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('memory');
+  await expect(page.locator('.hub .tile')).toHaveCount(1);
+  await expect(search).toBeFocused();
+  await search.fill('zzz');
+  await expect(page.getByText('No games match')).toBeVisible();
 });
 
 test('theme toggle switches and persists', async ({ page }) => {
@@ -34,8 +59,9 @@ test('theme toggle switches and persists', async ({ page }) => {
 });
 
 test('Eco Memory can be completed and saves a best score', async ({ page }) => {
-  await openGame(page, 'Eco Memory');
+  const start = await openGame(page, 'Eco Memory');
   await page.getByRole('radio', { name: 'Easy' }).check();
+  await start.click();
   const cards = page.locator('.mem-card');
   await expect(cards).toHaveCount(12);
 
@@ -57,16 +83,17 @@ test('Eco Memory can be completed and saves a best score', async ({ page }) => {
   await expect(dialog.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
 
   await dialog.getByRole('button', { name: 'All games' }).click();
-  await expect(page.locator('[data-game="eco-memory"] .tag--best')).toBeVisible();
+  await expect(page.locator('.tile-row--md [data-game="eco-memory"] .tile__badge')).toBeVisible();
 });
 
 test('Eco Quiz runs ten questions to a result', async ({ page }) => {
-  await openGame(page, 'Eco Quiz');
+  const start = await openGame(page, 'Eco Quiz', 'Start quiz');
+  await start.click();
   for (let i = 0; i < 10; i++) {
     await expect(page.getByText(`Question ${i + 1} of 10`)).toBeVisible();
     await page.locator('.quiz-option').first().click();
     await expect(page.locator('.quiz-feedback')).toBeVisible();
-    await page.getByRole('button', { name: i === 9 ? 'See results' : 'Next question' }).click();
+    await page.getByRole('button', { name: i === 9 ? 'See results' : 'Next' }).click();
   }
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
@@ -77,9 +104,7 @@ test('Eco Quiz runs ten questions to a result', async ({ page }) => {
 
 test('Waste Sorter starts and ends when lives run out', async ({ page }) => {
   test.setTimeout(90_000);
-  await openGame(page, 'Waste Sorter');
-  const start = page.getByRole('button', { name: 'Start sorting' });
-  await expect(start).toBeEnabled({ timeout: 20_000 });
+  const start = await openGame(page, 'Waste Sorter', 'Start sorting');
   await start.click();
   await expect(page.locator('.sorter-stage canvas')).toBeVisible();
   // Keep sending items to the Recycling bin (key 1). Wrong bins and missed

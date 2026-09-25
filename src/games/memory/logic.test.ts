@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { CONCEPTS } from '../../content/concepts';
 import { seededRng } from '../../core/random';
-import { MemoryGame, PAIRS, buildDeck, scoreFor, starsFor } from './logic';
+import {
+  COMPACT_PAIRS,
+  MemoryGame,
+  PAIRS,
+  bestGrid,
+  buildDeck,
+  pairsFor,
+  scoreFor,
+  starsFor,
+} from './logic';
 
 function pairIndexes(game: MemoryGame): [number, number][] {
   const byConcept = new Map<string, number[]>();
@@ -90,5 +99,39 @@ describe('scoring', () => {
     expect(scoreFor(8, 8, 30)).toBeGreaterThan(scoreFor(8, 16, 30));
     expect(scoreFor(8, 12, 20)).toBeGreaterThan(scoreFor(8, 12, 90));
     expect(scoreFor(12, 12, 60)).toBeGreaterThan(scoreFor(6, 6, 60));
+  });
+});
+
+describe('board layout', () => {
+  it('uses smaller boards on phones', () => {
+    expect(pairsFor('hard', true)).toBe(COMPACT_PAIRS.hard);
+    expect(pairsFor('hard', false)).toBe(PAIRS.hard);
+    expect(COMPACT_PAIRS.hard).toBeLessThan(PAIRS.hard);
+  });
+
+  it('picks more columns for wide boxes and more rows for tall ones', () => {
+    const wide = bestGrid(24, 1200, 500, 10);
+    const tall = bestGrid(20, 360, 640, 8);
+    expect(wide.cols).toBeGreaterThan(wide.rows);
+    expect(tall.rows).toBeGreaterThan(tall.cols);
+  });
+
+  it('prefers an even grid over a ragged last row', () => {
+    const fit = bestGrid(16, 1180, 590, 12);
+    expect(fit.cols * fit.rows).toBe(16);
+  });
+
+  it('always fits the box and places every card', () => {
+    for (const [count, w, h] of [
+      [12, 358, 600],
+      [16, 1000, 560],
+      [20, 380, 700],
+      [24, 830, 300],
+    ] as const) {
+      const fit = bestGrid(count, w, h, 8);
+      expect(fit.cols * fit.rows).toBeGreaterThanOrEqual(count);
+      expect(fit.cols * fit.cardWidth + (fit.cols - 1) * 8).toBeLessThanOrEqual(w + 0.001);
+      expect(fit.rows * fit.cardHeight + (fit.rows - 1) * 8).toBeLessThanOrEqual(h + 0.001);
+    }
   });
 });

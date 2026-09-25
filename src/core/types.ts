@@ -2,6 +2,8 @@ import type { IconName } from '../ui/icons';
 
 /** Everything a game needs from the app shell while it is running. */
 export interface GameContext {
+  /** Metadata of the running game (title, accent, how-to text). */
+  game: GameDefinition;
   /** Play a named sound effect (respects the user's mute setting). */
   sound: (name: SoundName) => void;
   /** Announce a message to screen-reader users. */
@@ -39,19 +41,26 @@ export interface GameModule {
   mount: (host: HTMLElement, ctx: GameContext) => GameInstance;
 }
 
+export type CategoryId = 'arcade' | 'puzzle' | 'quiz';
+
 /** Static metadata used by the hub; the game code itself is lazy-loaded via `load`. */
 export interface GameDefinition {
   id: string;
   title: string;
+  /** One short line for tiles and the featured banner. */
   tagline: string;
-  description: string;
+  category: CategoryId;
+  /** Main icon for the tile art. */
   icon: IconName;
-  /** CSS colour token name used for the card accent, e.g. "leaf". */
+  /** 2–3 supporting icons scattered around the tile art. */
+  art: IconName[];
+  /** CSS colour token name used for the tile and game accent. */
   accent: 'leaf' | 'sky' | 'sun' | 'coral' | 'berry';
   minutes: string;
-  topics: string[];
-  /** Label for the saved best score on the hub card, e.g. "Best score". */
-  bestLabel: string;
+  /** Short how-to-play lines for the start screen. */
+  howTo: string[];
+  /** Phone-specific how-to lines, when the controls differ on touch screens. */
+  howToMobile?: string[];
   load: () => Promise<GameModule>;
 }
 

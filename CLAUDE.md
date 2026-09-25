@@ -23,7 +23,7 @@ so e2e tests use the preinstalled Chromium. Don't run `npx playwright install` t
 src/
   main.ts, app.ts        # boot, shell (header/footer), hash router, GameContext wiring
   core/                  # framework-free helpers: types, storage, sound, random, dom
-  ui/                    # shared UI: hub, icons (Lucide), result dialog, toast, confetti
+  ui/                    # shared UI: hub (MSN Play-style), art, intro (start screen), icons, result dialog, toast
   styles/                # tokens.css (all colours), base, components, shell
   content/               # ALL educational text: concepts, quiz questions, waste items
   games/
@@ -51,7 +51,12 @@ docs/                    # DESIGN.md (visual system), CONTENT.md (fact-checking 
   touch/mouse. Announce outcomes with `ctx.announce`, respect `prefers-reduced-motion`,
   use real `<button>`s, and keep touch targets at 44px or more.
 - **Storage:** use `core/storage.ts` only. It never throws, and the app must work without it.
-- **Mobile first:** check at 390px wide. Game screens should fit one viewport where possible.
+- **Mobile first, and fit the screen:** every game page fits one viewport with no page
+  scrolling during play. Games open on the shared start screen (`ui/intro.ts`). On phones,
+  games use a compact variant (`isCompact()`: smaller boards, bigger targets, tap-first
+  controls). See `docs/DESIGN.md`.
+- **Look and feel:** white background, Plus Jakarta Sans, and the MSN Play-style hub
+  (rail, carousel, tiles with cover art). Keep new UI consistent with `docs/DESIGN.md`.
 - **Tests:** logic changes need unit tests. New games need an e2e spec that plays to the
   results dialog.
 

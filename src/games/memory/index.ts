@@ -1,12 +1,14 @@
 import { CONCEPTS, type Concept } from '../../content/concepts';
-import { h, prefersReducedMotion } from '../../core/dom';
+import { h, haptic, isCompact, prefersReducedMotion, replace } from '../../core/dom';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
+import { renderIntro } from '../../ui/intro';
 import { toast } from '../../ui/toast';
 import {
   MemoryGame,
-  PAIRS,
+  bestGrid,
   buildDeck,
+  pairsFor,
   scoreFor,
   starsFor,
   type Card,
@@ -38,10 +40,14 @@ function radioGroup<T extends string>(
   return group;
 }
 
+function formatTime(s: number): string {
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
 export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   let difficulty: Difficulty = 'medium';
   let players = 1;
-  let game: MemoryGame;
+  let game: MemoryGame | null = null;
   let startedAt = 0;
   let elapsed = 0;
   let tick: number | undefined;
@@ -49,84 +55,132 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   let learned: Concept[] = [];
 
   const board = h('div', { class: 'mem-board', role: 'group', 'aria-label': 'Memory cards' });
-  const stats = h('div', { class: 'mem-stats', 'aria-live': 'off' });
+  const stage = h('div', { class: 'mem-stage' }, board);
+  const stats = h('div', { class: 'mem-stats' });
+  const restart = h(
+    'button',
+    { class: 'btn btn--ghost btn--icon', type: 'button', 'aria-label': 'New game' },
+    icon('replay', { size: 18 }),
+  );
+  const settings = h(
+    'button',
+    { class: 'btn btn--ghost btn--icon', type: 'button', 'aria-label': 'Change level or players' },
+    icon('grid', { size: 18 }),
+  );
+  restart.addEventListener('click', () => newGame());
+  settings.addEventListener('click', () => showIntro());
 
-  const controls = h(
+  const options = h(
     'div',
-    { class: 'mem-controls' },
-    radioGroup(
-      'mem-players',
-      'Players',
-      [
-        { value: '1', text: '1 player' },
-        { value: '2', text: '2 players' },
-      ],
-      '1',
-      (v) => {
-        players = Number(v);
-        newGame();
-      },
-    ),
-    radioGroup<Difficulty>(
-      'mem-level',
-      'Level',
-      [
-        { value: 'easy', text: 'Easy' },
-        { value: 'medium', text: 'Medium' },
-        { value: 'hard', text: 'Hard' },
-      ],
-      difficulty,
-      (v) => {
-        difficulty = v;
-        newGame();
-      },
+    { class: 'intro-options' },
+    h(
+      'div',
+      { class: 'intro-option' },
+      h('span', {}, 'Players'),
+      radioGroup(
+        'mem-players',
+        'Players',
+        [
+          { value: '1', text: '1 player' },
+          { value: '2', text: '2 players' },
+        ],
+        '1',
+        (v) => (players = Number(v)),
+      ),
     ),
     h(
-      'button',
-      { class: 'btn mem-new', type: 'button', 'aria-label': 'New game', onclick: () => newGame() },
-      icon('replay', { size: 18 }),
-      h('span', { class: 'mem-new__label' }, 'New game'),
+      'div',
+      { class: 'intro-option' },
+      h('span', {}, 'Level'),
+      radioGroup<Difficulty>(
+        'mem-level',
+        'Level',
+        [
+          { value: 'easy', text: 'Easy' },
+          { value: 'medium', text: 'Medium' },
+          { value: 'hard', text: 'Hard' },
+        ],
+        difficulty,
+        (v) => (difficulty = v),
+      ),
     ),
   );
+  const intro = renderIntro(ctx.game, {
+    options,
+    onStart: () => {
+      ctx.sound('tap');
+      newGame();
+    },
+  });
 
-  host.replaceChildren(h('div', { class: 'mem' }, controls, stats, board));
+  const root = h(
+    'div',
+    { class: 'mem' },
+    h(
+      'div',
+      { class: 'mem-hud' },
+      stats,
+      h('div', { class: 'mem-hud__actions' }, settings, restart),
+    ),
+    stage,
+    intro,
+  );
+  host.replaceChildren(root);
 
-  function formatTime(s: number): string {
-    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  function showIntro(): void {
+    window.clearInterval(tick);
+    intro.hidden = false;
+    intro.querySelector<HTMLElement>('.intro__start')?.focus({ preventScroll: true });
   }
 
   function renderStats(): void {
+    if (!game) {
+      stats.replaceChildren();
+      return;
+    }
+    const g = game;
     if (players === 1) {
-      stats.replaceChildren(
+      replace(
+        stats,
         h(
           'span',
           { class: 'stat' },
-          icon('puzzle', { size: 16 }),
-          `${game.matchedPairs}/${game.totalPairs} pairs`,
+          icon('puzzle', { size: 14 }),
+          `${g.matchedPairs}/${g.totalPairs}`,
         ),
-        h(
-          'span',
-          { class: 'stat' },
-          icon('replay', { size: 16 }),
-          `${game.moves} ${game.moves === 1 ? 'move' : 'moves'}`,
-        ),
-        h('span', { class: 'stat' }, icon('timer', { size: 16 }), formatTime(elapsed)),
+        h('span', { class: 'stat' }, `${g.moves} ${g.moves === 1 ? 'move' : 'moves'}`),
+        h('span', { class: 'stat' }, icon('timer', { size: 14 }), formatTime(elapsed)),
       );
     } else {
-      stats.replaceChildren(
-        ...game.pairsFound.map((p, i) =>
+      replace(
+        stats,
+        ...g.pairsFound.map((p, i) =>
           h(
             'span',
             {
-              class: `stat mem-player mem-player--${i} ${i === game.currentPlayer && !game.finished ? 'stat--active' : ''}`,
-              'aria-current': i === game.currentPlayer ? 'true' : undefined,
+              class: `stat mem-player mem-player--${i} ${i === g.currentPlayer && !g.finished ? 'stat--active' : ''}`,
+              'aria-current': i === g.currentPlayer ? 'true' : undefined,
             },
-            icon('user', { size: 16 }),
-            `Player ${i + 1}: ${p}`,
+            icon('user', { size: 14 }),
+            `P${i + 1}: ${p}`,
           ),
         ),
       );
     }
+  }
+
+  /** Sizes the board so every card is as large as possible in the space available. */
+  function fitBoard(): void {
+    if (!game) return;
+    const rect = stage.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const gap = rect.width < 500 ? 8 : 12;
+    const fit = bestGrid(game.cards.length, rect.width, rect.height, gap);
+    board.style.setProperty('--cols', String(fit.cols));
+    board.style.setProperty('--gap', `${gap}px`);
+    board.style.width = `${fit.cols * fit.cardWidth + (fit.cols - 1) * gap}px`;
+    board.style.setProperty('--card-w', `${fit.cardWidth}px`);
+    board.style.setProperty('--card-h', `${fit.cardHeight}px`);
   }
 
   function cardFace(card: Card): HTMLElement {
@@ -141,7 +195,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       : h(
           'span',
           { class: 'mem-card__face mem-card__face--word' },
-          icon(c.icon, { size: 18 }),
+          icon(c.icon, { size: 16 }),
           h('span', { class: 'mem-card__term' }, c.term),
         );
   }
@@ -153,7 +207,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function renderBoard(): void {
-    board.dataset.count = String(game.cards.length);
+    if (!game) return;
     board.classList.toggle('mem-board--duo', players > 1);
     board.replaceChildren(
       ...game.cards.map((card, i) =>
@@ -173,19 +227,22 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
             h(
               'span',
               { class: 'mem-card__back', 'aria-hidden': 'true' },
-              icon('leaf', { size: 28 }),
+              icon('leaf', { size: 24 }),
             ),
             cardFace(card),
           ),
         ),
       ),
     );
+    fitBoard();
     syncCards();
   }
 
   function syncCards(): void {
+    if (!game) return;
+    const cards = game.cards;
     board.querySelectorAll<HTMLButtonElement>('.mem-card').forEach((el, i) => {
-      const card = game.cards[i];
+      const card = cards[i];
       if (!card) return;
       el.classList.toggle('is-up', card.faceUp || card.matched);
       el.classList.toggle('is-matched', card.matched);
@@ -196,14 +253,16 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function onFlip(index: number): void {
+    if (!game) return;
+    const g = game;
     // Tapping while a mismatch is showing skips the wait.
-    if (game.awaitingReset) {
+    if (g.awaitingReset) {
       window.clearTimeout(resetTimer);
-      game.resetMismatch();
+      g.resetMismatch();
       syncCards();
       renderStats();
     }
-    const outcome = game.flip(index);
+    const outcome = g.flip(index);
     if (outcome.kind === 'ignored') return;
     if (!startedAt) {
       startedAt = performance.now();
@@ -224,13 +283,14 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       if (outcome.finished) finish();
     } else if (outcome.kind === 'mismatch') {
       ctx.sound('bad');
+      haptic();
       ctx.announce('Not a match.');
       resetTimer = window.setTimeout(
         () => {
-          game.resetMismatch();
+          g.resetMismatch();
           syncCards();
           renderStats();
-          if (players > 1) ctx.announce(`Player ${game.currentPlayer + 1}'s turn`);
+          if (players > 1) ctx.announce(`Player ${g.currentPlayer + 1}'s turn`);
         },
         prefersReducedMotion() ? 1400 : 1100,
       );
@@ -239,32 +299,34 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function finish(): void {
+    if (!game) return;
+    const g = game;
     window.clearInterval(tick);
     elapsed = Math.floor((performance.now() - startedAt) / 1000);
     renderStats();
-    const pairs = game.totalPairs;
+    const pairs = g.totalPairs;
     const recap = learned.map((c) => ({ term: c.term, detail: c.detail }));
     window.setTimeout(() => {
       ctx.sound('win');
       if (players === 1) {
-        const score = scoreFor(pairs, game.moves, elapsed);
+        const score = scoreFor(pairs, g.moves, elapsed);
         ctx.showResult({
           title: 'All pairs found!',
           score,
-          stars: starsFor(pairs, game.moves),
+          stars: starsFor(pairs, g.moves),
           isBest: ctx.submitScore(score),
-          stats: [`${game.moves} moves`, formatTime(elapsed), `${pairs} pairs`],
+          stats: [`${g.moves} moves`, formatTime(elapsed), `${pairs} pairs`],
           learned: recap,
           onReplay: newGame,
         });
       } else {
-        const winner = game.winner();
+        const winner = g.winner();
         ctx.showResult({
           title: winner === null ? "It's a draw!" : `Player ${winner + 1} wins!`,
-          score: Math.max(...game.pairsFound),
+          score: Math.max(...g.pairsFound),
           stars: 3,
           isBest: false,
-          stats: game.pairsFound.map((p, i) => `Player ${i + 1}: ${p} pairs`),
+          stats: g.pairsFound.map((p, i) => `Player ${i + 1}: ${p} pairs`),
           learned: recap,
           onReplay: newGame,
         });
@@ -275,20 +337,28 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   function newGame(): void {
     window.clearInterval(tick);
     window.clearTimeout(resetTimer);
+    intro.hidden = true;
     startedAt = 0;
     elapsed = 0;
     learned = [];
-    game = new MemoryGame(buildDeck(CONCEPTS, PAIRS[difficulty]), players);
+    game = new MemoryGame(buildDeck(CONCEPTS, pairsFor(difficulty, isCompact())), players);
     renderBoard();
     renderStats();
+    board.querySelector<HTMLElement>('.mem-card')?.focus({ preventScroll: true });
   }
 
+  const observer = new ResizeObserver(() => fitBoard());
+  observer.observe(stage);
+
+  // Deal a face-down board behind the start screen so the page never looks empty.
   newGame();
+  showIntro();
 
   return {
     destroy() {
       window.clearInterval(tick);
       window.clearTimeout(resetTimer);
+      observer.disconnect();
       host.replaceChildren();
     },
   };

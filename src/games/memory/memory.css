@@ -1,103 +1,63 @@
 .mem {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
 }
-.mem-controls {
+.mem-hud {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
-}
-.mem-new {
-  margin-left: auto;
+  gap: 8px;
+  min-height: 40px;
 }
 .mem-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+}
+.mem-hud__actions {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
 }
 .mem-player--0 {
   --accent: var(--sky);
+  --accent-soft: var(--sky-soft);
 }
 .mem-player--1 {
   --accent: var(--coral);
+  --accent-soft: var(--coral-soft);
 }
 
-.mem-board {
-  --cols: 4;
-  --rows: 4;
-  --board-max: 760px;
+/* The stage takes all remaining height; JS picks the grid that fits it best. */
+.mem-stage {
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: clamp(8px, 1.6vw, 14px);
-  /* Fit the whole board in the viewport height where possible (cards are 4:5). */
-  max-width: max(
-    min(100%, 520px),
-    min(var(--board-max), (100dvh - 280px) * 0.8 * var(--cols) / var(--rows))
-  );
-  width: 100%;
-  margin: 0 auto;
+  place-items: center;
 }
-.mem-board[data-count='12'] {
-  --rows: 3;
+.mem-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centres a partial last row */
+  gap: var(--gap, 12px);
 }
-.mem-board[data-count='24'] {
-  --cols: 6;
-  --board-max: 980px;
-}
-@media (max-width: 640px) {
-  .mem-board {
-    max-width: none;
-  }
-  .mem-board[data-count='24'] {
-    --cols: 4;
-  }
-  /* Phones: players + icon-only "new game" on one row, level below. */
-  .mem-controls {
-    gap: 8px;
-  }
-  .mem-controls .segmented span {
-    min-height: 36px;
-    padding: 0 12px;
-    font-size: 0.9rem;
-  }
-  .mem-controls fieldset:first-child {
-    order: 0;
-  }
-  .mem-new {
-    order: 1;
-    width: 44px;
-    min-height: 44px;
-    padding: 0;
-  }
-  .mem-controls fieldset:nth-child(2) {
-    order: 2;
-  }
-  .mem-new__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-  }
-  .mem-stats {
-    gap: 6px;
-  }
-  .mem-stats .stat {
-    min-height: 32px;
-    padding: 0 10px;
-    font-size: 0.88rem;
-  }
+.mem-board > .mem-card {
+  flex: none;
+  width: var(--card-w, 120px);
+  height: var(--card-h, 150px);
 }
 
 .mem-card {
-  aspect-ratio: 4 / 5;
+  position: relative;
   padding: 0;
   border: 0;
   background: none;
   perspective: 900px;
   touch-action: manipulation;
+  container-type: inline-size;
 }
 .mem-card__inner {
   position: relative;
@@ -118,47 +78,50 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: clamp(8px, 9cqi, 14px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  box-shadow: var(--shadow-sm);
 }
 .mem-card__back {
   color: rgb(255 255 255 / 0.9);
   background:
-    radial-gradient(circle at 30% 25%, rgb(255 255 255 / 0.18) 0 12%, transparent 13%),
-    radial-gradient(circle at 75% 80%, rgb(255 255 255 / 0.12) 0 18%, transparent 19%),
-    linear-gradient(145deg, #2e9e62, #1f7a4a);
-  border: 3px solid rgb(255 255 255 / 0.25);
+    radial-gradient(circle at 28% 22%, rgb(255 255 255 / 0.2) 0 11%, transparent 11.5%),
+    radial-gradient(circle at 78% 82%, rgb(255 255 255 / 0.14) 0 17%, transparent 17.5%),
+    linear-gradient(150deg, var(--brand-blue), #0f5d99);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.15s var(--ease);
 }
+.mem-card__back svg {
+  width: 26cqi;
+  height: 26cqi;
+}
 .mem-card:hover:not(.is-up) .mem-card__back {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 .mem-card__face {
   transform: rotateY(180deg);
-  gap: 6px;
-  padding: 8px;
+  gap: 6cqi;
+  padding: 8cqi;
   background: var(--surface);
-  border: 3px solid var(--accent);
+  border: 2px solid var(--accent);
   text-align: center;
 }
 .mem-card__icon {
   display: grid;
   place-items: center;
-  width: 62%;
+  width: 58%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--accent-soft);
   color: var(--accent);
 }
 .mem-card__icon svg {
-  width: 58%;
-  height: 58%;
+  width: 56%;
+  height: 56%;
 }
 .mem-card__caption {
-  font-size: clamp(0.62rem, 1.4vw, 0.8rem);
-  font-weight: 700;
+  font-size: clamp(9px, 10.5cqi, 13px);
+  font-weight: 650;
   line-height: 1.15;
   color: var(--muted);
   overflow-wrap: break-word;
@@ -169,18 +132,17 @@
   color: var(--ink);
 }
 .mem-card__face--word svg {
+  width: 16cqi;
+  height: 16cqi;
   color: var(--accent);
 }
 .mem-card__term {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(0.8rem, 2vw, 1.15rem);
-  line-height: 1.1;
+  font-size: clamp(10px, 13.5cqi, 17px);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
   overflow-wrap: break-word;
   hyphens: auto;
-}
-.mem-board[data-count='24'] .mem-card__term {
-  font-size: clamp(0.72rem, 1.6vw, 1rem);
 }
 
 .mem-card.is-matched .mem-card__face {
@@ -190,29 +152,13 @@
   cursor: default;
 }
 .mem-board--duo .mem-card.is-matched[data-player='0'] .mem-card__face {
-  box-shadow:
-    0 0 0 3px var(--sky),
-    var(--shadow-sm);
+  box-shadow: 0 0 0 3px var(--sky);
 }
 .mem-board--duo .mem-card.is-matched[data-player='1'] .mem-card__face {
-  box-shadow:
-    0 0 0 3px var(--coral),
-    var(--shadow-sm);
+  box-shadow: 0 0 0 3px var(--coral);
 }
 @keyframes mem-pop {
   50% {
-    transform: rotateY(180deg) scale(1.07);
-  }
-}
-
-/* Phones held sideways: spread the cards into wide rows so the board fits. */
-@media (max-height: 500px) and (orientation: landscape) {
-  .mem-board,
-  .mem-board[data-count='24'] {
-    --cols: 8;
-    max-width: none;
-  }
-  .mem-board[data-count='12'] {
-    --cols: 6;
+    transform: rotateY(180deg) scale(1.06);
   }
 }

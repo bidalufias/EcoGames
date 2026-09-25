@@ -1,94 +1,84 @@
-/* Design tokens. All colours in the UI come from here; see docs/DESIGN.md. */
+/* Design tokens. All colours in the UI come from here; see docs/DESIGN.md.
+   Light (white) is the default; dark is opt-in via the header toggle. */
 :root {
   color-scheme: light;
 
-  --font-display: 'Fredoka Variable', 'Fredoka', ui-rounded, system-ui, sans-serif;
-  --font-body: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font:
+    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  /* Kept as aliases so every component uses the same family. */
+  --font-display: var(--font);
+  --font-body: var(--font);
+
+  /* Type scale (refined, compact). */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: clamp(1.75rem, 3.2vw, 2.5rem);
 
   /* MGTC brand colours (from the MGTC logo). */
   --brand-blue: #0079c2;
   --brand-navy: #1c4a8e;
   --brand-green: #8dc63f;
+  --brand-green-ink: #4d8a17;
 
-  --paper: #f6f4ec;
+  --paper: #ffffff;
   --surface: #ffffff;
-  --surface-2: #eeebe0;
-  --ink: #12302a;
-  --muted: #56695f;
-  --line: #e0dccd;
-  --focus: #2f7fd8;
+  --surface-2: #f4f6f8;
+  --surface-3: #eaeef2;
+  --ink: #16191d;
+  --muted: #5f6b76;
+  --line: #e5e9ee;
+  --focus: #0079c2;
 
-  --leaf: #2e9e62;
-  --leaf-soft: #dcf1e4;
+  --leaf: #2f9b5b;
+  --leaf-soft: #e3f4ea;
   --sky: #0079c2;
-  --sky-soft: #dde9f8;
-  --sun: #e9a825;
-  --sun-soft: #fbefd2;
-  --coral: #e2604a;
-  --coral-soft: #fbe2dc;
-  --berry: #7c5ce0;
-  --berry-soft: #e9e3fb;
+  --sky-soft: #e1f0fa;
+  --sun: #e7a21c;
+  --sun-soft: #fdf2d9;
+  --coral: #e0573f;
+  --coral-soft: #fce6e1;
+  --berry: #6e56d8;
+  --berry-soft: #ece8fb;
 
-  --good: #23884f;
-  --bad: #c8412c;
+  --good: #1f8a4c;
+  --bad: #cf3e2a;
   --on-accent: #ffffff;
 
-  --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 24px;
-  --shadow-sm: 0 1px 2px rgb(18 48 42 / 0.08);
-  --shadow: 0 2px 4px rgb(18 48 42 / 0.06), 0 8px 24px rgb(18 48 42 / 0.08);
-  --shadow-lg: 0 4px 8px rgb(18 48 42 / 0.08), 0 20px 48px rgb(18 48 42 / 0.16);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow: 0 1px 3px rgb(16 24 40 / 0.06), 0 6px 16px rgb(16 24 40 / 0.06);
+  --shadow-lg: 0 4px 10px rgb(16 24 40 / 0.08), 0 20px 40px rgb(16 24 40 / 0.14);
 
-  --gutter: clamp(16px, 4vw, 32px);
-  --max-width: 1120px;
+  --header-h: 56px;
+  --rail-w: 220px;
+  --gutter: clamp(16px, 3vw, 28px);
+  --max-width: 1240px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --brand-navy: #8db4ee;
-    --paper: #0d1714;
-    --surface: #15221e;
-    --surface-2: #1c2c27;
-    --ink: #e8f1ec;
-    --muted: #9ab0a6;
-    --line: #273832;
-    --focus: #6aa8f0;
-    --leaf: #4cc184;
-    --leaf-soft: #173a29;
-    --sky: #5a9ff0;
-    --sky-soft: #172b44;
-    --sun: #f2bf4f;
-    --sun-soft: #3a2f14;
-    --coral: #f07f69;
-    --coral-soft: #41221c;
-    --berry: #9d85f0;
-    --berry-soft: #2a2248;
-    --good: #4cc184;
-    --bad: #f07f69;
-    --on-accent: #0d1714;
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-    --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
-    --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 20px 48px rgb(0 0 0 / 0.5);
-  }
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
   --brand-navy: #8db4ee;
-  --paper: #0d1714;
-  --surface: #15221e;
-  --surface-2: #1c2c27;
-  --ink: #e8f1ec;
-  --muted: #9ab0a6;
-  --line: #273832;
-  --focus: #6aa8f0;
+  --brand-green-ink: #9fd45a;
+  --paper: #111417;
+  --surface: #181c20;
+  --surface-2: #1f2429;
+  --surface-3: #293037;
+  --ink: #eef1f4;
+  --muted: #9aa5b0;
+  --line: #2a3036;
+  --focus: #5aaef0;
   --leaf: #4cc184;
   --leaf-soft: #173a29;
-  --sky: #5a9ff0;
-  --sky-soft: #172b44;
+  --sky: #4aa8ea;
+  --sky-soft: #14324a;
   --sun: #f2bf4f;
   --sun-soft: #3a2f14;
   --coral: #f07f69;
@@ -97,10 +87,10 @@
   --berry-soft: #2a2248;
   --good: #4cc184;
   --bad: #f07f69;
-  --on-accent: #0d1714;
+  --on-accent: #0d1117;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
-  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.35), 0 20px 48px rgb(0 0 0 / 0.5);
+  --shadow: 0 1px 3px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 4px 10px rgb(0 0 0 / 0.35), 0 20px 40px rgb(0 0 0 / 0.5);
 }
 
 /* Per-accent helpers: set --accent / --accent-soft on any element. */

@@ -1,4 +1,19 @@
-import type { GameDefinition } from '../core/types';
+import type { CategoryId, GameDefinition } from '../core/types';
+import type { IconName } from '../ui/icons';
+
+export interface Category {
+  id: CategoryId;
+  label: string;
+  icon: IconName;
+  /** Accent used for the category's icon in navigation. */
+  accent: GameDefinition['accent'];
+}
+
+export const CATEGORIES: readonly Category[] = [
+  { id: 'arcade', label: 'Arcade', icon: 'gamepad', accent: 'coral' },
+  { id: 'puzzle', label: 'Puzzle & memory', icon: 'puzzle', accent: 'sky' },
+  { id: 'quiz', label: 'Quiz & trivia', icon: 'brain', accent: 'berry' },
+];
 
 // The list of games shown on the hub. Each game's code is lazy-loaded when it
 // is opened, so adding a game here doesn't slow down the home page.
@@ -7,41 +22,78 @@ export const GAMES: readonly GameDefinition[] = [
   {
     id: 'waste-sorter',
     title: 'Waste Sorter',
-    tagline: 'Drag the rubbish into the right bin before it hits the ground.',
-    description: 'A fast sorting game about recycling, composting and special drop-offs.',
+    tagline: 'Sort the rubbish into the right bin before it lands.',
+    category: 'arcade',
     icon: 'recycle',
+    art: ['can', 'banana', 'battery'],
     accent: 'sky',
     minutes: '2–4 min',
-    topics: ['Waste', 'Recycling'],
-    bestLabel: 'Best score',
+    howTo: [
+      'Drag each item into the right bin, or tap a bin to send the lowest item there.',
+      'Keys 1–4 work too.',
+      'Three mistakes and the round ends. Sort several in a row for bonus points!',
+    ],
+    howToMobile: [
+      'Tap a bin to send the lowest item into it. You can drag items too.',
+      'Three mistakes and the round ends. Sort several in a row for bonus points!',
+    ],
     load: () => import('./sorter'),
   },
   {
     id: 'eco-memory',
     title: 'Eco Memory',
     tagline: 'Flip cards and match pairs of climate words.',
-    description: 'A memory game for one or two players that builds climate vocabulary.',
+    category: 'puzzle',
     icon: 'puzzle',
+    art: ['sun', 'wind', 'sprout'],
     accent: 'leaf',
     minutes: '3–6 min',
-    topics: ['Climate words', '1–2 players'],
-    bestLabel: 'Best score',
+    howTo: [
+      'Flip two cards at a time and find the matching picture and word.',
+      'Each match shows what the word means.',
+      'Play alone for a high score, or take turns with a friend.',
+    ],
     load: () => import('./memory'),
   },
   {
     id: 'eco-quiz',
     title: 'Eco Quiz',
-    tagline: 'Ten quick questions about climate, energy and nature.',
-    description: 'A multiple-choice quiz with an explanation after every answer.',
+    tagline: 'Ten quick questions on climate, energy and nature.',
+    category: 'quiz',
     icon: 'brain',
+    art: ['globe', 'lightbulb', 'bird'],
     accent: 'berry',
     minutes: '3–5 min',
-    topics: ['Science', 'Energy', 'Nature'],
-    bestLabel: 'Best score',
+    howTo: [
+      'Answer ten multiple-choice questions.',
+      'You’ll see a short explanation after every answer.',
+      'Answer several in a row correctly for streak bonus points.',
+    ],
     load: () => import('./quiz'),
   },
 ];
 
 export function findGame(id: string): GameDefinition | undefined {
   return GAMES.find((g) => g.id === id);
+}
+
+export function findCategory(id: string): Category | undefined {
+  return CATEGORIES.find((c) => c.id === id);
+}
+
+/** Case-insensitive search over game titles, taglines and categories. */
+export function searchGames(query: string): GameDefinition[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [...GAMES];
+  return GAMES.filter((g) =>
+    [g.title, g.tagline, findCategory(g.category)?.label ?? ''].some((t) =>
+      t.toLowerCase().includes(q),
+    ),
+  );
+}
+
+/** A different featured game each day. */
+export function gameOfTheDay(date = new Date()): GameDefinition {
+  const day = Math.floor(date.getTime() / 86_400_000);
+  return GAMES[day % GAMES.length] as GameDefinition;
 }

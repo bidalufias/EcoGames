@@ -37,3 +37,16 @@ export function submitScore(gameId: string, score: number): boolean {
   writeJSON('best', scores);
   return true;
 }
+
+const MAX_RECENT = 6;
+
+/** Remembers that a game was opened, most recent first. */
+export function recordPlay(gameId: string): void {
+  const recent = recentGames().filter((id) => id !== gameId);
+  writeJSON('recent', [gameId, ...recent].slice(0, MAX_RECENT));
+}
+
+export function recentGames(): string[] {
+  const value = readJSON<unknown>('recent', []);
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
+}

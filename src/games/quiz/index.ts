@@ -1,14 +1,15 @@
 import { QUESTIONS } from '../../content/quiz';
-import { h, replace } from '../../core/dom';
+import { h, haptic, replace } from '../../core/dom';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
+import { renderIntro } from '../../ui/intro';
 import { QuizRound, buildRound, quizStars } from './logic';
 import './quiz.css';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
-  let round: QuizRound;
+  let round = new QuizRound(buildRound(QUESTIONS));
 
   const progressBar = h('div', { class: 'quiz-progress__bar' });
   const progress = h(
@@ -23,9 +24,25 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   );
   const stats = h('div', { class: 'quiz-stats' });
   const card = h('section', { class: 'quiz-card', 'aria-live': 'off' });
+  // Explanation after each answer: inline on desktop, a bottom sheet on phones.
+  const feedback = h('div', { class: 'quiz-feedback', hidden: true });
+  const intro = renderIntro(ctx.game, {
+    startLabel: 'Start quiz',
+    onStart: () => {
+      ctx.sound('tap');
+      start();
+    },
+  });
 
   host.replaceChildren(
-    h('div', { class: 'quiz' }, h('div', { class: 'quiz-top' }, stats, progress), card),
+    h(
+      'div',
+      { class: 'quiz' },
+      h('div', { class: 'quiz-top' }, stats, progress),
+      card,
+      feedback,
+      intro,
+    ),
   );
 
   function renderStats(): void {
@@ -66,8 +83,9 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       h('span', { class: 'quiz-topic' }, q.source.topic),
       h('h2', { class: 'quiz-question', tabindex: '-1' }, q.source.question),
       options,
-      h('div', { class: 'quiz-feedback', hidden: true }),
     );
+    feedback.hidden = true;
+    card.scrollTop = 0;
     renderStats();
     card.querySelector<HTMLElement>('.quiz-question')?.focus({ preventScroll: true });
   }
@@ -82,33 +100,32 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       else if (i === choice) btn.classList.add('is-wrong');
     });
     ctx.sound(result.correct ? 'good' : 'bad');
+    if (!result.correct) haptic();
 
     const q = round.current!;
-    const feedback = card.querySelector<HTMLElement>('.quiz-feedback')!;
     const nextBtn = h(
       'button',
       { class: 'btn btn--primary', type: 'button', onclick: next },
-      round.isLast ? 'See results' : 'Next question',
-      icon('arrowRight', { size: 18 }),
+      round.isLast ? 'See results' : 'Next',
+      icon('arrowRight', { size: 16 }),
     );
     feedback.className = `quiz-feedback ${result.correct ? 'is-correct' : 'is-wrong'}`;
     feedback.replaceChildren(
       h(
         'p',
         { class: 'quiz-feedback__title' },
-        icon(result.correct ? 'check' : 'x', { size: 20, strokeWidth: 3 }),
+        icon(result.correct ? 'check' : 'x', { size: 18, strokeWidth: 3 }),
         result.correct
           ? `Correct! +${result.points}`
           : `Not quite. The answer is: ${q.options[q.correct]}`,
       ),
-      h('p', {}, q.source.explain),
+      h('p', { class: 'quiz-feedback__text' }, q.source.explain),
       nextBtn,
     );
     feedback.hidden = false;
     ctx.announce(`${result.correct ? 'Correct.' : 'Not quite.'} ${q.source.explain}`);
     renderStats();
     nextBtn.focus({ preventScroll: true });
-    feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   function next(): void {
@@ -140,6 +157,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function onKey(e: KeyboardEvent): void {
+    if (!intro.hidden) return;
     if (e.target instanceof HTMLInputElement || document.querySelector('dialog[open]')) return;
     const n = ['1', '2', '3', '4'].indexOf(e.key);
     const letter = LETTERS.indexOf(e.key.toUpperCase());
@@ -148,12 +166,15 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function start(): void {
+    intro.hidden = true;
     round = new QuizRound(buildRound(QUESTIONS));
     renderQuestion();
   }
 
   document.addEventListener('keydown', onKey);
-  start();
+  // Show the first question behind the start screen.
+  renderQuestion();
+  intro.querySelector<HTMLElement>('.intro__start')?.focus({ preventScroll: true });
 
   return {
     destroy() {

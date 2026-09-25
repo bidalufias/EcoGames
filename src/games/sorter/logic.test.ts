@@ -53,6 +53,7 @@ describe('difficulty curve', () => {
     expect(spawnInterval(1000)).toBeGreaterThanOrEqual(1100);
     expect(maxOnScreen(0)).toBe(1);
     expect(maxOnScreen(100)).toBe(3);
+    expect(maxOnScreen(100, 2)).toBe(2);
     expect(multiplierFor(0)).toBe(1);
     expect(multiplierFor(12)).toBe(4);
   });

@@ -32,7 +32,8 @@ npm run dev        # http://localhost:5173
 - **Vite + TypeScript (strict)**, with no UI framework. A small hash router loads each
   game on demand.
 - **Phaser 4** for real-time games, loaded only when one is opened.
-- **Lucide** icons, and self-hosted **Fredoka** and **Nunito** fonts.
+- **Lucide** icons and the self-hosted **Plus Jakarta Sans** font. The hub layout is modelled
+  on MSN Play.
 - **Vitest** for game rules and content checks. **Playwright** plays every game to the
   end.
 - **GitHub Actions** runs CI on every PR. **Netlify** builds and hosts the site
