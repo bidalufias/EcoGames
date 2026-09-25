@@ -39,8 +39,8 @@ test('categories and search filter the games', async ({ page, isMobile }) => {
   await expect(page.locator('.hub .tile')).toHaveCount(1);
   await page.goto('./');
   const search = page.locator(isMobile ? '#hub-search' : '#rail-search');
-  await search.fill('memory');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('memory');
+  await search.fill('river');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('river');
   await expect(page.locator('.hub .tile')).toHaveCount(1);
   await expect(search).toBeFocused();
   await search.fill('zzz');
