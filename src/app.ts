@@ -20,6 +20,29 @@ function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
 }
 
+/**
+ * MGTC logo shown before the EcoGames wordmark. The official file lives at
+ * public/brand/mgtc-logo.png; if it is missing the header simply shows EcoGames.
+ */
+function orgLogo(): HTMLElement {
+  const img = h('img', {
+    class: 'org-logo',
+    src: './brand/mgtc-logo.png',
+    alt: 'MGTC',
+    width: 88,
+    height: 48,
+    decoding: 'async',
+  });
+  const wrap = h(
+    'span',
+    { class: 'org' },
+    img,
+    h('span', { class: 'org__divider', 'aria-hidden': 'true' }),
+  );
+  img.addEventListener('error', () => wrap.remove());
+  return wrap;
+}
+
 /** Parses the hash into a route. `#/play/<id>` opens a game; anything else shows the hub. */
 export function parseRoute(hash: string): { name: 'hub' } | { name: 'game'; id: string } {
   const match = /^#\/play\/([a-z0-9-]+)\/?$/.exec(hash);
@@ -62,7 +85,7 @@ export function startApp(root: HTMLElement): void {
   root.replaceChildren(
     h(
       'div',
-      { class: 'shell' },
+      { class: 'shell', id: 'shell' },
       h(
         'button',
         {
@@ -79,6 +102,7 @@ export function startApp(root: HTMLElement): void {
         h(
           'div',
           { class: 'topbar__inner' },
+          orgLogo(),
           h(
             'a',
             { class: 'brand', href: '#/', 'aria-label': 'EcoGames home' },
@@ -95,7 +119,7 @@ export function startApp(root: HTMLElement): void {
         h(
           'div',
           { class: 'footer__inner' },
-          h('span', {}, 'EcoGames · Learn through play'),
+          h('span', {}, `© ${new Date().getFullYear()} MGTC · EcoGames · Learn through play`),
           h('span', {}, 'Recycling rules vary by area: check your local council.'),
         ),
       ),
@@ -185,6 +209,7 @@ export function startApp(root: HTMLElement): void {
     const token = ++navToken;
     teardown();
     const route = parseRoute(window.location.hash);
+    document.getElementById('shell')?.setAttribute('data-route', route.name);
     const game = route.name === 'game' ? findGame(route.id) : undefined;
     window.scrollTo(0, 0);
     if (game) {

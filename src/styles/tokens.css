@@ -5,6 +5,11 @@
   --font-display: 'Fredoka Variable', 'Fredoka', ui-rounded, system-ui, sans-serif;
   --font-body: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
+  /* MGTC brand colours (from the MGTC logo). */
+  --brand-blue: #0079c2;
+  --brand-navy: #1c4a8e;
+  --brand-green: #8dc63f;
+
   --paper: #f6f4ec;
   --surface: #ffffff;
   --surface-2: #eeebe0;
@@ -15,7 +20,7 @@
 
   --leaf: #2e9e62;
   --leaf-soft: #dcf1e4;
-  --sky: #2f7fd8;
+  --sky: #0079c2;
   --sky-soft: #dde9f8;
   --sun: #e9a825;
   --sun-soft: #fbefd2;
@@ -43,6 +48,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
+    --brand-navy: #8db4ee;
     --paper: #0d1714;
     --surface: #15221e;
     --surface-2: #1c2c27;
@@ -71,6 +77,7 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
+  --brand-navy: #8db4ee;
   --paper: #0d1714;
   --surface: #15221e;
   --surface-2: #1c2c27;

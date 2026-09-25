@@ -156,6 +156,23 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     ctx.sound('tap');
     scene.startRun();
     stage.focus({ preventScroll: true });
+    // Make sure the whole play area (including the bins) is on screen, with
+    // the score and lives too when there is room. A sticky header covers the
+    // top of the viewport, so measure from its bottom edge.
+    const topbar = document.querySelector<HTMLElement>('.topbar');
+    const covered =
+      topbar && getComputedStyle(topbar).position === 'sticky'
+        ? topbar.getBoundingClientRect().bottom
+        : 0;
+    const top = Math.min(hud.getBoundingClientRect().top, stage.getBoundingClientRect().top);
+    const bottom = stage.getBoundingClientRect().bottom;
+    if (top < covered || bottom > window.innerHeight) {
+      if (bottom - top <= window.innerHeight - covered) {
+        window.scrollBy({ top: top - covered - 8 });
+      } else {
+        stage.scrollIntoView({ block: 'end' });
+      }
+    }
   }
   startBtn.addEventListener('click', start);
 
@@ -175,6 +192,10 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       input: { activePointers: 2 },
       scene,
     });
+    // Opt-in handle for end-to-end tests (?e2e in the URL); never used in normal play.
+    if (new URLSearchParams(window.location.search).has('e2e')) {
+      (window as unknown as { __sorter: unknown }).__sorter = { scene, game };
+    }
     game.events.once(Phaser.Core.Events.READY, () => {
       startBtn.disabled = false;
       startBtn.replaceChildren('Start sorting');

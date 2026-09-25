@@ -9,7 +9,7 @@
   gap: 10px;
   align-items: center;
 }
-.mem-controls .btn {
+.mem-new {
   margin-left: auto;
 }
 .mem-stats {
@@ -32,7 +32,10 @@
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: clamp(8px, 1.6vw, 14px);
   /* Fit the whole board in the viewport height where possible (cards are 4:5). */
-  max-width: max(300px, min(var(--board-max), (100dvh - 280px) * 0.8 * var(--cols) / var(--rows)));
+  max-width: max(
+    min(100%, 520px),
+    min(var(--board-max), (100dvh - 280px) * 0.8 * var(--cols) / var(--rows))
+  );
   width: 100%;
   margin: 0 auto;
 }
@@ -50,8 +53,41 @@
   .mem-board[data-count='24'] {
     --cols: 4;
   }
-  .mem-controls .btn {
-    margin-left: 0;
+  /* Phones: players + icon-only "new game" on one row, level below. */
+  .mem-controls {
+    gap: 8px;
+  }
+  .mem-controls .segmented span {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.9rem;
+  }
+  .mem-controls fieldset:first-child {
+    order: 0;
+  }
+  .mem-new {
+    order: 1;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+  .mem-controls fieldset:nth-child(2) {
+    order: 2;
+  }
+  .mem-new__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .mem-stats {
+    gap: 6px;
+  }
+  .mem-stats .stat {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.88rem;
   }
 }
 
@@ -166,5 +202,17 @@
 @keyframes mem-pop {
   50% {
     transform: rotateY(180deg) scale(1.07);
+  }
+}
+
+/* Phones held sideways: spread the cards into wide rows so the board fits. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mem-board,
+  .mem-board[data-count='24'] {
+    --cols: 8;
+    max-width: none;
+  }
+  .mem-board[data-count='12'] {
+    --cols: 6;
   }
 }

@@ -1,4 +1,5 @@
 .sorter {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -29,7 +30,8 @@
 
 .sorter-stage {
   position: relative;
-  height: clamp(440px, calc(100dvh - 230px), 760px);
+  /* Fill the rest of the screen under the header, title and HUD. */
+  height: clamp(300px, calc(100dvh - 230px), 760px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface-2);
@@ -37,6 +39,27 @@
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+}
+/* Short screens (phones held sideways): the stage takes the whole viewport and
+   the page scrolls it into view when a run starts. */
+@media (max-height: 500px) {
+  .sorter-stage {
+    height: calc(100dvh - 16px);
+    min-height: 260px;
+  }
+  /* No room above the play area: float the score and lives over it. */
+  .sorter-hud {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+@media (max-width: 640px) {
+  .sorter-stage {
+    height: clamp(300px, calc(100dvh - 170px), 760px);
+  }
 }
 .sorter-stage:focus {
   outline: none;
@@ -61,6 +84,8 @@
 .sorter-panel {
   display: grid;
   gap: 16px;
+  max-height: 100%;
+  overflow: auto;
   width: min(440px, 100%);
   padding: 24px;
   border-radius: var(--radius-lg);

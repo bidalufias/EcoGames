@@ -22,7 +22,7 @@ export interface WasteItem {
 }
 
 export const BINS: readonly Bin[] = [
-  { id: 'recycle', label: 'Recycling', color: 0x2f7fd8, icon: 'recycle', key: '1' },
+  { id: 'recycle', label: 'Recycling', color: 0x0079c2, icon: 'recycle', key: '1' },
   { id: 'compost', label: 'Food & garden', color: 0x3a9d5d, icon: 'sprout', key: '2' },
   { id: 'general', label: 'General waste', color: 0x6b7280, icon: 'trash', key: '3' },
   { id: 'dropoff', label: 'Special drop-off', color: 0xe07a2f, icon: 'battery', key: '4' },

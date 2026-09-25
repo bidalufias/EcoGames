@@ -83,9 +83,9 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     ),
     h(
       'button',
-      { class: 'btn', type: 'button', onclick: () => newGame() },
+      { class: 'btn mem-new', type: 'button', 'aria-label': 'New game', onclick: () => newGame() },
       icon('replay', { size: 18 }),
-      'New game',
+      h('span', { class: 'mem-new__label' }, 'New game'),
     ),
   );
 

@@ -5,6 +5,15 @@
 Friendly, bright and calm. It's for all ages, so it's playful without being babyish.
 The look is warm paper backgrounds, rounded shapes, bold colour blocks and one icon family.
 
+## Brand
+
+EcoGames is an MGTC product. The header shows the MGTC logo
+(`public/brand/mgtc-logo.png`) next to the EcoGames wordmark, and the footer credits MGTC.
+The brand colours come from the MGTC logo and are exposed as `--brand-blue` (#0079C2),
+`--brand-navy` (#1C4A8E) and `--brand-green` (#8DC63F). The `--sky` accent is MGTC blue,
+and the EcoGames mark uses a blue→green gradient. Use the official logo file only; never
+redraw it.
+
 ## Tokens (`src/styles/tokens.css`)
 
 | Token                                        | Use                                    |
