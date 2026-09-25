@@ -22,7 +22,6 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     },
     progressBar,
   );
-  const stats = h('div', { class: 'quiz-stats' });
   const card = h('section', { class: 'quiz-card', 'aria-live': 'off' });
   // Explanation after each answer: inline on desktop, a bottom sheet on phones.
   const feedback = h('div', { class: 'quiz-feedback', hidden: true });
@@ -34,28 +33,25 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     },
   });
 
-  host.replaceChildren(
-    h(
-      'div',
-      { class: 'quiz' },
-      h('div', { class: 'quiz-top' }, stats, progress),
-      card,
-      feedback,
-      intro,
-    ),
-  );
+  host.replaceChildren(h('div', { class: 'quiz' }, progress, card, feedback, intro));
 
   function renderStats(): void {
     replace(
-      stats,
-      h('span', { class: 'stat' }, `Question ${round.index + 1} of ${round.questions.length}`),
-      h('span', { class: 'stat' }, icon('star', { size: 16 }), `${round.score} pts`),
+      ctx.hud,
+      h(
+        'span',
+        { class: 'stat quiz-count' },
+        h('span', { class: 'stat__label' }, 'Question '),
+        `${round.index + 1}/${round.questions.length}`,
+      ),
+      h('span', { class: 'stat' }, icon('star', { size: 14 }), `${round.score} pts`),
       round.streak >= 2 &&
         h(
           'span',
           { class: 'stat quiz-streak' },
-          icon('flame', { size: 16 }),
-          `${round.streak} in a row`,
+          icon('flame', { size: 14 }),
+          `${round.streak}`,
+          h('span', { class: 'stat__label' }, ' in a row'),
         ),
     );
     const total = round.questions.length;

@@ -90,7 +90,7 @@ test('Eco Quiz runs ten questions to a result', async ({ page }) => {
   const start = await openGame(page, 'Eco Quiz', 'Start quiz');
   await start.click();
   for (let i = 0; i < 10; i++) {
-    await expect(page.getByText(`Question ${i + 1} of 10`)).toBeVisible();
+    await expect(page.locator('.quiz-count')).toHaveText(`Question ${i + 1}/10`);
     await page.locator('.quiz-option').first().click();
     await expect(page.locator('.quiz-feedback')).toBeVisible();
     await page.getByRole('button', { name: i === 9 ? 'See results' : 'Next' }).click();
@@ -99,7 +99,7 @@ test('Eco Quiz runs ten questions to a result', async ({ page }) => {
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('correct');
   await dialog.getByRole('button', { name: 'Play again' }).click();
-  await expect(page.getByText('Question 1 of 10')).toBeVisible();
+  await expect(page.locator('.quiz-count')).toHaveText('Question 1/10');
 });
 
 test('Waste Sorter starts and ends when lives run out', async ({ page }) => {
@@ -127,6 +127,7 @@ test('Waste Sorter items can be dragged into the right bin', async ({ page, isMo
   type Snap = {
     items: { bin: string; x: number; y: number }[];
     bins: { id: string; x: number; y: number }[];
+    radius: number;
     score: number;
   };
   // Converts game coordinates into page (CSS pixel) coordinates.
@@ -134,7 +135,9 @@ test('Waste Sorter items can be dragged into the right bin', async ({ page, isMo
     page.evaluate(() => {
       type Pt = { x: number; y: number };
       type Hook = {
-        scene: { debugSnapshot: () => { items: Pt[]; bins: Pt[]; score: number } };
+        scene: {
+          debugSnapshot: () => { items: Pt[]; bins: Pt[]; radius: number; score: number };
+        };
         game: { canvas: HTMLCanvasElement; scale: { width: number; height: number } };
       };
       const { scene, game } = (window as unknown as { __sorter: Hook }).__sorter;
@@ -147,19 +150,26 @@ test('Waste Sorter items can be dragged into the right bin', async ({ page, isMo
         x: rect.left + p.x * sx,
         y: rect.top + p.y * sy,
       });
-      return { ...snap, items: snap.items.map(toPage), bins: snap.bins.map(toPage) };
+      return {
+        ...snap,
+        items: snap.items.map(toPage),
+        bins: snap.bins.map(toPage),
+        radius: snap.radius * sy,
+      };
     }) as Promise<Snap>;
 
-  let snap: Snap;
+  // Wait until the item is well inside the play area, like a player would.
+  const box = (await page.locator('.sorter-stage canvas').boundingBox())!;
   await expect(async () => {
-    snap = await snapshot();
-    expect(snap.items.length).toBeGreaterThan(0);
-    // Wait until the item is well inside the play area, like a player would.
-    const box = (await page.locator('.sorter-stage canvas').boundingBox())!;
-    expect(snap.items[0]!.y).toBeGreaterThan(box.y + box.height * 0.2);
+    const s = await snapshot();
+    expect(s.items[0]?.y ?? 0).toBeGreaterThan(box.y + box.height * 0.2);
   }).toPass({ timeout: 20_000 });
-  const item = snap!.items[0]!;
-  const bin = snap!.bins.find((b) => b.id === item.bin)!;
+  // The item keeps falling while the test talks to the browser, so read its position
+  // right before grabbing it, and grab its lower half: the item falls onto the pointer
+  // rather than away from it.
+  const snap = await snapshot();
+  const item = { ...snap.items[0]!, y: snap.items[0]!.y + snap.radius * 0.6 };
+  const bin = snap.bins.find((b) => b.id === item.bin)!;
 
   if (isMobile) {
     // Real touch events, as a phone would send them.
@@ -186,5 +196,5 @@ test('Waste Sorter items can be dragged into the right bin', async ({ page, isMo
   }
 
   await expect.poll(async () => (await snapshot()).score).toBeGreaterThan(0);
-  await expect(page.locator('.sorter-hud')).toContainText('10 pts');
+  await expect(page.locator('.gamebar__hud')).toContainText('10 pts');
 });

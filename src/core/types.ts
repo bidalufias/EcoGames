@@ -4,6 +4,11 @@ import type { IconName } from '../ui/icons';
 export interface GameContext {
   /** Metadata of the running game (title, accent, how-to text). */
   game: GameDefinition;
+  /**
+   * Slot in the game bar, on the same line as the title, for live stats (score, lives,
+   * timer) and small in-game buttons. Keep it to a few compact `.stat` pills.
+   */
+  hud: HTMLElement;
   /** Play a named sound effect (respects the user's mute setting). */
   sound: (name: SoundName) => void;
   /** Announce a message to screen-reader users. */

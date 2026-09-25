@@ -716,24 +716,44 @@
   gap: 6px;
   min-height: 44px;
 }
+.gamebar > .btn {
+  flex-shrink: 0;
+}
 .gamebar__title {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  margin-right: auto;
 }
 .gamebar__title h1 {
+  overflow: hidden;
   font-size: var(--text-lg);
   font-weight: 800;
   line-height: 1.15;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .gamebar__title span {
   font-size: var(--text-xs);
   color: var(--muted);
 }
+/* The running game's stats share the line with the title (see GameContext.hud). */
+.gamebar__hud {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+}
+.gamebar__hud:empty,
+.game-page:has(.intro:not([hidden])) .gamebar__hud {
+  display: none;
+}
 .gamebar__actions {
   display: flex;
   gap: 4px;
-  margin-left: auto;
+}
+.gamebar__actions:empty {
+  display: none;
 }
 .game-page__host {
   position: relative;
@@ -765,10 +785,38 @@
     gap: 4px;
   }
   .gamebar {
-    min-height: 40px;
+    min-height: 44px;
+    gap: 4px;
+  }
+  /* Pull the back button into the page margin so its arrow lines up with the content. */
+  .gamebar > .btn:first-child {
+    margin-left: -10px;
   }
   .gamebar__title h1 {
     font-size: var(--text-md);
+  }
+  /* The category label and full-screen button give way to the stats on phones
+     (the site header is already hidden, and iOS has no full-screen API). */
+  .gamebar__title span,
+  .gamebar__fullscreen {
+    display: none;
+  }
+  .gamebar__hud {
+    gap: 4px;
+  }
+  .gamebar__hud .stat {
+    gap: 4px;
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: var(--text-xs);
+  }
+}
+@media (max-width: 360px) {
+  .gamebar__title h1 {
+    font-size: var(--text-sm);
+  }
+  .gamebar__hud .stat {
+    padding: 0 7px;
   }
 }
 

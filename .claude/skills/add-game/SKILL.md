@@ -48,6 +48,9 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance;
 - The game must fit one screen. The root gets `height: 100%` and is a flex column; the
   play area takes the remaining space (`flex: 1; min-height: 0`) and sizes its content to
   it, as `.mem-stage` + `bestGrid()` and `.sorter-stage` do. No page scrolling during play.
+- Put live stats (score, lives, timer, `.stat` pills) and small in-game buttons in
+  `ctx.hud`, which sits on the same line as the title in the game bar, not in a row of
+  your own. Keep it to two or three pills on phones (see `docs/DESIGN.md`).
 - Build DOM with `h()` from `core/dom.ts`, and icons with `icon()` from `ui/icons.ts`.
 - Call `ctx.sound(...)`, `ctx.announce(...)` on outcomes, and at the end
   `ctx.showResult({ ..., isBest: ctx.submitScore(score), learned: [...] , onReplay })`.

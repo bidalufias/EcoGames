@@ -202,6 +202,7 @@ export class SorterScene extends Phaser.Scene {
         .filter((f) => !f.done)
         .map((f) => ({ id: f.item.id, bin: f.item.bin, x: f.box.x, y: f.box.y })),
       bins: this.bins.map((b) => ({ id: b.bin.id, x: b.box.x, y: b.box.y })),
+      radius: this.tokenRadius,
       score: this.state.score,
     };
   }

@@ -128,6 +128,17 @@
 .stat svg {
   color: var(--muted);
 }
+/* Words inside a stat that phones drop visually (screen readers still get them). */
+@media (max-width: 640px), (max-height: 500px) {
+  .stat__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 .stat--active {
   background: var(--accent-soft, var(--sky-soft));
   box-shadow: inset 0 0 0 2px var(--accent, var(--sky));
