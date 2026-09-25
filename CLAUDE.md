@@ -67,6 +67,7 @@ folder, so it stays in its own lazy chunk and the hub stays small.
 
 ## Deploy
 
-Pushes to `main` deploy to GitHub Pages via `.github/workflows/deploy.yml`.
-`vite.config.ts` uses `base: './'` and the router uses hashes, so the build works
-from any sub-path.
+Netlify (project `ecogamesmgtc`) builds and hosts the site, as configured in `netlify.toml`
+(`npm run build`, which publishes `dist/`). `main` deploys to production, and every PR gets a
+deploy preview. `vite.config.ts` uses `base: './'` and the router uses hashes, so the
+build works from any path.

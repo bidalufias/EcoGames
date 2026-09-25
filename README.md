@@ -35,8 +35,8 @@ npm run dev        # http://localhost:5173
 - **Lucide** icons, and self-hosted **Fredoka** and **Nunito** fonts.
 - **Vitest** for game rules and content checks. **Playwright** plays every game to the
   end.
-- **GitHub Actions** for CI on every PR, and deployment to **GitHub Pages** from `main`.
-  One-time setup: _Settings → Pages → Source: GitHub Actions_.
+- **GitHub Actions** runs CI on every PR. **Netlify** builds and hosts the site
+  (`netlify.toml`), deploying production from `main` and a preview for every PR.
 
 ## Contributing
 
