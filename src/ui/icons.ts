@@ -1,5 +1,13 @@
 import type { IconNode } from 'lucide';
 import {
+  Info,
+  Pause,
+  Search,
+  Maximize2,
+  ChevronRight,
+  LayoutGrid,
+  History,
+  Play,
   Apple,
   ArrowLeft,
   ArrowRight,
@@ -76,6 +84,14 @@ import {
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
 // Add icons here and they become available everywhere by name.
 const ICONS = {
+  info: Info,
+  pause: Pause,
+  search: Search,
+  maximize: Maximize2,
+  chevronRight: ChevronRight,
+  grid: LayoutGrid,
+  history: History,
+  play: Play,
   apple: Apple,
   arrowLeft: ArrowLeft,
   arrowRight: ArrowRight,

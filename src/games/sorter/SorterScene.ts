@@ -29,13 +29,13 @@ interface Palette {
 }
 
 const LIGHT: Palette = {
-  skyTop: 0xcfe6f7,
-  skyBottom: 0xf6f4ec,
-  ground: 0xdcd6c2,
+  skyTop: 0xdcedf9,
+  skyBottom: 0xffffff,
+  ground: 0xeaeef2,
   cloud: 0xffffff,
   token: 0xffffff,
-  tokenStroke: 0x12302a,
-  ink: '#12302a',
+  tokenStroke: 0x16191d,
+  ink: '#16191d',
   labelBg: '#ffffffee',
 };
 
@@ -46,11 +46,17 @@ const DARK: Palette = {
   cloud: 0x1d3340,
   token: 0xf3f1e8,
   tokenStroke: 0x000000,
-  ink: '#12302a',
+  ink: '#16191d',
   labelBg: '#f3f1e8ee',
 };
 
-const FONT = '"Nunito Variable", Nunito, system-ui, sans-serif';
+const FONT = '"Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif';
+
+export interface SorterOptions {
+  dark: boolean;
+  /** Phone variant: fewer items on screen at once. */
+  compact: boolean;
+}
 
 interface Falling {
   item: WasteItem;
@@ -86,10 +92,13 @@ export class SorterScene extends Phaser.Scene {
   private bg!: Phaser.GameObjects.Graphics;
   private clouds: Phaser.GameObjects.Ellipse[] = [];
 
-  constructor(hooks: SorterHooks, dark: boolean) {
+  private compact: boolean;
+
+  constructor(hooks: SorterHooks, opts: SorterOptions) {
     super('sorter');
     this.hooks = hooks;
-    this.palette = dark ? DARK : LIGHT;
+    this.palette = opts.dark ? DARK : LIGHT;
+    this.compact = opts.compact;
   }
 
   // Layout helpers, all derived from the current game size.
@@ -215,7 +224,7 @@ export class SorterScene extends Phaser.Scene {
 
     this.sinceSpawn += delta;
     if (
-      this.falling.length < maxOnScreen(this.state.sorted) &&
+      this.falling.length < maxOnScreen(this.state.sorted, this.compact ? 2 : 3) &&
       this.sinceSpawn >= spawnInterval(this.state.sorted)
     ) {
       this.spawn();
@@ -229,13 +238,13 @@ export class SorterScene extends Phaser.Scene {
     const label = this.add
       .text(0, 0, bin.label, {
         fontFamily: FONT,
-        fontStyle: '800',
+        fontStyle: '700',
         color: '#ffffff',
         align: 'center',
       })
       .setOrigin(0.5, 0);
     const badge = this.add
-      .text(0, 0, bin.key, { fontFamily: FONT, fontStyle: '800', color: '#ffffff' })
+      .text(0, 0, bin.key, { fontFamily: FONT, fontStyle: '700', color: '#ffffff' })
       .setOrigin(0.5)
       .setAlpha(0.85);
     const box = this.add.container(0, 0, [body, icon, label, badge]);
@@ -274,8 +283,13 @@ export class SorterScene extends Phaser.Scene {
       this.drawBin(b, bw, bh, radius, false);
       const iconSize = Math.min(bw * 0.42, bh * 0.4);
       b.icon.setDisplaySize(iconSize, iconSize).setPosition(0, -bh * 0.12);
-      const fontSize = Phaser.Math.Clamp(bw * 0.11, unit * 2.6, unit * 4);
+      // Narrow bins (phones) use short labels so the text stays large enough to read.
+      const narrow = bw < unit * 30;
+      const fontSize = narrow
+        ? Phaser.Math.Clamp(bw * 0.17, unit * 3, unit * 4.2)
+        : Phaser.Math.Clamp(bw * 0.1, unit * 2.6, unit * 3.6);
       b.label
+        .setText(narrow ? b.bin.shortLabel : b.bin.label)
         .setFontSize(fontSize)
         .setWordWrapWidth(bw * 0.92)
         .setPosition(0, bh * 0.14);
@@ -347,7 +361,7 @@ export class SorterScene extends Phaser.Scene {
     const label = this.add
       .text(0, r + this.unit * 0.8, item.name, {
         fontFamily: FONT,
-        fontStyle: '800',
+        fontStyle: '700',
         fontSize: `${Math.round(this.unit * 2.8)}px`,
         color: this.palette.ink,
         backgroundColor: this.palette.labelBg,
@@ -439,7 +453,7 @@ export class SorterScene extends Phaser.Scene {
     const t = this.add
       .text(x, y, text, {
         fontFamily: FONT,
-        fontStyle: '900',
+        fontStyle: '800',
         fontSize: `${Math.round(this.unit * 5)}px`,
         color,
         stroke: '#ffffff',

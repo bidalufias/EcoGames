@@ -22,11 +22,13 @@ export function spawnInterval(sorted: number): number {
   return Math.max(1100, 2600 - sorted * 60);
 }
 
-/** How many items may be falling at once. */
-export function maxOnScreen(sorted: number): number {
-  if (sorted < 6) return 1;
-  if (sorted < 18) return 2;
-  return 3;
+/**
+ * How many items may be falling at once. Phones cap this lower (`cap`) because
+ * there is less room and fingers cover part of the screen.
+ */
+export function maxOnScreen(sorted: number, cap = 3): number {
+  const n = sorted < 6 ? 1 : sorted < 18 ? 2 : 3;
+  return Math.min(n, cap);
 }
 
 export function sorterStars(score: number): number {

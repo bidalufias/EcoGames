@@ -5,6 +5,47 @@ export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export const PAIRS: Record<Difficulty, number> = { easy: 6, medium: 8, hard: 12 };
 
+/** Smaller boards on phones, so every card stays big enough to tap and read. */
+export const COMPACT_PAIRS: Record<Difficulty, number> = { easy: 6, medium: 8, hard: 10 };
+
+export function pairsFor(difficulty: Difficulty, compact: boolean): number {
+  return (compact ? COMPACT_PAIRS : PAIRS)[difficulty];
+}
+
+/** Card width ÷ height. */
+export const CARD_ASPECT = 4 / 5;
+
+export interface GridFit {
+  cols: number;
+  rows: number;
+  cardWidth: number;
+  cardHeight: number;
+}
+
+/**
+ * Chooses the column/row split for `count` cards that makes the cards as large
+ * as possible inside a `width` × `height` box (with `gap` between cards).
+ */
+export function bestGrid(count: number, width: number, height: number, gap: number): GridFit {
+  let best: GridFit = { cols: count, rows: 1, cardWidth: 0, cardHeight: 0 };
+  let bestScore = -1;
+  for (let cols = 1; cols <= count; cols++) {
+    const rows = Math.ceil(count / cols);
+    // Skip layouts that leave a whole empty row or more than one hole per row.
+    if (cols * rows - count >= cols) continue;
+    const maxW = (width - gap * (cols - 1)) / cols;
+    const maxH = (height - gap * (rows - 1)) / rows;
+    const cardWidth = Math.max(0, Math.min(maxW, maxH * CARD_ASPECT));
+    // Prefer grids with no gaps: a ragged last row must win by more than 10%.
+    const score = cardWidth * (cols * rows === count ? 1 : 0.9);
+    if (score > bestScore) {
+      bestScore = score;
+      best = { cols, rows, cardWidth, cardHeight: cardWidth / CARD_ASPECT };
+    }
+  }
+  return best;
+}
+
 export interface Card {
   /** Position-independent unique id. */
   uid: string;

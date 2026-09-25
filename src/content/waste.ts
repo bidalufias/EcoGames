@@ -5,6 +5,8 @@ export type BinId = 'recycle' | 'compost' | 'general' | 'dropoff';
 export interface Bin {
   id: BinId;
   label: string;
+  /** Label used on narrow phone screens. */
+  shortLabel: string;
   /** Hex colour used by the game renderer. */
   color: number;
   icon: IconName;
@@ -22,10 +24,38 @@ export interface WasteItem {
 }
 
 export const BINS: readonly Bin[] = [
-  { id: 'recycle', label: 'Recycling', color: 0x0079c2, icon: 'recycle', key: '1' },
-  { id: 'compost', label: 'Food & garden', color: 0x3a9d5d, icon: 'sprout', key: '2' },
-  { id: 'general', label: 'General waste', color: 0x6b7280, icon: 'trash', key: '3' },
-  { id: 'dropoff', label: 'Special drop-off', color: 0xe07a2f, icon: 'battery', key: '4' },
+  {
+    id: 'recycle',
+    label: 'Recycling',
+    shortLabel: 'Recycle',
+    color: 0x0079c2,
+    icon: 'recycle',
+    key: '1',
+  },
+  {
+    id: 'compost',
+    label: 'Food & garden',
+    shortLabel: 'Food',
+    color: 0x3a9d5d,
+    icon: 'sprout',
+    key: '2',
+  },
+  {
+    id: 'general',
+    label: 'General waste',
+    shortLabel: 'General',
+    color: 0x6b7280,
+    icon: 'trash',
+    key: '3',
+  },
+  {
+    id: 'dropoff',
+    label: 'Special drop-off',
+    shortLabel: 'Drop-off',
+    color: 0xe07a2f,
+    icon: 'battery',
+    key: '4',
+  },
 ];
 
 // Items are chosen to be unambiguous in most places. Local rules vary, and

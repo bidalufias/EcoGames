@@ -41,3 +41,17 @@ export function replace(parent: Element, ...children: Child[]): void {
 export function prefersReducedMotion(): boolean {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 }
+
+/** True on phone-sized screens, where games use their compact mobile variant. */
+export function isCompact(): boolean {
+  return window.matchMedia?.('(max-width: 640px), (max-height: 500px)').matches ?? false;
+}
+
+/** Short vibration for touch feedback (Android); silently ignored elsewhere. */
+export function haptic(ms = 30): void {
+  try {
+    navigator.vibrate?.(ms);
+  } catch {
+    // Not supported.
+  }
+}

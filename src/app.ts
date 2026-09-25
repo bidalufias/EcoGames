@@ -1,19 +1,18 @@
-import { h } from './core/dom';
+import { h, replace } from './core/dom';
 import { isMuted, onMuteChange, playSound, setMuted } from './core/sound';
-import { getBest, readJSON, submitScore, writeJSON } from './core/storage';
-import type { GameContext, GameDefinition, GameInstance } from './core/types';
-import { findGame } from './games/registry';
-import { renderHub } from './ui/hub';
+import { getBest, readJSON, recordPlay, submitScore, writeJSON } from './core/storage';
+import type { CategoryId, GameContext, GameDefinition, GameInstance } from './core/types';
+import { CATEGORIES, GAMES, findCategory, findGame } from './games/registry';
+import { categoryLabel, gameTile, renderHub, searchBox, type HubView } from './ui/hub';
 import { icon } from './ui/icons';
 import { showResult } from './ui/result';
 import { hideToast } from './ui/toast';
 
 type Theme = 'light' | 'dark';
 
+/** Light (white) by default; dark only when the player picks it. */
 function currentTheme(): Theme {
-  const saved = readJSON<Theme | null>('theme', null);
-  if (saved) return saved;
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return readJSON<Theme | null>('theme', null) === 'dark' ? 'dark' : 'light';
 }
 
 function applyTheme(theme: Theme): void {
@@ -29,8 +28,8 @@ function orgLogo(): HTMLElement {
     class: 'org-logo',
     src: './brand/mgtc-logo.png',
     alt: 'MGTC',
-    width: 88,
-    height: 48,
+    width: 64,
+    height: 36,
     decoding: 'async',
   });
   const wrap = h(
@@ -43,10 +42,68 @@ function orgLogo(): HTMLElement {
   return wrap;
 }
 
-/** Parses the hash into a route. `#/play/<id>` opens a game; anything else shows the hub. */
-export function parseRoute(hash: string): { name: 'hub' } | { name: 'game'; id: string } {
-  const match = /^#\/play\/([a-z0-9-]+)\/?$/.exec(hash);
-  return match?.[1] ? { name: 'game', id: match[1] } : { name: 'hub' };
+export type Route =
+  { name: 'hub'; category: CategoryId | null; query?: string } | { name: 'game'; id: string };
+
+/**
+ * Parses the hash into a route: `#/play/<id>` opens a game, `#/c/<category>`
+ * filters the hub, `#/s/<query>` searches, and anything else shows the hub home.
+ */
+export function parseRoute(hash: string): Route {
+  const game = /^#\/play\/([a-z0-9-]+)\/?$/.exec(hash);
+  if (game?.[1]) return { name: 'game', id: game[1] };
+  const search = /^#\/s\/(.+)$/.exec(hash);
+  if (search?.[1]) {
+    let query = search[1];
+    try {
+      query = decodeURIComponent(query);
+    } catch {
+      // Keep the raw text if it isn't valid URI encoding.
+    }
+    return { name: 'hub', category: null, query };
+  }
+  const cat = /^#\/c\/([a-z0-9-]+)\/?$/.exec(hash);
+  const category = cat?.[1] ? findCategory(cat[1])?.id : undefined;
+  return { name: 'hub', category: category ?? null };
+}
+
+/** Side navigation (desktop): search, all games and one link per category. */
+function renderRail(): HTMLElement {
+  const link = (
+    href: string,
+    iconName: Parameters<typeof icon>[0],
+    label: string,
+    accent: string,
+  ) =>
+    h(
+      'a',
+      { class: `rail__link accent-${accent}`, href },
+      h('span', { class: 'rail__icon' }, icon(iconName, { size: 18 })),
+      h('span', {}, label),
+    );
+  return h(
+    'nav',
+    { class: 'rail', 'aria-label': 'Main' },
+    searchBox('', 'rail-search'),
+    link('#/', 'gamepad', 'All games', 'berry'),
+    ...CATEGORIES.map((c) => link(`#/c/${c.id}`, c.icon, c.label, c.accent)),
+  );
+}
+
+function updateRail(rail: HTMLElement, route: Route): void {
+  const current = window.location.hash || '#/';
+  rail.querySelectorAll<HTMLAnchorElement>('.rail__link').forEach((a) => {
+    const href = a.getAttribute('href');
+    const on =
+      route.name === 'hub' &&
+      !route.query &&
+      (href === current || (href === '#/' && current === '#'));
+    if (on) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  });
+  const input = rail.querySelector<HTMLInputElement>('.search__input');
+  const query = route.name === 'hub' ? (route.query ?? '') : '';
+  if (input && document.activeElement !== input && input.value !== query) input.value = query;
 }
 
 export function startApp(root: HTMLElement): void {
@@ -82,6 +139,15 @@ export function startApp(root: HTMLElement): void {
     renderThemeBtn();
   });
 
+  const rail = renderRail();
+  const footer = h(
+    'footer',
+    { class: 'footer' },
+    h('span', {}, `© ${new Date().getFullYear()} MGTC`),
+    h('span', { 'aria-hidden': 'true' }, '·'),
+    h('span', {}, 'EcoGames'),
+  );
+
   root.replaceChildren(
     h(
       'div',
@@ -100,29 +166,14 @@ export function startApp(root: HTMLElement): void {
         'header',
         { class: 'topbar' },
         h(
-          'div',
-          { class: 'topbar__inner' },
+          'a',
+          { class: 'brand', href: '#/', 'aria-label': 'MGTC EcoGames home' },
           orgLogo(),
-          h(
-            'a',
-            { class: 'brand', href: '#/', 'aria-label': 'EcoGames home' },
-            h('span', { class: 'brand__mark' }, icon('leaf', { size: 22, strokeWidth: 2.5 })),
-            h('span', { class: 'brand__name' }, 'Eco', h('span', {}, 'Games')),
-          ),
-          h('div', { class: 'topbar__actions' }, soundBtn, themeBtn),
+          h('span', { class: 'brand__name' }, 'Eco', h('span', {}, 'Games')),
         ),
+        h('div', { class: 'topbar__actions' }, soundBtn, themeBtn),
       ),
-      view,
-      h(
-        'footer',
-        { class: 'footer' },
-        h(
-          'div',
-          { class: 'footer__inner' },
-          h('span', {}, `© ${new Date().getFullYear()} MGTC · EcoGames · Learn through play`),
-          h('span', {}, 'Recycling rules vary by area: check your local council.'),
-        ),
-      ),
+      h('div', { class: 'body' }, rail, h('div', { class: 'content' }, view, footer)),
       live,
     ),
   );
@@ -134,6 +185,7 @@ export function startApp(root: HTMLElement): void {
   };
 
   let active: GameInstance | null = null;
+  let hub: HubView | null = null;
   let closeResult: (() => void) | null = null;
   let navToken = 0;
 
@@ -142,6 +194,8 @@ export function startApp(root: HTMLElement): void {
     closeResult = null;
     active?.destroy();
     active = null;
+    hub?.destroy();
+    hub = null;
     hideToast();
   };
 
@@ -152,23 +206,53 @@ export function startApp(root: HTMLElement): void {
   };
 
   const openGame = async (game: GameDefinition, token: number) => {
+    recordPlay(game.id);
     const host = h('div', { class: 'game-page__host' }, h('div', { class: 'loading' }, 'Loading…'));
-    view.replaceChildren(
+    const actions = h('div', { class: 'gamebar__actions' });
+    const page = h(
+      'div',
+      { class: `game-page accent-${game.accent}`, 'data-game': game.id },
       h(
         'div',
-        { class: `game-page accent-${game.accent}`, 'data-game': game.id },
+        { class: 'gamebar' },
+        h(
+          'a',
+          { class: 'btn btn--ghost btn--icon', href: '#/', 'aria-label': 'Back to all games' },
+          icon('arrowLeft', { size: 20 }),
+        ),
         h(
           'div',
-          { class: 'game-page__head' },
-          h(
-            'a',
-            { class: 'btn btn--ghost btn--icon', href: '#/', 'aria-label': 'Back to all games' },
-            icon('arrowLeft'),
-          ),
+          { class: 'gamebar__title' },
           h('h1', {}, game.title),
+          h('span', {}, categoryLabel(game.category)),
         ),
-        host,
+        actions,
       ),
+      host,
+    );
+    if (document.fullscreenEnabled) {
+      const fs = h(
+        'button',
+        { class: 'btn btn--ghost btn--icon', type: 'button', 'aria-label': 'Full screen' },
+        icon('maximize', { size: 18 }),
+      );
+      fs.addEventListener('click', () => {
+        if (document.fullscreenElement) void document.exitFullscreen();
+        else void page.requestFullscreen?.().catch(() => undefined);
+      });
+      actions.appendChild(fs);
+    }
+    const others = GAMES.filter((g) => g.id !== game.id);
+    replace(
+      view,
+      page,
+      others.length > 0 &&
+        h(
+          'section',
+          { class: 'shelf more-games', 'aria-labelledby': 'more-title' },
+          h('h2', { class: 'shelf__title', id: 'more-title' }, 'More games'),
+          h('div', { class: 'tile-row tile-row--md' }, ...others.map((g) => gameTile(g))),
+        ),
     );
     document.title = `${game.title} · EcoGames`;
     focusHeading();
@@ -191,6 +275,7 @@ export function startApp(root: HTMLElement): void {
     if (token !== navToken) return;
 
     const ctx: GameContext = {
+      game,
       sound: playSound,
       announce,
       getBest: () => getBest(game.id),
@@ -209,17 +294,28 @@ export function startApp(root: HTMLElement): void {
     const token = ++navToken;
     teardown();
     const route = parseRoute(window.location.hash);
-    document.getElementById('shell')?.setAttribute('data-route', route.name);
     const game = route.name === 'game' ? findGame(route.id) : undefined;
-    window.scrollTo(0, 0);
+    document.getElementById('shell')?.setAttribute('data-route', game ? 'game' : 'hub');
+    // Typing in the in-page search re-renders the hub; keep the caret in the field.
+    const focusedId = document.activeElement?.id;
+    if (!(route.name === 'hub' && route.query)) window.scrollTo(0, 0);
     if (game) {
       void openGame(game, token);
     } else {
       document.title = 'EcoGames · Learn through play';
-      view.replaceChildren(renderHub());
+      hub = renderHub(route.name === 'hub' ? route : {});
+      view.replaceChildren(hub.el);
       if (route.name === 'game') window.history.replaceState(null, '', '#/');
-      if (token > 1) focusHeading();
+      const refocus =
+        focusedId === 'hub-search' ? view.querySelector<HTMLInputElement>('#hub-search') : null;
+      if (refocus) {
+        refocus.focus();
+        refocus.setSelectionRange(refocus.value.length, refocus.value.length);
+      } else if (token > 1 && focusedId !== 'rail-search') {
+        focusHeading();
+      }
     }
+    updateRail(rail, route);
   };
 
   window.addEventListener('hashchange', render);
