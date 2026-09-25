@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { QUESTIONS } from '../../content/quiz';
+import { QUESTIONS, QUIZ_TOPICS } from '../../content/quiz';
 import { seededRng } from '../../core/random';
-import { QuizRound, ROUND_LENGTH, buildRound, quizStars } from './logic';
+import { QuizRound, ROUND_LENGTH, buildRound, pickQuestions, quizStars } from './logic';
 
 describe('buildRound', () => {
   it('picks distinct questions and keeps the right answer after shuffling options', () => {
@@ -12,6 +12,28 @@ describe('buildRound', () => {
       expect(q.options[q.correct]).toBe(q.source.options[q.source.answer]);
       expect([...q.options].sort()).toEqual([...q.source.options].sort());
     }
+  });
+});
+
+describe('pickQuestions', () => {
+  it('returns only the chosen topic', () => {
+    const picked = pickQuestions(QUESTIONS, 'oceans', seededRng(3));
+    expect(picked.length).toBeGreaterThan(0);
+    expect(picked.every((q) => q.topic === 'oceans')).toBe(true);
+    expect(picked).toHaveLength(QUESTIONS.filter((q) => q.topic === 'oceans').length);
+  });
+
+  it('covers every topic once before repeating one when mixing all topics', () => {
+    const picked = pickQuestions(QUESTIONS, 'all', seededRng(4));
+    expect(picked).toHaveLength(QUESTIONS.length);
+    const first = picked.slice(0, QUIZ_TOPICS.length).map((q) => q.topic);
+    expect(new Set(first).size).toBe(QUIZ_TOPICS.length);
+  });
+
+  it('varies the order between rounds', () => {
+    const a = pickQuestions(QUESTIONS, 'all', seededRng(1)).map((q) => q.id);
+    const b = pickQuestions(QUESTIONS, 'all', seededRng(2)).map((q) => q.id);
+    expect(a).not.toEqual(b);
   });
 });
 

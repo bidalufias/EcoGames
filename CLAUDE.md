@@ -23,7 +23,8 @@ so e2e tests use the preinstalled Chromium. Don't run `npx playwright install` t
 src/
   main.ts, app.ts        # boot, shell (header/footer), hash router, GameContext wiring
   core/                  # framework-free helpers: types, storage, sound, random, dom
-  ui/                    # shared UI: hub (MSN Play-style), art, intro (start screen), icons, result dialog, toast
+  ui/                    # shared UI: hub (MSN Play-style), art, intro (start screen), icons, images, result dialog, toast
+  assets/3d/             # 3D object images (Fluent Emoji, MIT) for game art; README says how to add one
   styles/                # tokens.css (all colours), base, components, shell
   content/               # ALL educational text: concepts, quiz questions, waste items
   games/
@@ -45,8 +46,11 @@ docs/                    # DESIGN.md (visual system), CONTENT.md (fact-checking 
   `docs/CONTENT.md`: plain language, checked facts, no statistics that date quickly.
 - **Colours only come from CSS tokens** in `src/styles/tokens.css`, and every colour has a
   dark-theme value. Phaser scenes get a light/dark palette at construction time.
-- **Icons:** only Lucide, registered by name in `src/ui/icons.ts`. Use `iconDataUrl()`
-  (base64) for Phaser textures. Phaser's loader rejects non-base64 data URLs.
+- **Icons and images:** UI chrome (buttons, stats, bins, categories) uses Lucide icons,
+  registered by name in `src/ui/icons.ts`. Game art (cover art, waste items, memory
+  cards) uses the 3D images in `src/assets/3d`, registered in `src/ui/images.ts`. Don't
+  mix in other image styles. For Phaser, load icons with `iconDataUrl()` (base64; the
+  loader rejects other data URLs) and images with `load.image(key, imageUrl(name))`.
 - **Accessibility is required.** Every game must be playable by keyboard as well as
   touch/mouse. Announce outcomes with `ctx.announce`, respect `prefers-reduced-motion`,
   use real `<button>`s, and keep touch targets at 44px or more.

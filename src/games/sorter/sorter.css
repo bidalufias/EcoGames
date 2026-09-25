@@ -26,28 +26,6 @@
   touch-action: none;
 }
 
-/* Score and lives sit above the play area... */
-.sorter-hud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  min-height: 32px;
-}
-/* ...except on short (landscape phone) screens, where they float over it. */
-@media (max-height: 500px) {
-  .sorter-hud {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    z-index: 1;
-    pointer-events: none;
-  }
-  .sorter-hud .stat {
-    background: rgb(255 255 255 / 0.9);
-    color: #16191d;
-    box-shadow: var(--shadow-sm);
-  }
-}
 .sorter-lives {
   gap: 3px;
 }
@@ -88,6 +66,12 @@
 }
 .sorter-legend svg {
   flex: none;
+}
+.sorter-legend small {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.85;
 }
 .sorter-note {
   color: var(--muted);

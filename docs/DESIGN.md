@@ -3,8 +3,8 @@
 ## Personality
 
 Clean, refined and playful. It's for all ages, so it's fun without being babyish. The look
-is a white page, compact type, rounded tiles and colourful "cover art" built from one icon
-family. The hub layout is modelled on MSN Play (msn.com/play).
+is a white page, compact type, rounded tiles and colourful "cover art" built from 3D
+object images on each game's accent colour. The hub layout is modelled on MSN Play (msn.com/play).
 
 ## Brand
 
@@ -61,8 +61,13 @@ subtitle), as on MSN Play.
 - The game fills exactly one screen: `.game-page` is sized to the viewport, and the game's
   root must use `height: 100%` and flex so its play area takes the remaining space.
   "More games" sits below the fold.
-- On phones, the site header is hidden on game pages, and a compact game bar (back, title,
-  full screen) remains.
+- The **game bar** is one line: back, title, then the game's live stats (score, lives,
+  timer) and any in-game buttons, which games render into `ctx.hud`. Never add a second
+  stats row above the play area. The stats are hidden while the start screen is open.
+- On phones, the site header is hidden on game pages, and the game bar drops the category
+  label and full-screen button to make room for the stats. Keep phone HUDs to two or three
+  short pills; words wrapped in `.stat__label` are hidden on phones (e.g. "Question 3/10"
+  becomes "3/10"). Check at 320px that the title isn't cut off.
 - Every game opens on the shared **start screen** (`ui/intro.ts`): art, how to play, any
   options (level, players) and a Play button. Keep options there, not on the game screen.
 
@@ -75,6 +80,8 @@ example:
   to fit the screen.
 - Eco Quiz uses one column of answers, with the explanation in a bottom sheet with a
   full-width Next button.
+- Eco Memory shows only pairs and time in the game bar, and one "New game" button that
+  opens the start screen.
 - Waste Sorter uses short bin labels, at most two falling items at once, tap-to-sort
   instructions and vibration on mistakes.
 
@@ -85,10 +92,15 @@ Use `howToMobile` in the registry when the controls differ on touch screens.
 `.btn` (`--primary`, `--ghost`, `--icon`, `--lg`), `.segmented` radio groups, `.stat`
 pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing new ones.
 
-## Icons
+## Icons and images
 
-Use Lucide only, registered in `src/ui/icons.ts`. Game art is composed from a game's `icon`
-and `art` icons by `gameArt()`.
+- **Icons** (Lucide, `src/ui/icons.ts`) are for UI chrome: buttons, stats, bins,
+  categories and the carousel caption chip.
+- **Images** are 3D object renders from Microsoft's Fluent Emoji set (MIT), stored in
+  `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
+  (`gameArt()` composes a game's `image` and `art` images), Waste Sorter items and Eco
+  Memory cards. Keep to this one set so everything shares a style; see the README in
+  `src/assets/3d` to add one.
 
 ## Motion
 

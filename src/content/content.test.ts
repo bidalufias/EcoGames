@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { hasIcon } from '../ui/icons';
+import { IMAGE_FILES, IMAGE_NAMES, imageUrl } from '../ui/images';
 import { CONCEPTS } from './concepts';
-import { QUESTIONS } from './quiz';
+import { QUESTIONS, QUIZ_TOPICS } from './quiz';
 import { WASTE_ITEMS } from './waste';
 
 // Guards the content rules in docs/CONTENT.md so edits can't silently break games.
@@ -15,9 +16,14 @@ describe('content', () => {
     expect(unique(WASTE_ITEMS.map((w) => w.id))).toBe(true);
   });
 
-  it('only references icons that exist', () => {
-    for (const c of CONCEPTS) expect(hasIcon(c.icon), c.id).toBe(true);
-    for (const w of WASTE_ITEMS) expect(hasIcon(w.icon), w.id).toBe(true);
+  it('only references images that exist', () => {
+    for (const c of CONCEPTS) expect(imageUrl(c.image), c.id).toBeTruthy();
+    for (const w of WASTE_ITEMS) expect(imageUrl(w.image), w.id).toBeTruthy();
+  });
+
+  it('lists exactly the image files in src/assets/3d', () => {
+    const files = Object.keys(IMAGE_FILES).map((p) => p.replace(/^.*\/(.+)\.webp$/, '$1'));
+    expect([...files].sort()).toEqual([...IMAGE_NAMES].sort());
   });
 
   it('keeps concept text short enough for cards and toasts', () => {
@@ -36,6 +42,14 @@ describe('content', () => {
       expect(q.options[q.answer], q.id).toBeTruthy();
       expect(q.explain.length, q.id).toBeGreaterThan(20);
     }
+  });
+
+  it('gives every quiz topic enough questions for its own round', () => {
+    for (const t of QUIZ_TOPICS) {
+      expect(hasIcon(t.icon), t.id).toBe(true);
+      expect(QUESTIONS.filter((q) => q.topic === t.id).length, t.id).toBeGreaterThanOrEqual(8);
+    }
+    expect(QUESTIONS.every((q) => QUIZ_TOPICS.some((t) => t.id === q.topic))).toBe(true);
   });
 
   it('spreads correct quiz answers across positions in the source data', () => {

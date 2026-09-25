@@ -20,7 +20,6 @@ function gameSize(el: HTMLElement): { width: number; height: number } {
 
 export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   const compact = isCompact();
-  const hud = h('div', { class: 'sorter-hud' });
   const stage = h('div', { class: 'sorter-stage', tabindex: '-1' });
   const legend = h(
     'div',
@@ -33,11 +32,15 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
           'li',
           { style: `--bin:#${b.color.toString(16).padStart(6, '0')}` },
           icon(b.icon, { size: 16 }),
-          h('span', {}, b.label),
+          h('span', {}, b.label, h('small', { lang: 'ms' }, b.malay)),
         ),
       ),
     ),
-    h('p', { class: 'sorter-note' }, 'Bin rules vary by area, so check what yours accepts.'),
+    h(
+      'p',
+      { class: 'sorter-note' },
+      'Based on Malaysia’s waste separation rules. Collections vary by council, so check yours.',
+    ),
   );
   const intro = renderIntro(ctx.game, {
     options: legend,
@@ -47,7 +50,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   const startBtn = intro.querySelector<HTMLButtonElement>('.intro__start')!;
   startBtn.disabled = true;
   stage.append(intro);
-  host.replaceChildren(h('div', { class: 'sorter' }, hud, stage));
+  host.replaceChildren(h('div', { class: 'sorter' }, stage));
 
   function renderHud(state: SorterState | null): void {
     const lives = state?.lives ?? START_LIVES;
@@ -59,8 +62,13 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       hearts.appendChild(heart);
     }
     replace(
-      hud,
-      h('span', { class: 'stat' }, icon('star', { size: 14 }), `${state?.score ?? 0} pts`),
+      ctx.hud,
+      h(
+        'span',
+        { class: 'stat sorter-score' },
+        icon('star', { size: 14 }),
+        `${state?.score ?? 0} pts`,
+      ),
       hearts,
       mult > 1 &&
         h('span', { class: 'stat sorter-combo' }, icon('flame', { size: 14 }), `×${mult}`),

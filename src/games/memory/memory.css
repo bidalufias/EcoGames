@@ -6,21 +6,18 @@
   height: 100%;
   min-height: 0;
 }
-.mem-hud {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-}
 .mem-stats {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  gap: inherit;
 }
 .mem-hud__actions {
   display: flex;
   gap: 2px;
-  margin-left: auto;
+}
+@media (max-width: 360px) {
+  .mem-player svg {
+    display: none;
+  }
 }
 .mem-player--0 {
   --accent: var(--sky);
@@ -115,9 +112,11 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
-.mem-card__icon svg {
-  width: 56%;
-  height: 56%;
+.mem-card__icon img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.14));
 }
 .mem-card__caption {
   font-size: clamp(9px, 10.5cqi, 13px);

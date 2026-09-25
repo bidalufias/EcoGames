@@ -6,9 +6,10 @@ EcoGames teaches real science, so wrong or outdated facts are bugs.
 
 All educational text lives in `src/content/`:
 
-- `concepts.ts`: climate vocabulary (Eco Memory, and future glossaries)
-- `quiz.ts`: Eco Quiz questions
-- `waste.ts`: Waste Sorter items and bins
+- `concepts.ts`: climate vocabulary (Eco Memory and the hub's "Did you know?" card)
+- `quiz.ts`: Eco Quiz topics (`QUIZ_TOPICS`) and questions. Every topic needs at least
+  eight questions so it can have a round of its own.
+- `waste.ts`: Waste Sorter items and bins, with each bin's Malay name
 
 `src/content/content.test.ts` enforces the structural rules: unique ids, known icons
 and length limits.
@@ -25,11 +26,18 @@ and length limits.
    Leave out anything contested.
 4. **Hopeful and practical.** Pair problems with actions where you can. Avoid fear or
    blame.
-5. **Local variation.** Recycling rules differ by area. Choose waste items that are sorted
-   the same way almost everywhere, and keep the "check your local rules" note.
-6. **Quiz questions** have exactly four plausible-looking options, one clearly correct
+5. **Set in Malaysia.** EcoGames is an MGTC product for Malaysian players. Use Malaysian
+   places, wildlife, food, weather and everyday life (tapau, teh tarik, gotong-royong,
+   the monsoon, haze), and Malaysian programmes where they help (MyHIJAU, the Low Carbon
+   Cities Framework, energy star labels). Name organisations by what they do rather than
+   by a ministry name, since those change.
+6. **Waste follows Malaysian practice:** separation at source, the recycling station
+   colours (blue for paper, orange for plastic and metal, brown for glass), and
+   e-waste collection points for batteries, electronics and fluorescent bulbs.
+   Collections still vary by council, so keep the "check yours" note.
+7. **Quiz questions** have exactly four plausible-looking options, one clearly correct
    answer and a one- or two-sentence explanation. Options are shuffled at runtime.
-7. **Length limits:** a concept term is at most 18 characters and a detail at most 110
+8. **Length limits:** a concept term is at most 18 characters and a detail at most 110
    characters. Details are full sentences ending in a full stop.
 
 ## Review checklist for content PRs

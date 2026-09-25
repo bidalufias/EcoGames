@@ -2,6 +2,7 @@ import { CONCEPTS, type Concept } from '../../content/concepts';
 import { h, haptic, isCompact, prefersReducedMotion, replace } from '../../core/dom';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
+import { image } from '../../ui/images';
 import { renderIntro } from '../../ui/intro';
 import { toast } from '../../ui/toast';
 import {
@@ -69,6 +70,15 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   );
   restart.addEventListener('click', () => newGame());
   settings.addEventListener('click', () => showIntro());
+  // Phones have room for one button beside the title: "New game" opens the start
+  // screen, where the level and players can be changed before playing again.
+  const compact = isCompact();
+  const newGameBtn = h(
+    'button',
+    { class: 'btn btn--ghost btn--icon', type: 'button', 'aria-label': 'New game' },
+    icon('replay', { size: 18 }),
+  );
+  newGameBtn.addEventListener('click', () => showIntro());
 
   const options = h(
     'div',
@@ -113,19 +123,12 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     },
   });
 
-  const root = h(
-    'div',
-    { class: 'mem' },
-    h(
-      'div',
-      { class: 'mem-hud' },
-      stats,
-      h('div', { class: 'mem-hud__actions' }, settings, restart),
-    ),
-    stage,
-    intro,
-  );
+  const root = h('div', { class: 'mem' }, stage, intro);
   host.replaceChildren(root);
+  ctx.hud.replaceChildren(
+    stats,
+    h('div', { class: 'mem-hud__actions' }, ...(compact ? [newGameBtn] : [settings, restart])),
+  );
 
   function showIntro(): void {
     window.clearInterval(tick);
@@ -148,7 +151,8 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
           icon('puzzle', { size: 14 }),
           `${g.matchedPairs}/${g.totalPairs}`,
         ),
-        h('span', { class: 'stat' }, `${g.moves} ${g.moves === 1 ? 'move' : 'moves'}`),
+        // Moves are left to the results dialog on phones, to keep the bar to one line.
+        !compact && h('span', { class: 'stat' }, `${g.moves} ${g.moves === 1 ? 'move' : 'moves'}`),
         h('span', { class: 'stat' }, icon('timer', { size: 14 }), formatTime(elapsed)),
       );
     } else {
@@ -189,13 +193,13 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       ? h(
           'span',
           { class: 'mem-card__face mem-card__face--picture' },
-          h('span', { class: 'mem-card__icon' }, icon(c.icon, { size: 40, strokeWidth: 1.75 })),
+          h('span', { class: 'mem-card__icon' }, image(c.image)),
           h('span', { class: 'mem-card__caption' }, c.term),
         )
       : h(
           'span',
           { class: 'mem-card__face mem-card__face--word' },
-          icon(c.icon, { size: 16 }),
+          image(c.image, { size: 22 }),
           h('span', { class: 'mem-card__term' }, c.term),
         );
   }
@@ -341,7 +345,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     startedAt = 0;
     elapsed = 0;
     learned = [];
-    game = new MemoryGame(buildDeck(CONCEPTS, pairsFor(difficulty, isCompact())), players);
+    game = new MemoryGame(buildDeck(CONCEPTS, pairsFor(difficulty, compact)), players);
     renderBoard();
     renderStats();
     board.querySelector<HTMLElement>('.mem-card')?.focus({ preventScroll: true });

@@ -22,10 +22,11 @@ export const GAMES: readonly GameDefinition[] = [
   {
     id: 'waste-sorter',
     title: 'Waste Sorter',
-    tagline: 'Sort the rubbish into the right bin before it lands.',
+    tagline: 'Sort Malaysian household rubbish into the right bin before it lands.',
     category: 'arcade',
     icon: 'recycle',
-    art: ['can', 'banana', 'battery'],
+    image: 'recycle',
+    art: ['tin', 'banana', 'battery'],
     accent: 'sky',
     minutes: '2–4 min',
     howTo: [
@@ -45,7 +46,8 @@ export const GAMES: readonly GameDefinition[] = [
     tagline: 'Flip cards and match pairs of climate words.',
     category: 'puzzle',
     icon: 'puzzle',
-    art: ['sun', 'wind', 'sprout'],
+    image: 'puzzle',
+    art: ['sun', 'tree', 'tiger'],
     accent: 'leaf',
     minutes: '3–6 min',
     howTo: [
@@ -58,14 +60,15 @@ export const GAMES: readonly GameDefinition[] = [
   {
     id: 'eco-quiz',
     title: 'Eco Quiz',
-    tagline: 'Ten quick questions on climate, energy and nature.',
+    tagline: 'Quick questions on climate, nature and green living in Malaysia.',
     category: 'quiz',
     icon: 'brain',
-    art: ['globe', 'lightbulb', 'bird'],
+    image: 'brain',
+    art: ['globe', 'lightbulb', 'turtle'],
     accent: 'berry',
     minutes: '3–5 min',
     howTo: [
-      'Answer ten multiple-choice questions.',
+      'Pick a topic, or mix them all, then answer up to ten questions.',
       'You’ll see a short explanation after every answer.',
       'Answer several in a row correctly for streak bonus points.',
     ],

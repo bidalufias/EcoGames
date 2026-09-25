@@ -5,6 +5,8 @@ export default defineConfig({
   base: './',
   build: {
     target: 'es2022',
+    // Keep the 3D art images as separate cached files rather than base64 inside the JS.
+    assetsInlineLimit: (file) => (file.includes('/assets/3d/') ? false : undefined),
     // Phaser is large and only loaded by action games, so it gets its own chunk.
     chunkSizeWarningLimit: 1600,
     rollupOptions: {

@@ -1,15 +1,56 @@
-import { QUESTIONS } from '../../content/quiz';
+import { QUESTIONS, QUIZ_TOPICS } from '../../content/quiz';
 import { h, haptic, replace } from '../../core/dom';
+import { readJSON, writeJSON } from '../../core/storage';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
 import { renderIntro } from '../../ui/intro';
-import { QuizRound, buildRound, quizStars } from './logic';
+import {
+  QuizRound,
+  ROUND_LENGTH,
+  buildRound,
+  pickQuestions,
+  quizStars,
+  type TopicChoice,
+} from './logic';
 import './quiz.css';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
+const TOPIC_KEY = 'quiz-topic';
+
+const topicLabel = (id: string) => QUIZ_TOPICS.find((t) => t.id === id)?.label ?? id;
+
+function newRound(topic: TopicChoice): QuizRound {
+  const picked = pickQuestions(QUESTIONS, topic).slice(0, ROUND_LENGTH);
+  return new QuizRound(buildRound(picked, picked.length));
+}
+
+/** The topic dropdown on the start screen: "All topics" or one topic. */
+function topicPicker(selected: TopicChoice, onChange: (t: TopicChoice) => void): HTMLElement {
+  const select = h(
+    'select',
+    { class: 'select__input', id: 'quiz-topic' },
+    h('option', { value: 'all' }, 'All topics (mixed)'),
+    ...QUIZ_TOPICS.map((t) => h('option', { value: t.id }, t.label)),
+  );
+  select.value = selected;
+  select.addEventListener('change', () => onChange(select.value as TopicChoice));
+  return h(
+    'div',
+    { class: 'intro-options' },
+    h(
+      'div',
+      { class: 'intro-option' },
+      h('label', { for: 'quiz-topic' }, 'Topic'),
+      h('span', { class: 'select' }, select, icon('chevronDown', { size: 16 })),
+    ),
+  );
+}
+
 export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
-  let round = new QuizRound(buildRound(QUESTIONS));
+  const saved = readJSON<string>(TOPIC_KEY, 'all');
+  let topic: TopicChoice = QUIZ_TOPICS.some((t) => t.id === saved) ? (saved as TopicChoice) : 'all';
+  let round = newRound(topic);
 
   const progressBar = h('div', { class: 'quiz-progress__bar' });
   const progress = h(
@@ -22,11 +63,14 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     },
     progressBar,
   );
-  const stats = h('div', { class: 'quiz-stats' });
   const card = h('section', { class: 'quiz-card', 'aria-live': 'off' });
   // Explanation after each answer: inline on desktop, a bottom sheet on phones.
   const feedback = h('div', { class: 'quiz-feedback', hidden: true });
   const intro = renderIntro(ctx.game, {
+    options: topicPicker(topic, (t) => {
+      topic = t;
+      writeJSON(TOPIC_KEY, t);
+    }),
     startLabel: 'Start quiz',
     onStart: () => {
       ctx.sound('tap');
@@ -34,28 +78,25 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     },
   });
 
-  host.replaceChildren(
-    h(
-      'div',
-      { class: 'quiz' },
-      h('div', { class: 'quiz-top' }, stats, progress),
-      card,
-      feedback,
-      intro,
-    ),
-  );
+  host.replaceChildren(h('div', { class: 'quiz' }, progress, card, feedback, intro));
 
   function renderStats(): void {
     replace(
-      stats,
-      h('span', { class: 'stat' }, `Question ${round.index + 1} of ${round.questions.length}`),
-      h('span', { class: 'stat' }, icon('star', { size: 16 }), `${round.score} pts`),
+      ctx.hud,
+      h(
+        'span',
+        { class: 'stat quiz-count' },
+        h('span', { class: 'stat__label' }, 'Question '),
+        `${round.index + 1}/${round.questions.length}`,
+      ),
+      h('span', { class: 'stat' }, icon('star', { size: 14 }), `${round.score} pts`),
       round.streak >= 2 &&
         h(
           'span',
           { class: 'stat quiz-streak' },
-          icon('flame', { size: 16 }),
-          `${round.streak} in a row`,
+          icon('flame', { size: 14 }),
+          `${round.streak}`,
+          h('span', { class: 'stat__label' }, ' in a row'),
         ),
     );
     const total = round.questions.length;
@@ -80,7 +121,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       );
     });
     card.replaceChildren(
-      h('span', { class: 'quiz-topic' }, q.source.topic),
+      h('span', { class: 'quiz-topic' }, topicLabel(q.source.topic)),
       h('h2', { class: 'quiz-question', tabindex: '-1' }, q.source.question),
       options,
     );
@@ -147,7 +188,11 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       score: round.score,
       stars: quizStars(correct, total),
       isBest: ctx.submitScore(round.score),
-      stats: [`${correct}/${total} correct`, `Best streak: ${round.bestStreak}`],
+      stats: [
+        `${correct}/${total} correct`,
+        `Best streak: ${round.bestStreak}`,
+        topic === 'all' ? 'All topics' : topicLabel(topic),
+      ],
       learned: round.missed.map((q) => ({
         term: q.options[q.correct] as string,
         detail: q.source.explain,
@@ -158,7 +203,8 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
 
   function onKey(e: KeyboardEvent): void {
     if (!intro.hidden) return;
-    if (e.target instanceof HTMLInputElement || document.querySelector('dialog[open]')) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+    if (document.querySelector('dialog[open]')) return;
     const n = ['1', '2', '3', '4'].indexOf(e.key);
     const letter = LETTERS.indexOf(e.key.toUpperCase());
     const choice = n >= 0 ? n : letter;
@@ -167,7 +213,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
 
   function start(): void {
     intro.hidden = true;
-    round = new QuizRound(buildRound(QUESTIONS));
+    round = newRound(topic);
     renderQuestion();
   }
 

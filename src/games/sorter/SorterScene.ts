@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import { BINS, WASTE_ITEMS, type Bin, type BinId, type WasteItem } from '../../content/waste';
 import { iconDataUrl } from '../../ui/icons';
+import { imageUrl } from '../../ui/images';
 import {
   ItemBag,
   SorterState,
@@ -122,12 +123,7 @@ export class SorterScene extends Phaser.Scene {
   }
 
   preload(): void {
-    for (const item of WASTE_ITEMS) {
-      this.load.svg(
-        `item-${item.id}`,
-        iconDataUrl(item.icon, { size: 128, color: this.palette.ink, strokeWidth: 1.75 }),
-      );
-    }
+    for (const item of WASTE_ITEMS) this.load.image(`item-${item.id}`, imageUrl(item.image));
     for (const bin of BINS) {
       this.load.svg(
         `bin-${bin.id}`,
@@ -202,6 +198,7 @@ export class SorterScene extends Phaser.Scene {
         .filter((f) => !f.done)
         .map((f) => ({ id: f.item.id, bin: f.item.bin, x: f.box.x, y: f.box.y })),
       bins: this.bins.map((b) => ({ id: b.bin.id, x: b.box.x, y: b.box.y })),
+      radius: this.tokenRadius,
       score: this.state.score,
     };
   }
@@ -357,7 +354,7 @@ export class SorterScene extends Phaser.Scene {
     token.fillCircle(0, 0, r);
     token.lineStyle(this.unit * 0.5, this.palette.tokenStroke, 0.12);
     token.strokeCircle(0, 0, r);
-    const img = this.add.image(0, 0, `item-${item.id}`).setDisplaySize(r * 1.15, r * 1.15);
+    const img = this.add.image(0, 0, `item-${item.id}`).setDisplaySize(r * 1.45, r * 1.45);
     const label = this.add
       .text(0, r + this.unit * 0.8, item.name, {
         fontFamily: FONT,

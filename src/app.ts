@@ -208,6 +208,7 @@ export function startApp(root: HTMLElement): void {
   const openGame = async (game: GameDefinition, token: number) => {
     recordPlay(game.id);
     const host = h('div', { class: 'game-page__host' }, h('div', { class: 'loading' }, 'Loading…'));
+    const hud = h('div', { class: 'gamebar__hud', role: 'group', 'aria-label': 'Score' });
     const actions = h('div', { class: 'gamebar__actions' });
     const page = h(
       'div',
@@ -226,6 +227,7 @@ export function startApp(root: HTMLElement): void {
           h('h1', {}, game.title),
           h('span', {}, categoryLabel(game.category)),
         ),
+        hud,
         actions,
       ),
       host,
@@ -233,7 +235,11 @@ export function startApp(root: HTMLElement): void {
     if (document.fullscreenEnabled) {
       const fs = h(
         'button',
-        { class: 'btn btn--ghost btn--icon', type: 'button', 'aria-label': 'Full screen' },
+        {
+          class: 'btn btn--ghost btn--icon gamebar__fullscreen',
+          type: 'button',
+          'aria-label': 'Full screen',
+        },
         icon('maximize', { size: 18 }),
       );
       fs.addEventListener('click', () => {
@@ -276,6 +282,7 @@ export function startApp(root: HTMLElement): void {
 
     const ctx: GameContext = {
       game,
+      hud,
       sound: playSound,
       announce,
       getBest: () => getBest(game.id),

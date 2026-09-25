@@ -112,6 +112,38 @@
   outline-offset: 1px;
 }
 
+/* ---------- Select (native, with a Lucide chevron) ---------- */
+.select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+.select__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 40px 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  appearance: none;
+  cursor: pointer;
+}
+.select__input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.select svg {
+  position: absolute;
+  right: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
 /* ---------- Stat pill ---------- */
 .stat {
   display: inline-flex;
@@ -127,6 +159,17 @@
 }
 .stat svg {
   color: var(--muted);
+}
+/* Words inside a stat that phones drop visually (screen readers still get them). */
+@media (max-width: 640px), (max-height: 500px) {
+  .stat__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 .stat--active {
   background: var(--accent-soft, var(--sky-soft));
