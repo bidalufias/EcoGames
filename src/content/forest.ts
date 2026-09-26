@@ -1,17 +1,26 @@
 import type { ImageName } from '../ui/images';
 
+/** Where an extra picture sits around a stage's main picture. */
+export type ArtSpot = 'left' | 'right' | 'back' | 'corner';
+
 export interface ForestStage {
   /** 1 for the seed, up to FOREST_STAGES.length for the top tile. */
   stage: number;
   id: string;
   name: string;
+  /** A shorter name for small tiles, when the full name is long. */
+  short?: string;
+  /** The main picture, in front. */
   image: ImageName;
+  /** More pictures around it, so a grove or a forest shows several trees. */
+  extras?: { image: ImageName; at: ArtSpot }[];
   /** Shown the first time a player grows this stage, and in the results. */
   fact: string;
 }
 
-// Grow the Forest: each merge grows the next stage of a Malaysian rainforest, from a
-// seed to the animals that live there. See docs/CONTENT.md for the rules.
+// Grow the Forest: each merge grows something bigger, from a seed to a tree, then from
+// a grove to a rainforest, and on to the great rainforests of the world. See
+// docs/CONTENT.md for the rules.
 export const FOREST_STAGES: readonly ForestStage[] = [
   {
     stage: 1,
@@ -31,63 +40,80 @@ export const FOREST_STAGES: readonly ForestStage[] = [
     stage: 3,
     id: 'sapling',
     name: 'Sapling',
-    image: 'herb',
-    fact: 'Saplings race upwards towards the light that reaches the forest floor.',
+    image: 'potted-plant',
+    fact: 'Tree nurseries grow saplings like this one to replant forests that were cut down.',
   },
   {
     stage: 4,
     id: 'tree',
-    name: 'Tree',
+    name: 'Young tree',
     image: 'tree',
     fact: 'Trees take in carbon dioxide as they grow and store the carbon in their wood.',
   },
   {
     stage: 5,
-    id: 'fungi',
-    name: 'Fungi',
-    image: 'mushroom',
-    fact: 'Fungi break down fallen leaves and wood, and give the goodness back to the soil.',
+    id: 'tualang',
+    name: 'Tualang',
+    image: 'tree',
+    extras: [{ image: 'bee', at: 'corner' }],
+    fact: 'Tualang trees tower over the rainforest, and wild bees hang their hives from them.',
   },
   {
     stage: 6,
-    id: 'butterfly',
-    name: 'Birdwing',
-    image: 'butterfly',
-    fact: 'Rajah Brooke’s birdwing, with its bright green wings, is Malaysia’s national butterfly.',
+    id: 'grove',
+    name: 'Grove',
+    image: 'tree',
+    extras: [
+      { image: 'tree', at: 'left' },
+      { image: 'tree', at: 'right' },
+    ],
+    fact: 'Trees growing close together shade the ground and keep it cool and damp.',
   },
   {
     stage: 7,
-    id: 'frog',
-    name: 'Frog',
-    image: 'frog',
-    fact: 'Frogs are harmed easily by pollution, so lots of frogs is a sign of a healthy forest.',
+    id: 'forest',
+    name: 'Forest',
+    image: 'tree',
+    extras: [
+      { image: 'tree', at: 'back' },
+      { image: 'palm-tree', at: 'left' },
+      { image: 'tree', at: 'right' },
+    ],
+    fact: 'Forests soak up rain like a sponge, which helps prevent floods and landslides.',
   },
   {
     stage: 8,
-    id: 'hornbill',
-    name: 'Hornbill',
-    image: 'bird',
-    fact: 'Malaysia has ten kinds of hornbill. They spread the seeds of the fruit they eat.',
+    id: 'rainforest',
+    name: 'Rainforest',
+    image: 'tree',
+    extras: [
+      { image: 'palm-tree', at: 'left' },
+      { image: 'tree', at: 'right' },
+      { image: 'rain-cloud', at: 'corner' },
+    ],
+    fact: 'Rainforests are home to more kinds of plants and animals than anywhere else on land.',
   },
   {
     stage: 9,
-    id: 'orangutan',
-    name: 'Orangutan',
-    image: 'orangutan',
-    fact: 'Wild orangutans in Malaysia live in the rainforests of Sabah and Sarawak.',
+    id: 'taman-negara',
+    name: 'Taman Negara',
+    image: 'national-park',
+    fact: 'Taman Negara, Malaysia’s first national park, protects one of the oldest rainforests on Earth.',
   },
   {
     stage: 10,
-    id: 'elephant',
-    name: 'Elephant',
-    image: 'elephant',
-    fact: 'Elephants need big, joined-up forests to find enough food as they roam.',
+    id: 'borneo',
+    name: 'Heart of Borneo',
+    short: 'Borneo',
+    image: 'globe-asia',
+    fact: 'Malaysia, Indonesia and Brunei work together to protect the Heart of Borneo’s rainforests.',
   },
   {
     stage: 11,
-    id: 'tiger',
-    name: 'Malayan tiger',
-    image: 'tiger',
-    fact: 'The Malayan tiger is critically endangered. Protecting its forest helps it survive.',
+    id: 'amazon',
+    name: 'Amazon rainforest',
+    short: 'Amazon',
+    image: 'globe-americas',
+    fact: 'The Amazon is the biggest rainforest on Earth, and it stretches across nine countries.',
   },
 ];
