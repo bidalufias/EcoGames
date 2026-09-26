@@ -145,6 +145,7 @@ export const GAMES: readonly GameDefinition[] = [
     art: ['seedling', 'orangutan', 'butterfly'],
     accent: 'leaf',
     minutes: '3–8 min',
+    isNew: true,
     howTo: [
       'Slide every tile with the arrow keys. Two matching tiles that meet grow into the next stage.',
       'A new seed appears after every move. Plan ahead so the board doesn’t fill up!',
@@ -167,6 +168,7 @@ export const GAMES: readonly GameDefinition[] = [
     art: ['books', 'globe', 'seedling'],
     accent: 'berry',
     minutes: '3–6 min',
+    isNew: true,
     howTo: [
       'Type a five-letter word and press Enter. Green letters are in the right place, yellow ones are in the word but somewhere else.',
       'You have six tries for each word, and a clue to help.',
@@ -189,6 +191,7 @@ export const GAMES: readonly GameDefinition[] = [
     art: ['crab', 'wave', 'lightbulb'],
     accent: 'sky',
     minutes: '2 min',
+    isNew: true,
     howTo: [
       'Guide each hatchling from the nest to the sea with the arrow keys, or click where to crawl.',
       'Dodge the ghost crabs and crawl around rubbish. Waves can carry you out to sea!',
@@ -200,6 +203,29 @@ export const GAMES: readonly GameDefinition[] = [
       'Bright beach lights pull hatchlings the wrong way. Tap a light to switch it off.',
     ],
     load: () => import('./turtle-trek'),
+  },
+  {
+    id: 'greener-choice',
+    title: 'Greener Choice',
+    tagline: 'Two everyday choices: pick the one that’s kinder to the planet.',
+    category: 'quiz',
+    icon: 'scale',
+    image: 'scales',
+    art: ['bicycle', 'car', 'hamburger'],
+    accent: 'leaf',
+    minutes: '2–3 min',
+    isNew: true,
+    howTo: [
+      'You’ll see two everyday choices. Pick the one that’s greener, with 1 and 2 or the arrow keys, or click it.',
+      'Find out why after every answer.',
+      'Pick several greener choices in a row for bonus points. Against the clock, quick answers score more!',
+    ],
+    howToMobile: [
+      'You’ll see two everyday choices. Tap the one that’s greener.',
+      'Find out why after every answer.',
+      'Pick several greener choices in a row for bonus points. Against the clock, quick answers score more!',
+    ],
+    load: () => import('./greener-choice'),
   },
 ];
 
@@ -220,6 +246,14 @@ export function searchGames(query: string): GameDefinition[] {
       t.toLowerCase().includes(q),
     ),
   );
+}
+
+/**
+ * Games in the order the home page features them: new games first (the carousel and
+ * the grid beside it), then the rest in registry order.
+ */
+export function featuredGames(): GameDefinition[] {
+  return [...GAMES.filter((g) => g.isNew), ...GAMES.filter((g) => !g.isNew)];
 }
 
 /** A different featured game each day. */

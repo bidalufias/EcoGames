@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseRoute } from './app';
-import { CATEGORIES, GAMES, findGame, gameOfTheDay } from './games/registry';
+import { CATEGORIES, GAMES, featuredGames, findGame, gameOfTheDay } from './games/registry';
 
 describe('parseRoute', () => {
   it('routes to the hub by default', () => {
@@ -35,6 +35,14 @@ describe('registry', () => {
       expect(g.art.length, g.id).toBeGreaterThanOrEqual(2);
       expect(g.howTo.length, g.id).toBeGreaterThan(0);
     }
+  });
+
+  it('features new games first, then every other game once', () => {
+    const order = featuredGames();
+    const firstOld = order.findIndex((g) => !g.isNew);
+    expect(order.slice(0, firstOld).every((g) => g.isNew)).toBe(true);
+    expect(order.slice(firstOld).some((g) => g.isNew)).toBe(false);
+    expect(new Set(order.map((g) => g.id))).toEqual(new Set(GAMES.map((g) => g.id)));
   });
 
   it('features a different game on consecutive days', () => {

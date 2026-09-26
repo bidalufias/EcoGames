@@ -25,6 +25,9 @@ test('hub shows featured games, shelves and navigates back', async ({ page }) =>
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Need a quick break?');
   await expect(page.locator('.carousel__slide')).toHaveCount(3);
   await expect(page.locator('.featured__grid .tile')).toHaveCount(3);
+  // New games are featured first, with a "New" label.
+  await expect(page.locator('.carousel__slide').first().locator('.carousel__new')).toBeVisible();
+  await expect(page.locator('.featured__grid .tile__new')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Games picked for you' })).toBeVisible();
   const start = await openGame(page, 'Eco Quiz', 'Start quiz');
   await expect(start).toBeVisible();

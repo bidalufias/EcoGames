@@ -571,6 +571,30 @@
 .tile__badge svg {
   color: var(--sun);
 }
+/* "New" label on recently added games (tiles and the carousel). */
+.tile__new,
+.carousel__new {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+}
+.tile__new {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.carousel__new {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  vertical-align: 1px;
+}
 
 /* ---------- Game artwork (tiles, hero, start screens) ---------- */
 .art {

@@ -63,6 +63,10 @@ import {
   BookOpen,
   WholeWord,
   Turtle,
+  Scale,
+  Building2,
+  Shield,
+  Fish,
 } from 'lucide';
 
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
@@ -131,6 +135,10 @@ const ICONS = {
   book: BookOpen,
   wholeWord: WholeWord,
   turtle: Turtle,
+  scale: Scale,
+  building: Building2,
+  shield: Shield,
+  fish: Fish,
 } satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;

@@ -65,6 +65,8 @@ export interface GameDefinition {
   /** CSS colour token name used for the tile and game accent. */
   accent: 'leaf' | 'sky' | 'sun' | 'coral' | 'berry';
   minutes: string;
+  /** Recently added: featured at the top of the hub, with a "New" badge. */
+  isNew?: boolean;
   /** Short how-to-play lines for the start screen. */
   howTo: string[];
   /** Phone-specific how-to lines, when the controls differ on touch screens. */
