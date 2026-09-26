@@ -227,6 +227,29 @@ export const GAMES: readonly GameDefinition[] = [
     ],
     load: () => import('./greener-choice'),
   },
+  {
+    id: 'green-city',
+    title: 'Green City',
+    tagline: 'Plan a town where people can walk, breathe clean air and keep cool.',
+    category: 'puzzle',
+    icon: 'building',
+    image: 'city',
+    art: ['metro', 'tree', 'house'],
+    accent: 'sun',
+    minutes: '3–6 min',
+    isNew: true,
+    howTo: [
+      'Each turn, pick one of two buildings and place it on the town grid.',
+      'Every building scores for what is next to it: homes like parks, shops and stations, but not factories.',
+      'Point at a square to see the points before you build. Fill the town for your final score!',
+    ],
+    howToMobile: [
+      'Each turn, pick one of two buildings and place it on the town grid.',
+      'Every building scores for what is next to it: homes like parks, shops and stations, but not factories.',
+      'Tap a square to see the points, then tap it again to build. Fill the town for your final score!',
+    ],
+    load: () => import('./green-city'),
+  },
 ];
 
 export function findGame(id: string): GameDefinition | undefined {
