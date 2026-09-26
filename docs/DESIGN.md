@@ -87,8 +87,8 @@ example:
   instructions and vibration on mistakes.
 - River Rescue uses bigger items, a slower river, fewer items at once and drag-to-steer,
   with the boat at 80% of the height so the thumb doesn't cover it.
-- Switch Off! puts each appliance's picture beside its name in a stack, and shows all four
-  rooms in a row on landscape phones.
+- Switch Off! turns the floor plan on its side on tall screens so the house fills the phone,
+  gives appliances a bigger tap area, and hides family name tags when the tiles get small.
 - Solar Link keeps 6×6 on Hard (tiles stay 44px+ at 320px), shows only homes and turns in
   the game bar, and one "New puzzle" button.
 
@@ -107,7 +107,7 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
   (`gameArt()` composes a game's `image` and `art` images), and anything the player
   looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
-  rooms and appliances, and Solar Link's farm and homes. Keep to this one set so everything shares a style; see the README in
+  appliances, furniture and characters, and Solar Link's farm and homes. Keep to this one set so everything shares a style; see the README in
   `src/assets/3d` to add one.
 
 ## Motion

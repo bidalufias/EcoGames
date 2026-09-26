@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { imageUrl } from '../ui/images';
-import { APPLIANCES, ENERGY_TIPS, FAMILY, ROOMS } from './energy';
+import { APPLIANCES, ENERGY_TIPS, FAMILY, PLAYER, ROOMS } from './energy';
 
 // Guards the Switch Off! content rules (see docs/CONTENT.md).
 
@@ -10,12 +10,13 @@ describe('energy content', () => {
   it('has unique ids', () => {
     expect(unique(ROOMS.map((r) => r.id))).toBe(true);
     expect(unique(APPLIANCES.map((a) => a.id))).toBe(true);
-    expect(unique([...FAMILY])).toBe(true);
+    expect(unique(FAMILY.map((f) => f.name))).toBe(true);
   });
 
   it('only references images that exist', () => {
     for (const r of ROOMS) expect(imageUrl(r.image), r.id).toBeTruthy();
     for (const a of APPLIANCES) expect(imageUrl(a.image), a.id).toBeTruthy();
+    for (const f of [...FAMILY, PLAYER]) expect(imageUrl(f.image), f.name).toBeTruthy();
   });
 
   it('puts two or three appliances in every room, and nowhere else', () => {

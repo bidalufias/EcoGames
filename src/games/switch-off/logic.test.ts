@@ -1,224 +1,363 @@
 import { describe, expect, it } from 'vitest';
-import { APPLIANCES, ROOMS } from '../../content/energy';
+import { APPLIANCES, FAMILY, ROOMS, type RoomId } from '../../content/energy';
 import { seededRng } from '../../core/random';
 import {
   DAY_MS,
+  FLOOR_PLAN,
   HouseDay,
   LEVELS,
-  MAX_MISTAKES,
   METER_MAX,
+  OOPS_PENALTY,
+  PLAYER_SPEED,
+  Walker,
   learnedFrom,
   meterBonus,
   streakBonus,
   switchStars,
+  type DayEvent,
   type Level,
+  type Tile,
 } from './logic';
 
 const LEVEL_IDS = Object.keys(LEVELS) as Level[];
+const plan = FLOOR_PLAN;
+const key = (t: Tile) => `${t.x},${t.y}`;
 
-/** An appliance that is on in a room nobody is in, if there is one. */
-const wasted = (d: HouseDay) => d.appliances.find((a) => d.isOn(a.id) && !d.occupied(a.room));
-/** An appliance that is on in a room someone is in. */
-const inUse = (d: HouseDay) => d.appliances.find((a) => d.isOn(a.id) && d.occupied(a.room));
-
-/** Switches off everything left on in empty rooms. */
-function tidy(d: HouseDay): void {
-  for (let a = wasted(d); a; a = wasted(d)) d.press(a.id);
+/** Runs the day for `ms` in 50 ms frames, collecting events. */
+function run(d: HouseDay, ms: number): DayEvent[] {
+  const events: DayEvent[] = [];
+  for (let t = 0; t < ms && !d.finished; t += 50) events.push(...d.tick(50));
+  return events;
 }
 
+/** Puts a walker on a tile, standing still. */
+function place(w: Walker, t: Tile): void {
+  w.x = t.x;
+  w.y = t.y;
+  w.path = [];
+}
+
+/** Keeps a family member busy in a room for the rest of the test. */
+function park(d: HouseDay, index: number, room: RoomId): void {
+  const p = d.people[index]!;
+  place(p, plan.roomTiles(room)[0]!);
+  p.target = d.appliancesIn(room)[0]!.id;
+  p.useLeft = 1e9;
+}
+
+/** Sends everyone to the bathroom so the other rooms are empty. */
+function parkEveryone(d: HouseDay): void {
+  d.people.forEach((_, i) => park(d, i, 'bathroom'));
+}
+
+describe('floor plan', () => {
+  it('has four rooms joined by doorways', () => {
+    expect(plan.doors).toHaveLength(4);
+    for (const r of ROOMS) expect(plan.roomTiles(r.id).length, r.id).toBeGreaterThan(20);
+  });
+
+  it('puts every appliance and piece of furniture inside its own room', () => {
+    for (const a of APPLIANCES) {
+      const at = plan.applianceTiles[a.id]!;
+      expect(plan.roomAt(at), a.id).toBe(a.room);
+      expect(plan.isWalkable(at), a.id).toBe(false);
+      const spot = plan.spotFor(a.id, a.room);
+      expect(plan.isWalkable(spot), a.id).toBe(true);
+      expect(plan.roomAt(spot), a.id).toBe(a.room);
+      expect(Math.abs(spot.x - at.x) + Math.abs(spot.y - at.y), a.id).toBe(1);
+    }
+    for (const r of ROOMS) expect(plan.roomAt(plan.furnitureTiles[r.id])).toBe(r.id);
+  });
+
+  it('keeps the tiles either side of every doorway free', () => {
+    for (const d of plan.doors) {
+      const sides = [
+        { x: d.x - 1, y: d.y },
+        { x: d.x + 1, y: d.y },
+        { x: d.x, y: d.y - 1 },
+        { x: d.x, y: d.y + 1 },
+      ].filter((t) => plan.roomAt(t) !== null);
+      expect(sides).toHaveLength(2);
+      for (const t of sides) expect(plan.isWalkable(t), key(t)).toBe(true);
+    }
+  });
+
+  it('finds walks between every pair of rooms, one tile at a time through doorways', () => {
+    for (const from of ROOMS)
+      for (const to of ROOMS) {
+        const a = plan.roomTiles(from.id)[0]!;
+        const b = plan.roomTiles(to.id).at(-1)!;
+        const path = plan.path(a, b);
+        expect(path, `${from.id} → ${to.id}`).not.toBeNull();
+        let prev = a;
+        for (const t of path!) {
+          expect(Math.abs(t.x - prev.x) + Math.abs(t.y - prev.y)).toBe(1);
+          expect(plan.isWalkable(t)).toBe(true);
+          prev = t;
+        }
+        expect(prev).toEqual(b);
+        if (from.id !== to.id) expect(path!.some((t) => plan.isDoor(t))).toBe(true);
+      }
+  });
+
+  it('cannot walk into walls or furniture', () => {
+    expect(plan.path({ x: 1, y: 1 }, { x: 0, y: 0 })).toBeNull();
+    expect(plan.path({ x: 1, y: 1 }, plan.furnitureTiles.bedroom)).toBeNull();
+    expect(plan.path({ x: 1, y: 1 }, { x: 1, y: 1 })).toEqual([]);
+  });
+
+  it('snaps taps on walls to the nearest floor', () => {
+    const t = plan.nearestWalkable({ x: 0, y: 3 });
+    expect(t).toEqual({ x: 1, y: 3 });
+    expect(plan.nearestWalkable({ x: 5, y: 5 })).toEqual({ x: 5, y: 5 });
+  });
+});
+
+describe('Walker', () => {
+  it('walks at its speed and stops at the end of the path', () => {
+    const w = new Walker(FAMILY[0]!, { x: 1, y: 1 }, 2);
+    w.setPath([
+      { x: 2, y: 1 },
+      { x: 3, y: 1 },
+    ]);
+    expect(w.advance(250)).toBe(false);
+    expect(w.x).toBeCloseTo(1.5);
+    expect(w.advance(1000)).toBe(true);
+    expect({ x: w.x, y: w.y }).toEqual({ x: 3, y: 1 });
+    expect(w.moving).toBe(false);
+    expect(w.facing).toBe(1);
+  });
+
+  it('goes back to the middle of its tile before turning, so it never cuts a corner', () => {
+    const w = new Walker(FAMILY[0]!, { x: 2, y: 2 }, 2);
+    w.setPath([{ x: 3, y: 2 }]);
+    w.advance(200); // x = 2.4, still on tile 2
+    w.setPath([{ x: 2, y: 3 }]);
+    expect(w.path[0]).toEqual({ x: 2, y: 2 });
+    w.advance(200);
+    expect(w.x).toBeCloseTo(2);
+    expect(w.y).toBe(2);
+    w.advance(1000);
+    expect({ x: w.x, y: w.y }).toEqual({ x: 2, y: 3 });
+    expect(w.facing).toBe(-1);
+  });
+});
+
 describe('HouseDay setup', () => {
-  it.each(LEVEL_IDS)('%s starts with the family in different rooms and waste to find', (lvl) => {
+  it.each(LEVEL_IDS)('%s starts the family in different rooms, with a job to do', (lvl) => {
     const d = new HouseDay(lvl, seededRng(1));
     expect(d.people).toHaveLength(LEVELS[lvl].people);
-    expect(new Set(d.people.map((p) => p.room)).size).toBe(d.people.length);
-    for (const p of d.people) expect(d.peopleIn(p.room).length).toBeGreaterThan(0);
-    // Every occupied room has something on, and one empty room has something left on.
-    for (const r of ROOMS) {
-      if (d.occupied(r.id))
-        expect(APPLIANCES.some((a) => a.room === r.id && d.isOn(a.id))).toBe(true);
+    const rooms = d.people.map((p) => d.roomOf(p));
+    expect(new Set(rooms).size).toBe(d.people.length);
+    expect(d.people.every((p) => p.target !== null)).toBe(true);
+    if (d.people.length < ROOMS.length) {
+      expect(d.appliances.some((a) => d.isWasted(a))).toBe(true);
     }
-    expect(wasted(d)).toBeDefined();
-    expect(d.wastePower()).toBeGreaterThan(0);
+    expect(d.player.tile).toEqual(plan.doors[0]);
   });
 
   it('is deterministic for a seed', () => {
-    const run = (seed: number) => {
-      const d = new HouseDay('normal', seededRng(seed));
-      const log: string[] = [];
-      for (let i = 0; i < 300 && !d.finished; i++) {
-        for (const e of d.tick(100))
-          log.push(e.kind === 'move' ? `${e.person.name}>${e.to}` : e.reason);
-      }
-      return { log, on: [...d.on].sort(), meter: d.meter };
-    };
-    expect(run(42)).toEqual(run(42));
-    expect(run(42).log).not.toEqual(run(43).log);
+    const a = new HouseDay('normal', seededRng(9));
+    const b = new HouseDay('normal', seededRng(9));
+    run(a, 20_000);
+    run(b, 20_000);
+    expect([...a.on].sort()).toEqual([...b.on].sort());
+    expect(a.people.map((p) => p.tile)).toEqual(b.people.map((p) => p.tile));
+    expect(a.meter).toBe(b.meter);
   });
 });
 
-describe('moving around', () => {
-  it('moves people to another room and switches things on there', () => {
-    const d = new HouseDay('easy', seededRng(5));
-    const first = d.people[0]!;
-    const from = first.room;
-    const events = d.tick(first.nextMove);
-    const move = events.find((e) => e.kind === 'move' && e.person === first);
-    expect(move).toBeDefined();
-    if (move?.kind !== 'move') return;
-    expect(move.from).toBe(from);
-    expect(move.to).not.toBe(from);
-    expect(first.room).toBe(move.to);
-    expect(first.nextMove).toBeGreaterThanOrEqual(LEVELS.easy.stay[0]);
-    for (const a of move.switchedOn) {
-      expect(a.room).toBe(move.to);
-      expect(d.isOn(a.id)).toBe(true);
+describe('the family', () => {
+  it('walks around switching things on, and leaves rooms with things still on', () => {
+    const d = new HouseDay('normal', seededRng(3));
+    const events = run(d, 30_000);
+    const on = events.filter((e) => e.kind === 'on');
+    const left = events.filter((e) => e.kind === 'left-on');
+    expect(on.length).toBeGreaterThan(3);
+    expect(left.length).toBeGreaterThan(0);
+    const visited = new Set(on.map((e) => (e.kind === 'on' ? e.appliance.room : null)));
+    expect(visited.size).toBeGreaterThan(1);
+    // Someone who switches something on is standing next to it.
+    for (const e of on) {
+      if (e.kind !== 'on') continue;
+      expect(e.person.name).toBeTruthy();
     }
   });
 
-  it('leaves things on when people walk out, which fills the meter', () => {
-    const d = new HouseDay('normal', seededRng(9));
-    tidy(d);
-    expect(d.wastePower()).toBe(0);
-    const before = d.meter;
-    d.tick(1000);
-    expect(d.meter).toBe(before);
-    // Wait for someone to leave a room behind with things on.
-    for (let i = 0; i < 200 && d.wastePower() === 0; i++) d.tick(100);
-    const waste = d.wastePower();
-    expect(waste).toBeGreaterThan(0);
-    const meter = d.meter;
-    const events = d.tick(1);
-    expect(events.every((e) => e.kind !== 'end')).toBe(true);
-    expect(d.meter - meter).toBeCloseTo((waste * LEVELS.normal.meterRate) / 1000);
-  });
-
-  it('fills the meter faster on harder levels', () => {
-    expect(LEVELS.easy.meterRate).toBeLessThan(LEVELS.normal.meterRate);
-    expect(LEVELS.normal.meterRate).toBeLessThan(LEVELS.hard.meterRate);
-    expect(LEVELS.hard.stay[1]).toBeLessThan(LEVELS.easy.stay[0]);
-    expect(LEVELS.easy.people).toBeLessThanOrEqual(LEVELS.hard.people);
+  it('only switches things on while standing next to them', () => {
+    const d = new HouseDay('hard', seededRng(4));
+    for (let t = 0; t < 20_000; t += 50) {
+      for (const e of d.tick(50)) {
+        if (e.kind !== 'on') continue;
+        const at = plan.applianceTiles[e.appliance.id]!;
+        const p = e.person.tile;
+        expect(Math.abs(p.x - at.x) + Math.abs(p.y - at.y)).toBe(1);
+      }
+    }
   });
 });
 
-describe('pressing switches', () => {
-  it('switches off things in empty rooms for points by power', () => {
-    const d = new HouseDay('easy', seededRng(3));
-    const a = wasted(d)!;
-    const out = d.press(a.id);
-    expect(out).toMatchObject({ kind: 'off', points: a.power * 10, streak: 1 });
-    expect(d.isOn(a.id)).toBe(false);
-    expect(d.score).toBe(a.power * 10);
-    expect(d.offCounts.get(a.id)).toBe(1);
-    // Pressing something already off does nothing.
-    expect(d.press(a.id).kind).toBe('ignored');
-    expect(d.press('no-such-thing').kind).toBe('ignored');
+describe('the player', () => {
+  it('steps one tile at a time and not through walls', () => {
+    const d = new HouseDay('easy', seededRng(1));
+    place(d.player, { x: 1, y: 3 });
+    expect(d.step('up')).toBe(false); // the bed
+    expect(d.step('left')).toBe(false); // the wall
+    expect(d.player.facing).toBe(-1);
+    expect(d.step('down')).toBe(true);
+    expect(d.step('down')).toBe(false); // still walking
+    run(d, 1000 / PLAYER_SPEED + 50);
+    expect(d.player.tile).toEqual({ x: 1, y: 4 });
   });
 
-  it('counts a mistake when someone is using it, and leaves it on', () => {
-    const d = new HouseDay('easy', seededRng(3));
-    tidy(d);
-    expect(d.streak).toBeGreaterThan(0);
-    const a = inUse(d)!;
-    const out = d.press(a.id);
-    expect(out).toMatchObject({ kind: 'mistake', mistakes: 1, gameOver: false });
-    expect(d.isOn(a.id)).toBe(true);
+  it('walks to a tapped spot', () => {
+    const d = new HouseDay('easy', seededRng(1));
+    d.walkTo({ x: 16, y: 10 });
+    run(d, 6000);
+    expect(d.player.tile).toEqual({ x: 16, y: 10 });
+  });
+
+  it('walks over and switches off something left on in an empty room', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    parkEveryone(d);
+    d.on.add('kettle');
+    expect(d.goSwitch('kettle')).toBeNull();
+    expect(d.heading).toBe('kettle');
+    const events = run(d, 8000);
+    const press = events.find((e) => e.kind === 'press');
+    expect(press).toEqual({
+      kind: 'press',
+      outcome: expect.objectContaining({ kind: 'off', points: 20, streak: 1 }),
+    });
+    expect(d.isOn('kettle')).toBe(false);
+    expect(d.score).toBe(20);
+  });
+
+  it('switches off straight away when already in reach, and Space picks what is on', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    parkEveryone(d);
+    d.on.add('tv');
+    d.on.add('console');
+    place(d.player, plan.spotFor('tv', 'living'));
+    expect(d.inReach('tv')).toBe(true);
+    expect(d.reachable()?.id).toBe('tv');
+    expect(d.goSwitch('tv')).toMatchObject({ kind: 'off', points: 20 });
+    expect(d.interact()).toMatchObject({ kind: 'ignored' }); // console is out of reach
+    expect(d.inReach('console')).toBe(false);
+  });
+
+  it('cannot reach through a wall', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    // (8, 1) is the bedroom light; (10, 1) is in the living room, two tiles away.
+    place(d.player, { x: 10, y: 2 });
+    expect(d.inReach('bedroom-light')).toBe(false);
+    place(d.player, plan.doors[0]!);
+    expect(d.inReach('bedroom-light')).toBe(false);
+  });
+
+  it('loses points and the streak for switching off something in use', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    parkEveryone(d);
+    d.on.add('kettle');
+    d.on.add('water-heater');
+    place(d.player, plan.spotFor('kettle', 'kitchen'));
+    d.interact();
+    expect(d.streak).toBe(1);
+    place(d.player, plan.spotFor('water-heater', 'bathroom'));
+    const outcome = d.interact();
+    expect(outcome).toMatchObject({ kind: 'oops', penalty: OOPS_PENALTY });
+    expect(d.isOn('water-heater')).toBe(true);
     expect(d.streak).toBe(0);
-    expect(d.mistakeIds).toEqual([a.id]);
+    expect(d.score).toBe(20 - OOPS_PENALTY);
+    expect(d.oops).toBe(1);
+    // The score never goes below zero.
+    d.interact();
+    d.interact();
+    expect(d.score).toBe(0);
   });
 
-  it('ends the day after three mistakes', () => {
-    const d = new HouseDay('normal', seededRng(11));
-    const a = inUse(d)!;
-    let out;
-    for (let i = 0; i < MAX_MISTAKES; i++) out = d.press(a.id);
-    expect(out).toMatchObject({ kind: 'mistake', gameOver: true });
-    expect(d.ended).toBe('mistakes');
+  it('does no harm when someone walks in while the player is on the way', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    parkEveryone(d);
+    d.on.add('rice-cooker');
+    d.goSwitch('rice-cooker');
+    park(d, 0, 'kitchen');
+    const events = run(d, 8000);
+    const press = events.find((e) => e.kind === 'press');
+    expect(press).toMatchObject({ outcome: { kind: 'busy' } });
+    expect(d.score).toBe(0);
+    expect(d.oops).toBe(0);
+    expect(d.isOn('rice-cooker')).toBe(true);
+  });
+});
+
+describe('the bill and the end of the day', () => {
+  it('counts only things left on in empty rooms as waste', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    d.on.clear();
+    parkEveryone(d);
+    d.on.add('aircon'); // 3, bedroom is empty
+    d.on.add('water-heater'); // 3, but someone is in the bathroom
+    expect(d.wastePower()).toBe(3);
+  });
+
+  it('ends the day when the bill meter fills up', () => {
+    const d = new HouseDay('hard', seededRng(5));
+    const events = run(d, DAY_MS);
+    expect(d.ended).toBe('meter');
+    expect(d.meter).toBe(METER_MAX);
+    expect(events.at(-1)).toEqual({ kind: 'end', reason: 'meter' });
     expect(d.survived).toBe(false);
-    expect(d.tick(1000)).toEqual([]);
-    expect(d.press(a.id).kind).toBe('ignored');
     expect(d.finalScore).toBe(d.score);
   });
-});
 
-describe('end of the day', () => {
-  it('ends with a full meter when nobody switches anything off', () => {
-    for (const lvl of LEVEL_IDS) {
-      const d = new HouseDay(lvl, seededRng(7));
-      let last: ReturnType<HouseDay['tick']> = [];
-      while (!d.finished) last = d.tick(100);
-      expect(d.ended, lvl).toBe('meter');
-      expect(last.at(-1)).toEqual({ kind: 'end', reason: 'meter' });
-      expect(d.meter).toBe(METER_MAX);
-      expect(d.elapsed).toBeLessThan(DAY_MS);
-    }
-  });
-
-  it('survives the day with a quick player and scores the meter bonus', () => {
-    for (const lvl of LEVEL_IDS) {
-      const d = new HouseDay(lvl, seededRng(21));
-      while (!d.finished) {
-        d.tick(250);
-        tidy(d);
-      }
-      expect(d.ended, lvl).toBe('time');
-      expect(d.survived).toBe(true);
-      expect(d.elapsed).toBe(DAY_MS);
-      expect(d.timeLeft).toBe(0);
-      expect(d.switchedOff).toBeGreaterThan(3);
-      expect(d.bestStreak).toBe(d.switchedOff);
-      expect(d.finalScore).toBe(d.score + meterBonus(d.meter));
-      expect(switchStars(true, d.meter, d.switchedOff), lvl).toBe(3);
-    }
-  });
-
-  it('does not run past the end of the day on a long tick', () => {
-    const d = new HouseDay('easy', seededRng(2));
-    tidy(d);
-    d.tick(DAY_MS - 10);
-    if (!d.finished) d.tick(5000);
-    expect(d.elapsed).toBeLessThanOrEqual(DAY_MS);
-    expect(d.finished).toBe(true);
+  it('ends when the day is over, with a bonus for a low bill', () => {
+    const d = new HouseDay('easy', seededRng(5), { dayMs: 3000 });
+    d.on.clear();
+    parkEveryone(d);
+    const events = run(d, 5000);
+    expect(d.ended).toBe('time');
+    expect(events.at(-1)).toEqual({ kind: 'end', reason: 'time' });
+    expect(d.timeLeft).toBe(0);
+    expect(d.finalScore).toBe(d.score + meterBonus(d.meter));
+    expect(d.tick(50)).toEqual([]);
+    expect(d.step('down')).toBe(false);
   });
 });
 
 describe('scoring', () => {
-  it('adds a streak bonus that grows and caps', () => {
-    expect([1, 2, 3, 5, 6, 9, 30].map(streakBonus)).toEqual([0, 0, 5, 5, 10, 15, 15]);
+  it('gives a growing streak bonus, capped', () => {
+    expect([0, 2, 3, 6, 9, 20].map(streakBonus)).toEqual([0, 0, 5, 10, 15, 15]);
   });
 
-  it('gives a bigger meter bonus for a lower bill', () => {
+  it('gives more bonus the emptier the meter', () => {
     expect(meterBonus(0)).toBe(100);
     expect(meterBonus(25)).toBe(75);
-    expect(meterBonus(METER_MAX)).toBe(0);
-    expect(meterBonus(METER_MAX * 2)).toBe(0);
+    expect(meterBonus(150)).toBe(0);
   });
 
-  it('gives stars mainly for a low meter', () => {
-    expect(switchStars(true, 10, 5)).toBe(3);
+  it('gives stars mainly for a low bill', () => {
+    expect(switchStars(true, 20, 5)).toBe(3);
     expect(switchStars(true, 50, 5)).toBe(2);
     expect(switchStars(true, 90, 5)).toBe(1);
-    expect(switchStars(false, 40, 5)).toBe(1);
+    expect(switchStars(false, 100, 5)).toBe(1);
     expect(switchStars(false, 100, 0)).toBe(0);
-  });
-});
-
-describe('learnedFrom', () => {
-  it('lists mistakes first, then the most switched off, one per tip', () => {
-    const d = new HouseDay('easy', seededRng(3));
-    d.mistakeIds.push('aircon');
-    d.offCounts.set('bedroom-light', 1);
-    d.offCounts.set('kitchen-light', 4);
-    d.offCounts.set('water-heater', 2);
-    d.offCounts.set('tv', 1);
-    d.offCounts.set('console', 1);
-    d.offCounts.set('kettle', 1);
-    const ids = learnedFrom(d).map((a) => a.id);
-    expect(ids).toHaveLength(4);
-    expect(ids.slice(0, 3)).toEqual(['aircon', 'kitchen-light', 'water-heater']);
-    expect(ids).not.toContain('bedroom-light');
+    expect(switchStars(true, 10, 0)).toBe(1);
   });
 
-  it('is empty when the player met nothing', () => {
-    expect(learnedFrom(new HouseDay('easy', seededRng(1)))).toEqual([]);
+  it('recaps tips from mistakes first, one per tip', () => {
+    const d = new HouseDay('easy', seededRng(2));
+    parkEveryone(d);
+    for (const id of ['kitchen-light', 'bedroom-light', 'aircon']) {
+      d.on.add(id);
+      place(d.player, plan.spotFor(id, d.appliance(id)!.room));
+      d.interact();
+    }
+    d.on.add('water-heater');
+    place(d.player, plan.spotFor('water-heater', 'bathroom'));
+    d.interact();
+    const tips = learnedFrom(d);
+    expect(tips[0]?.id).toBe('water-heater');
+    expect(tips.map((t) => t.id)).toEqual(['water-heater', 'kitchen-light', 'aircon']);
   });
 });

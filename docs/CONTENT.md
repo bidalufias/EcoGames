@@ -11,7 +11,8 @@ All educational text lives in `src/content/`:
   eight questions so it can have a round of its own.
 - `waste.ts`: Waste Sorter items and bins, with each bin's Malay name
 - `river.ts`: River Rescue rubbish, river animals and river facts
-- `energy.ts`: Switch Off! rooms (with Malay names), appliances and energy-saving tips
+- `energy.ts`: Switch Off! rooms (with Malay names), appliances, energy-saving tips and the
+  family characters
 - `solar.ts`: Solar Link's solar power facts
 
 Each of these has its own checks in `src/content/<file>.test.ts`.
