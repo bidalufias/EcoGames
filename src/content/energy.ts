@@ -121,8 +121,22 @@ export const APPLIANCES: readonly Appliance[] = [
   },
 ];
 
-/** Names for the family members who wander around the house. */
-export const FAMILY: readonly string[] = ['Adik', 'Kakak', 'Abang'];
+export interface FamilyMember {
+  /** What the family calls them: Malay family titles. */
+  name: string;
+  image: ImageName;
+}
+
+/** The family who walk around the house switching things on, in the order levels add them. */
+export const FAMILY: readonly FamilyMember[] = [
+  { name: 'Adik', image: 'child' },
+  { name: 'Ibu', image: 'woman-headscarf' },
+  { name: 'Abang', image: 'boy' },
+  { name: 'Atuk', image: 'grandpa' },
+];
+
+/** The player's character. */
+export const PLAYER: FamilyMember = { name: 'You', image: 'superhero' };
 
 /** General energy tips, used when the player met no appliance tips. */
 export const ENERGY_TIPS: readonly { term: string; detail: string }[] = [

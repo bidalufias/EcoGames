@@ -1,27 +1,38 @@
-import { APPLIANCES, ENERGY_TIPS, ROOMS, type Appliance, type Room } from '../../content/energy';
+import * as Phaser from 'phaser';
+import { ENERGY_TIPS, ROOMS } from '../../content/energy';
 import { h, haptic, isCompact, prefersReducedMotion, replace } from '../../core/dom';
-import { seededRng } from '../../core/random';
 import { readJSON, writeJSON } from '../../core/storage';
 import type { GameContext, GameInstance } from '../../core/types';
 import { icon } from '../../ui/icons';
-import { image } from '../../ui/images';
 import { renderIntro } from '../../ui/intro';
 import { toast } from '../../ui/toast';
 import {
-  HouseDay,
   LEVELS,
-  MAX_MISTAKES,
   METER_MAX,
   learnedFrom,
   switchStars,
-  type EndReason,
+  type DayEvent,
+  type Dir,
+  type HouseDay,
   type Level,
 } from './logic';
+import { SwitchScene } from './SwitchScene';
 import './switch-off.css';
 
 const LEVEL_KEY = 'switch-off-level';
 
-const roomOf = (a: Appliance) => ROOMS.find((r) => r.id === a.room) as Room;
+const roomName = (id: string) => ROOMS.find((r) => r.id === id)?.name.toLowerCase() ?? id;
+
+const KEY_DIRS: Record<string, Dir> = {
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  w: 'up',
+  s: 'down',
+  a: 'left',
+  d: 'right',
+};
 
 function radioGroup<T extends string>(
   name: string,
@@ -49,23 +60,34 @@ function formatTime(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-/** "Adik", "Adik and Kakak", "Adik, Kakak and Abang". */
-function listNames(names: string[]): string {
-  if (names.length < 2) return names.join('');
-  return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+/** "the TV", "the TV and the kettle". */
+function listThings(names: string[]): string {
+  const the = names.map((n) => `the ${n}`);
+  if (the.length < 2) return the.join('');
+  return `${the.slice(0, -1).join(', ')} and ${the.at(-1)}`;
+}
+
+/** Game resolution: container size × device pixel ratio (capped), so the canvas stays sharp. */
+function gameSize(el: HTMLElement): { width: number; height: number } {
+  const rect = el.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  return {
+    width: Math.max(320, Math.round(rect.width * dpr)),
+    height: Math.max(240, Math.round(rect.height * dpr)),
+  };
 }
 
 export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   const compact = isCompact();
+  const params = new URLSearchParams(window.location.search);
+  // Opt-in hooks for end-to-end tests (?e2e in the URL); never used in normal play.
+  const e2e = params.has('e2e');
+  const daySeconds = e2e ? Number(params.get('day')) : 0;
   const saved = readJSON<string>(LEVEL_KEY, 'normal');
   let level: Level = saved in LEVELS ? (saved as Level) : 'normal';
-  let day = new HouseDay(level, seededRng(1));
-  let raf = 0;
-  let last = 0;
   let shownSecond = -1;
+  let shownScore = -1;
   let shownMeter = -1;
-  let finishTimer: number | undefined;
-  const timers = new Set<number>();
 
   // ---------- Bill meter ----------
   const billFill = h('div', { class: 'switch-bill__fill' });
@@ -89,52 +111,6 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     billTrack,
     billValue,
   );
-
-  // ---------- House: one room per quarter, appliances as big buttons ----------
-  const buttons = new Map<string, HTMLButtonElement>();
-  const roomEls = new Map<string, { el: HTMLElement; people: HTMLElement }>();
-  const house = h('div', { class: 'switch-house' });
-  for (const room of ROOMS) {
-    const people = h('div', { class: 'switch-room__people' });
-    const apps = APPLIANCES.filter((a) => a.room === room.id);
-    const grid = h('div', { class: 'switch-room__apps', style: `--n:${apps.length}` });
-    for (const a of apps) {
-      const btn = h(
-        'button',
-        {
-          class: 'switch-app',
-          type: 'button',
-          'data-id': a.id,
-          onclick: () => onPress(a.id),
-        },
-        h('span', { class: 'switch-app__art' }, image(a.image)),
-        h('span', { class: 'switch-app__name' }, a.name),
-        h('span', { class: 'switch-app__state', 'aria-hidden': 'true' }),
-      );
-      buttons.set(a.id, btn);
-      grid.appendChild(btn);
-    }
-    const el = h(
-      'section',
-      { class: 'switch-room', 'data-room': room.id, 'aria-label': room.name },
-      h(
-        'header',
-        { class: 'switch-room__head' },
-        image(room.image, { size: 26 }),
-        h(
-          'span',
-          { class: 'switch-room__name' },
-          h('strong', {}, compact ? room.shortName : room.name),
-          h('small', { lang: 'ms' }, room.malay),
-        ),
-        people,
-      ),
-      h('div', { class: 'switch-room__body' }, grid),
-    );
-    roomEls.set(room.id, { el, people });
-    house.appendChild(el);
-  }
-  const stage = h('div', { class: 'switch-stage' }, house);
 
   // ---------- Start screen ----------
   const options = h(
@@ -168,6 +144,8 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       newGame();
     },
   });
+  const startBtn = intro.querySelector<HTMLButtonElement>('.intro__start')!;
+  startBtn.disabled = true;
 
   const levelBtn = h(
     'button',
@@ -176,27 +154,16 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   );
   levelBtn.addEventListener('click', () => showIntro());
 
-  host.replaceChildren(h('div', { class: 'switch' }, bill, stage, intro));
+  const stage = h('div', {
+    class: 'switch-stage',
+    tabindex: '-1',
+    role: 'application',
+    'aria-label': 'House. Arrow keys to walk, Space to switch off.',
+  });
+  stage.append(intro);
+  host.replaceChildren(h('div', { class: 'switch' }, bill, stage));
 
-  function later(fn: () => void, ms: number): void {
-    const id = window.setTimeout(() => {
-      timers.delete(id);
-      fn();
-    }, ms);
-    timers.add(id);
-  }
-
-  function renderHud(): void {
-    const lives = MAX_MISTAKES - day.mistakes;
-    const hearts = h('span', {
-      class: 'stat switch-lives',
-      'aria-label': `${lives} ${lives === 1 ? 'heart' : 'hearts'} left`,
-    });
-    for (let i = 0; i < MAX_MISTAKES; i++) {
-      const heart = icon('heart', { size: 14 });
-      if (i < lives) heart.classList.add('on');
-      hearts.appendChild(heart);
-    }
+  function renderHud(day: HouseDay): void {
     replace(
       ctx.hud,
       h(
@@ -206,7 +173,6 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
         `${day.score}`,
         h('span', { class: 'stat__label' }, ' pts'),
       ),
-      hearts,
       !compact &&
         day.streak >= 3 &&
         h(
@@ -227,9 +193,9 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     );
   }
 
-  function renderMeter(): void {
-    const pct = Math.round((day.meter / METER_MAX) * 100);
+  function renderMeter(day: HouseDay): void {
     billFill.style.transform = `scaleX(${day.meter / METER_MAX})`;
+    const pct = Math.round((day.meter / METER_MAX) * 100);
     if (pct === shownMeter) return;
     shownMeter = pct;
     billTrack.setAttribute('aria-valuenow', String(Math.round(day.meter)));
@@ -238,204 +204,187 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     bill.dataset.level = pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low';
   }
 
-  /** Copies the day's state onto the rooms and buttons. */
-  function syncHouse(): void {
-    for (const room of ROOMS) {
-      const parts = roomEls.get(room.id);
-      if (!parts) continue;
-      const inRoom = day.peopleIn(room.id);
-      parts.el.classList.toggle('is-occupied', inRoom.length > 0);
-      if (inRoom.length === 0) {
-        replace(parts.people, h('span', { class: 'switch-room__empty' }, 'Empty'));
-      } else {
-        replace(
-          parts.people,
-          h(
-            'span',
-            { class: 'sr-only' },
-            `${listNames(inRoom.map((p) => p.name))} ${inRoom.length === 1 ? 'is' : 'are'} here`,
-          ),
-          ...inRoom.map((p) =>
-            h(
-              'span',
-              {
-                class: `switch-person switch-person--${day.people.indexOf(p)}`,
-                title: p.name,
-                'aria-hidden': 'true',
-              },
-              icon('user', { size: 16, strokeWidth: 2.5 }),
-              h('span', { class: 'switch-person__name' }, p.name),
-            ),
-          ),
-        );
-      }
-    }
-    for (const a of APPLIANCES) {
-      const btn = buttons.get(a.id);
-      if (!btn) continue;
-      const on = day.isOn(a.id);
-      const occupied = day.occupied(a.room);
-      btn.dataset.on = String(on);
-      btn.dataset.occupied = String(occupied);
-      const state = btn.querySelector('.switch-app__state') as HTMLElement;
-      replace(
-        state,
-        on && icon(occupied ? 'power' : 'zap', { size: 12, strokeWidth: 2.5 }),
-        on ? 'On' : 'Off',
-      );
-      const where = roomOf(a).name.toLowerCase();
-      const status = on ? (occupied ? 'on, in use' : 'on, room empty') : 'off';
-      btn.setAttribute('aria-label', `${a.name}, ${where}, ${status}`);
-    }
-  }
-
-  function floatPoints(btn: HTMLElement, points: number): void {
-    const el = h('span', { class: 'switch-float', 'aria-hidden': 'true' }, `+${points}`);
-    btn.appendChild(el);
-    later(() => el.remove(), prefersReducedMotion() ? 500 : 800);
-  }
-
-  function flash(btn: HTMLElement, cls: string): void {
-    btn.classList.remove(cls);
-    // Restart the animation when the same button is pressed again quickly.
-    void btn.offsetWidth;
-    btn.classList.add(cls);
-    later(() => btn.classList.remove(cls), 450);
-  }
-
-  function onPress(id: string): void {
-    if (!raf) return;
-    const btn = buttons.get(id);
-    const outcome = day.press(id);
-    if (outcome.kind === 'ignored' || !btn) {
-      ctx.sound('tap');
-      return;
-    }
-    if (outcome.kind === 'off') {
-      ctx.sound('good');
-      floatPoints(btn, outcome.points);
-      flash(btn, 'is-done');
-      const where = roomOf(outcome.appliance).name.toLowerCase();
-      ctx.announce(`${outcome.appliance.name} in the ${where} switched off. +${outcome.points}.`);
-    } else {
-      ctx.sound('bad');
-      haptic(60);
-      flash(btn, 'is-wrong');
-      toast('Someone’s using that!', 'Only switch off things in empty rooms.');
-      const lives = MAX_MISTAKES - outcome.mistakes;
-      ctx.announce(`Someone’s using that! ${lives} ${lives === 1 ? 'heart' : 'hearts'} left.`);
-    }
-    syncHouse();
-    renderHud();
-    if (day.finished) finish(day.ended as EndReason);
-  }
-
-  function frame(now: number): void {
-    // Cap the step so a background tab or a slow frame doesn't skip the day ahead.
-    const dt = Math.min(now - last, 250);
-    last = now;
-    const events = day.tick(dt);
-    let moved = false;
-    for (const e of events) {
-      if (e.kind === 'move') {
-        moved = true;
-        const from = ROOMS.find((r) => r.id === e.from) as Room;
-        ctx.announce(`${e.person.name} left the ${from.name.toLowerCase()}.`);
-      }
-    }
-    if (moved) syncHouse();
-    renderMeter();
+  function onChange(day: HouseDay): void {
+    renderMeter(day);
     const second = Math.ceil(day.timeLeft / 1000);
-    if (second !== shownSecond) {
+    if (second !== shownSecond || day.score !== shownScore) {
       shownSecond = second;
-      renderHud();
+      shownScore = day.score;
+      renderHud(day);
     }
-    if (day.finished) {
-      raf = 0;
-      finish(day.ended as EndReason);
-      return;
-    }
-    raf = requestAnimationFrame(frame);
   }
 
-  function stopLoop(): void {
-    cancelAnimationFrame(raf);
-    raf = 0;
+  function onEvent(e: DayEvent): void {
+    if (e.kind === 'on') {
+      ctx.announce(
+        `${e.person.name} switched on the ${e.appliance.name.toLowerCase()} in the ${roomName(e.appliance.room)}.`,
+      );
+    } else if (e.kind === 'left-on') {
+      const things = listThings(e.appliances.map((a) => a.name.toLowerCase()));
+      ctx.announce(
+        `Nobody is in the ${roomName(e.room)}, but ${things} ${e.appliances.length === 1 ? 'is' : 'are'} still on.`,
+      );
+    } else if (e.kind === 'press') {
+      const o = e.outcome;
+      if (o.kind === 'off') {
+        ctx.sound('good');
+        ctx.announce(`You switched off the ${o.appliance.name.toLowerCase()}. +${o.points}.`);
+      } else if (o.kind === 'oops') {
+        ctx.sound('bad');
+        haptic(60);
+        toast(`${o.by.name} is using that!`, 'Only switch off things in empty rooms.');
+        ctx.announce(
+          `${o.by.name} is using the ${o.appliance.name.toLowerCase()}. Only switch off things in empty rooms.`,
+        );
+      } else if (o.kind === 'busy') {
+        ctx.sound('tap');
+        ctx.announce(`${o.by.name} is using the ${o.appliance.name.toLowerCase()} now.`);
+      } else {
+        ctx.sound('tap');
+      }
+    }
   }
 
-  function finish(reason: EndReason): void {
-    stopLoop();
-    syncHouse();
-    renderMeter();
-    renderHud();
-    const d = day;
-    const pct = Math.round((d.meter / METER_MAX) * 100);
-    if (reason === 'meter') {
-      ctx.sound('bad');
-      ctx.announce('The bill is too high!');
-    }
-    const learned = learnedFrom(d).map((a) => ({ term: a.name, detail: a.tip }));
-    if (learned.length === 0) learned.push({ ...(ENERGY_TIPS[0] as (typeof ENERGY_TIPS)[0]) });
-    finishTimer = window.setTimeout(() => {
-      if (d.survived) ctx.sound('win');
-      const score = d.finalScore;
-      ctx.showResult({
-        title:
-          reason === 'meter'
-            ? 'The bill is too high!'
-            : reason === 'mistakes'
-              ? 'Oops, they were using those!'
-              : pct <= 30
-                ? 'Super energy saver!'
-                : 'You made it through the day!',
-        score,
-        stars: switchStars(d.survived, d.meter, d.switchedOff),
-        isBest: ctx.submitScore(score),
-        stats: [
-          `${d.switchedOff} switched off`,
-          `Bill ${pct}% full`,
-          `Best streak: ${d.bestStreak}`,
-        ],
-        learned,
-        onReplay: newGame,
-      });
-    }, 700);
+  function onGameOver(day: HouseDay): void {
+    const pct = Math.round((day.meter / METER_MAX) * 100);
+    const meterFull = day.ended === 'meter';
+    ctx.sound(meterFull ? 'bad' : 'win');
+    if (meterFull) ctx.announce('The bill is too high!');
+    const learned = learnedFrom(day).map((a) => ({ term: a.name, detail: a.tip }));
+    if (learned.length === 0) learned.push({ ...ENERGY_TIPS[0]! });
+    const score = day.finalScore;
+    ctx.showResult({
+      title: meterFull
+        ? 'The bill is too high!'
+        : pct <= 30 && day.switchedOff > 0
+          ? 'Super energy saver!'
+          : 'You made it through the day!',
+      score,
+      stars: switchStars(day.survived, day.meter, day.switchedOff),
+      isBest: ctx.submitScore(score),
+      stats: [
+        `${day.switchedOff} switched off`,
+        `Bill ${pct}% full`,
+        `Best streak: ${day.bestStreak}`,
+        ...(day.oops > 0 ? [`${day.oops} oops`] : []),
+      ],
+      learned,
+      onReplay: newGame,
+    });
   }
+
+  const scene = new SwitchScene(
+    { onChange, onEvent, onGameOver },
+    {
+      dark: document.documentElement.dataset.theme === 'dark',
+      compact,
+      reducedMotion: prefersReducedMotion(),
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      dayMs: daySeconds > 0 ? daySeconds * 1000 : undefined,
+    },
+  );
+
+  // ---------- Keyboard: arrows or WASD to walk, Space/Enter/E to switch off ----------
+  const held: Dir[] = [];
+  const playing = () => intro.hidden && !document.querySelector('dialog[open]');
+  function onKeyDown(e: KeyboardEvent): void {
+    if (!playing() || e.altKey || e.ctrlKey || e.metaKey) return;
+    // Leave keys alone on the bar's buttons and links (Enter on "back" must still work).
+    if (e.target instanceof HTMLElement && e.target.closest('button, a, input, select')) return;
+    const dir = KEY_DIRS[e.key.length === 1 ? e.key.toLowerCase() : e.key];
+    if (dir) {
+      e.preventDefault();
+      if (!held.includes(dir)) held.push(dir);
+      scene.heldDir = held.at(-1) ?? null;
+    } else if (e.key === ' ' || e.key === 'Enter' || e.key.toLowerCase() === 'e') {
+      e.preventDefault();
+      if (!e.repeat) scene.interact();
+    }
+  }
+  function onKeyUp(e: KeyboardEvent): void {
+    const dir = KEY_DIRS[e.key.length === 1 ? e.key.toLowerCase() : e.key];
+    if (!dir) return;
+    held.splice(held.indexOf(dir), 1);
+    scene.heldDir = held.at(-1) ?? null;
+  }
+  function releaseKeys(): void {
+    held.length = 0;
+    scene.heldDir = null;
+  }
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
+  window.addEventListener('blur', releaseKeys);
 
   function newGame(): void {
-    stopLoop();
-    window.clearTimeout(finishTimer);
     intro.hidden = true;
-    day = new HouseDay(level, seededRng(Math.floor(Math.random() * 2 ** 32)));
-    shownSecond = -1;
-    shownMeter = -1;
-    syncHouse();
-    renderMeter();
-    renderHud();
-    // Keyboard players start on the first switch; touch screens skip the focus ring.
-    if (!compact) buttons.values().next().value?.focus({ preventScroll: true });
-    last = performance.now();
-    raf = requestAnimationFrame(frame);
+    releaseKeys();
+    shownSecond = shownScore = shownMeter = -1;
+    scene.startDay(level, Math.floor(Math.random() * 2 ** 32));
+    ctx.announce('The day has started. Walk into empty rooms and switch off what was left on.');
+    stage.focus({ preventScroll: true });
   }
 
   function showIntro(): void {
-    stopLoop();
+    scene.stop();
     intro.hidden = false;
-    intro.querySelector<HTMLElement>('.intro__start')?.focus({ preventScroll: true });
+    startBtn.focus({ preventScroll: true });
   }
 
-  // Show a house behind the start screen so the page never looks empty.
-  syncHouse();
-  renderMeter();
-  renderHud();
-  showIntro();
+  let destroyed = false;
+  let game: Phaser.Game | null = null;
+  // Wait for the UI font so canvas text renders in it, then boot Phaser.
+  const fontReady = document.fonts
+    ?.load('800 16px "Plus Jakarta Sans Variable"')
+    .catch(() => undefined);
+  void Promise.resolve(fontReady).then(() => {
+    if (destroyed) return;
+    const size = gameSize(stage);
+    game = new Phaser.Game({
+      type: Phaser.AUTO,
+      parent: stage,
+      width: size.width,
+      height: size.height,
+      transparent: true,
+      banner: false,
+      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+      scene,
+    });
+    if (e2e) (window as unknown as { __switch: unknown }).__switch = { scene, game };
+    game.events.once(Phaser.Core.Events.READY, () => {
+      startBtn.disabled = false;
+      startBtn.focus({ preventScroll: true });
+    });
+  });
+
+  // Keep the canvas resolution matched to the stage when the window resizes.
+  let resizeTimer: number | undefined;
+  const observer = new ResizeObserver(() => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      if (!game) return;
+      const size = gameSize(stage);
+      if (
+        Math.abs(size.width - game.scale.width) > 2 ||
+        Math.abs(size.height - game.scale.height) > 2
+      ) {
+        game.scale.setGameSize(size.width, size.height);
+      }
+    }, 150);
+  });
+  observer.observe(stage);
+
+  renderHud(scene.day);
+  renderMeter(scene.day);
 
   return {
     destroy() {
-      stopLoop();
-      window.clearTimeout(finishTimer);
-      timers.forEach((id) => window.clearTimeout(id));
-      timers.clear();
+      destroyed = true;
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', releaseKeys);
+      observer.disconnect();
+      window.clearTimeout(resizeTimer);
+      game?.destroy(true);
       host.replaceChildren();
     },
   };
