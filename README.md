@@ -16,6 +16,9 @@ They work on phones, tablets and computers, with touch, mouse or keyboard.
 | **Grow the Forest** | How a rainforest grows, and the wildlife that lives in it | DOM + CSS  |
 | **Eco Word**        | Climate and nature words, with what each one means        | DOM + CSS  |
 | **Turtle Trek**     | Sea turtle hatchlings, beach lights and beach rubbish     | Phaser 4   |
+| **Greener Choice**  | Everyday choices with a smaller footprint, and why        | DOM + CSS  |
+| **Green City**      | Walkable, green, clean-powered town planning              | DOM + CSS  |
+| **Mangrove Guard**  | How mangroves protect coasts, and the life they shelter   | Phaser 4   |
 
 ## Getting started
 

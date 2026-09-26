@@ -250,6 +250,29 @@ export const GAMES: readonly GameDefinition[] = [
     ],
     load: () => import('./green-city'),
   },
+  {
+    id: 'mangrove-guard',
+    title: 'Mangrove Guard',
+    tagline: 'Plant mangroves on the mudflats to calm the waves before they reach the village.',
+    category: 'arcade',
+    icon: 'shield',
+    image: 'tree',
+    art: ['wave', 'house', 'fish'],
+    accent: 'sky',
+    minutes: '2–3 min',
+    isNew: true,
+    howTo: [
+      'Waves roll in from the sea. Click the mud to plant mangroves, which calm each wave that passes through them.',
+      'Api-api is cheap and grows fast. Bakau costs more but its stilt roots are stronger. Keys 1 and 2 choose, the arrow keys and Space plant.',
+      'Grown mangroves drop new seedlings and shelter young fish. Click rubbish to pick it up. Keep the houses dry until the storm passes!',
+    ],
+    howToMobile: [
+      'Waves roll in from the sea. Tap the mud to plant mangroves, which calm each wave that passes through them.',
+      'Api-api is cheap and grows fast. Bakau costs more but its stilt roots are stronger.',
+      'Grown mangroves drop new seedlings and shelter young fish. Tap rubbish to pick it up. Keep the houses dry until the storm passes!',
+    ],
+    load: () => import('./mangrove-guard'),
+  },
 ];
 
 export function findGame(id: string): GameDefinition | undefined {

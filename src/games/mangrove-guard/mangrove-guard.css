@@ -1,0 +1,171 @@
+.mangrove {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+/* The coast fills the space the game page gives it, above the tray of mangroves. */
+.mangrove-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-2);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mangrove-stage:focus {
+  outline: none;
+}
+.mangrove-stage canvas {
+  touch-action: none;
+}
+
+.mangrove-tray {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mangrove-picks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 10px;
+}
+.mangrove-species {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 12px 6px 8px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  touch-action: manipulation;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    opacity 0.15s;
+}
+.mangrove-species:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+.mangrove-species.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.mangrove-species__art img {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+.mangrove-species__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.mangrove-species__name {
+  font-weight: 750;
+}
+.mangrove-species__tag {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.mangrove-species__cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--leaf-soft);
+  color: var(--leaf);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+/* Not enough seedlings for this one yet. */
+.mangrove-species.is-short .mangrove-species__cost {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.mangrove-species.is-short .mangrove-species__art {
+  opacity: 0.55;
+}
+.mangrove-tide {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-align: right;
+}
+
+.mangrove-seeds svg {
+  color: var(--leaf);
+}
+.mangrove-houses--hit {
+  background: var(--coral-soft);
+}
+.mangrove-houses--hit svg {
+  color: var(--coral);
+}
+
+@media (max-width: 640px), (max-height: 500px) {
+  .mangrove {
+    gap: 8px;
+  }
+  .mangrove-tray {
+    gap: 8px;
+  }
+  .mangrove-picks {
+    flex: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .mangrove-species {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px;
+    min-height: 48px;
+    padding: 4px 8px 4px 4px;
+  }
+  .mangrove-species__art img {
+    width: 32px;
+    height: 32px;
+  }
+  .mangrove-species__tag {
+    display: none;
+  }
+  .mangrove-species__cost {
+    grid-column: 2;
+    justify-self: start;
+    padding: 1px 6px;
+    font-size: var(--text-xs);
+  }
+  .mangrove-tide {
+    display: none;
+  }
+}
+
+/* Landscape phones: short on height, so the mangroves stack beside the coast. */
+@media (max-height: 500px) and (min-width: 641px) {
+  .mangrove {
+    flex-direction: row;
+  }
+  .mangrove-tray {
+    flex-direction: column;
+    justify-content: center;
+    width: 132px;
+  }
+  .mangrove-picks {
+    flex: none;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+}

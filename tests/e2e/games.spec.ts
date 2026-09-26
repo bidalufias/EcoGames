@@ -39,8 +39,8 @@ test('hub shows featured games, shelves and navigates back', async ({ page }) =>
 test('categories and search filter the games', async ({ page, isMobile }) => {
   await page.goto('./#/c/quiz');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Quiz & trivia');
-  // Eco Quiz and Eco Word.
-  await expect(page.locator('.hub .tile')).toHaveCount(2);
+  // Eco Quiz, Eco Word and Greener Choice.
+  await expect(page.locator('.hub .tile')).toHaveCount(3);
   await page.goto('./');
   const search = page.locator(isMobile ? '#hub-search' : '#rail-search');
   await search.fill('river');

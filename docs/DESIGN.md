@@ -50,12 +50,16 @@ subtitle), as on MSN Play.
   active item gets a grey fill and an ink bar on the left. Phones and tablets show the
   search field plus category chips instead.
 - **Home:** a light "Need a quick break?" heading, then the **featured block** (a rotating
-  carousel of the first three games in `registry.ts`, next to a 2×2 grid of the next three
-  plus a "Did you know?" fact card), then
+  carousel of three games, next to a 2×2 grid of the next three plus a "Did you know?" fact
+  card), then
   **"Pick up where you left off"** (small tiles) and **"Games picked for you"** (large
   tiles).
 - **Tiles:** image-style game "covers" with the title drawn on the art (`ui/art.ts`), and
   no text below.
+- **New games:** games marked `isNew` in `registry.ts` come first in the featured block
+  (`featuredGames()`), and get a "New" label on their tiles and carousel caption. The
+  featured block has room for six, so clear the flag on the oldest ones as new games
+  arrive; that keeps the label meaningful.
 
 ## Game pages
 
@@ -97,6 +101,12 @@ example:
   guesses on landscape phones.
 - Turtle Trek is played by touching and holding where the hatchling should crawl, and by
   tapping a light to switch it off. Tall screens show more dunes and sea around the beach.
+- Greener Choice keeps its two cards side by side and puts the explanation above a
+  full-width Next button; landscape phones put each picture beside its name.
+- Green City puts the two buildings on offer above the board. A first tap on a square
+  shows the points, and a second tap builds, since there is no hover on touch screens.
+- Mangrove Guard turns the coast on its side on tall screens (sea at the top, village at
+  the bottom), and stacks the two mangroves beside the coast on landscape phones.
 
 Use `howToMobile` in the registry when the controls differ on touch screens.
 
@@ -113,8 +123,9 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
   (`gameArt()` composes a game's `image` and `art` images), and anything the player
   looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
-  appliances, Solar Link's farm and homes, Grow the Forest's tiles, and Turtle Trek's
-  hatchlings, crabs and rubbish. Keep to this one set so everything shares a
+  appliances, Solar Link's farm and homes, Grow the Forest's tiles, Turtle Trek's
+  hatchlings, crabs and rubbish, Greener Choice's cards, Green City's buildings, and
+  Mangrove Guard's mangroves, waves, houses and rubbish. Keep to this one set so everything shares a
   style; see the README in `src/assets/3d` to add one.
 - **Drawn art** is the one exception: Switch Off!'s house is drawn in code as an
   architect's floor plan (`HouseArt.ts`: wood and tile floors, solid walls, windows, doors

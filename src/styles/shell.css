@@ -589,6 +589,10 @@
   top: 8px;
   left: 8px;
 }
+/* Make room for the label: the top-left sticker moves down a little. */
+.tile:has(.tile__new) .art__sticker--0 {
+  top: 30%;
+}
 .carousel__new {
   display: inline-block;
   margin-right: 8px;
