@@ -27,7 +27,7 @@ src/
   assets/3d/             # 3D object images (Fluent Emoji, MIT) for game art; README says how to add one
   styles/                # tokens.css (all colours), base, components, shell
   content/               # ALL educational text: concepts, quiz, waste, river, energy, solar,
-                         # forest, words, turtles
+                         # forest, words, turtles, footprint, city, mangroves
   games/
     registry.ts          # the list of games shown on the hub
     <game>/index.ts      # mount(host, ctx) -> { destroy }

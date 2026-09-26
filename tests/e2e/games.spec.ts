@@ -25,6 +25,9 @@ test('hub shows featured games, shelves and navigates back', async ({ page }) =>
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Need a quick break?');
   await expect(page.locator('.carousel__slide')).toHaveCount(3);
   await expect(page.locator('.featured__grid .tile')).toHaveCount(3);
+  // New games are featured first, with a "New" label.
+  await expect(page.locator('.carousel__slide').first().locator('.carousel__new')).toBeVisible();
+  await expect(page.locator('.featured__grid .tile__new')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Games picked for you' })).toBeVisible();
   const start = await openGame(page, 'Eco Quiz', 'Start quiz');
   await expect(start).toBeVisible();
@@ -36,8 +39,8 @@ test('hub shows featured games, shelves and navigates back', async ({ page }) =>
 test('categories and search filter the games', async ({ page, isMobile }) => {
   await page.goto('./#/c/quiz');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Quiz & trivia');
-  // Eco Quiz and Eco Word.
-  await expect(page.locator('.hub .tile')).toHaveCount(2);
+  // Eco Quiz, Eco Word and Greener Choice.
+  await expect(page.locator('.hub .tile')).toHaveCount(3);
   await page.goto('./');
   const search = page.locator(isMobile ? '#hub-search' : '#rail-search');
   await search.fill('river');

@@ -19,6 +19,12 @@ All educational text lives in `src/content/`:
   away and a fact shown once it is solved. Guesses are checked against a general word list
   in `games/eco-word/dictionary.ts`, which is not content.
 - `turtles.ts`: Turtle Trek's beach rubbish, ghost crab, beach light and sea turtle facts
+- `footprint.ts`: Greener Choice's pairs of everyday choices. Only compare choices with a
+  big, well-established gap (the train against a short flight, beans against beef), and
+  explain why in words rather than numbers.
+- `city.ts`: Green City's buildings, each with its scoring rule and a fact
+- `mangroves.ts`: Mangrove Guard's two mangrove species (api-api and bakau), the rubbish
+  and sea life shown in the game, and mangrove facts
 
 Each of these has its own checks in `src/content/<file>.test.ts`.
 

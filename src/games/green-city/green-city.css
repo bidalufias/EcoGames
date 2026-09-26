@@ -1,0 +1,328 @@
+.city {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  grid-template-areas: 'stage panel';
+  gap: 20px;
+  width: 100%;
+  max-width: 1040px;
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+}
+.city-stats,
+.city-hud__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.city-hud__actions {
+  gap: 2px;
+}
+.city-score svg {
+  color: var(--leaf);
+}
+
+/* ---------- The board: JS sizes the square cells to fit the stage ---------- */
+.city-stage {
+  grid-area: stage;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+.city-board {
+  --n: 5;
+  --cell: 80px;
+  --gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(var(--n), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+  padding: var(--gap);
+  border-radius: calc(var(--cell) * 0.14 + var(--gap));
+  background: color-mix(in srgb, var(--leaf) 20%, var(--surface-3));
+}
+.city-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px dashed color-mix(in srgb, var(--leaf) 30%, var(--line));
+  border-radius: calc(var(--cell) * 0.14);
+  background: color-mix(in srgb, var(--leaf) 7%, var(--surface-2));
+  touch-action: manipulation;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.city-cell:hover:not(.is-built),
+.city-cell.is-preview {
+  border-color: var(--leaf);
+  background: color-mix(in srgb, var(--leaf) 14%, var(--surface));
+}
+.city-cell.is-built {
+  border: 0;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  cursor: default;
+}
+.city-cell[data-kind='home'] {
+  background: color-mix(in srgb, var(--sun) 12%, var(--surface));
+}
+.city-cell[data-kind='park'] {
+  background: color-mix(in srgb, var(--leaf) 16%, var(--surface));
+}
+.city-cell[data-kind='shop'] {
+  background: color-mix(in srgb, var(--coral) 10%, var(--surface));
+}
+.city-cell[data-kind='station'] {
+  background: color-mix(in srgb, var(--sky) 12%, var(--surface));
+}
+.city-cell[data-kind='solar'] {
+  background: color-mix(in srgb, var(--sun) 22%, var(--surface));
+}
+.city-cell[data-kind='factory'] {
+  background: var(--surface-3);
+}
+.city-cell__art,
+.city-ghost {
+  display: grid;
+  place-items: center;
+}
+.city-cell__art img,
+.city-ghost img {
+  display: block;
+  width: calc(var(--cell) * 0.66);
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgb(16 24 40 / 0.14));
+}
+.city-cell.is-new .city-cell__art {
+  animation: city-pop 0.35s var(--ease);
+}
+@keyframes city-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Points badges: each building's points, and the preview's change to the score. */
+.city-cell__points,
+.city-change,
+.city-float,
+.city-ghost__delta {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+}
+.city-cell__points {
+  right: 4px;
+  bottom: 4px;
+}
+.city-change {
+  top: 4px;
+  right: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.city-up {
+  background: var(--good);
+  color: var(--on-accent);
+}
+.city-down {
+  background: var(--bad);
+  color: var(--on-accent);
+}
+.city-cell__points.city-up {
+  background: color-mix(in srgb, var(--good) 16%, var(--surface));
+  color: var(--good);
+}
+.city-cell__points.city-down {
+  background: color-mix(in srgb, var(--bad) 14%, var(--surface));
+  color: var(--bad);
+}
+.city-ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.city-ghost img {
+  opacity: 0.5;
+}
+.city-ghost__delta {
+  top: 50%;
+  left: 50%;
+  min-width: 34px;
+  height: 26px;
+  font-size: var(--text-sm);
+  transform: translate(-50%, -50%);
+  box-shadow: var(--shadow);
+}
+.city-float {
+  top: 4px;
+  right: 4px;
+  animation: city-float 0.9s var(--ease) forwards;
+}
+@keyframes city-float {
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+/* ---------- The two buildings on offer ---------- */
+.city-panel {
+  grid-area: panel;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: 0;
+}
+.city-panel__title {
+  font-size: var(--text-md);
+  font-weight: 750;
+}
+.city-offers {
+  display: grid;
+  gap: 10px;
+}
+.city-offer {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: left;
+  touch-action: manipulation;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+.city-offer:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+.city-offer.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.city-offer__key {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.city-offer__art img {
+  display: block;
+  width: 52px;
+  height: 52px;
+}
+.city-offer__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.city-offer__name {
+  font-weight: 750;
+}
+.city-offer__rule {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+.city-hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* Phones: the two buildings sit side by side above the board. */
+@media (max-width: 640px) {
+  .city {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: 'panel' 'stage';
+    gap: 10px;
+  }
+  .city-panel {
+    gap: 6px;
+  }
+  .city-panel__title,
+  .city-offer__key {
+    display: none;
+  }
+  .city-offers {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .city-offer {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 2px;
+    min-height: 0;
+    padding: 6px 6px 8px;
+    text-align: center;
+  }
+  .city-offer__art img {
+    width: 36px;
+    height: 36px;
+  }
+  .city-offer__rule {
+    font-size: var(--text-xs);
+    line-height: 1.3;
+  }
+  .city-hint {
+    font-size: var(--text-xs);
+    text-align: center;
+  }
+}
+/* Landscape phones: a narrow panel beside the board. */
+@media (max-height: 500px) and (min-width: 641px) {
+  .city {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 260px);
+    gap: 12px;
+  }
+  .city-panel {
+    gap: 6px;
+  }
+  .city-panel__title,
+  .city-hint {
+    display: none;
+  }
+  .city-offer {
+    min-height: 0;
+    gap: 8px;
+    padding: 6px 10px;
+  }
+  .city-offer__art img {
+    width: 36px;
+    height: 36px;
+  }
+  .city-offer__rule {
+    font-size: var(--text-xs);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-float {
+    animation: none;
+  }
+}

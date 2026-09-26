@@ -2,7 +2,14 @@ import { CONCEPTS } from '../content/concepts';
 import { h, prefersReducedMotion } from '../core/dom';
 import { getBest, recentGames } from '../core/storage';
 import type { CategoryId, GameDefinition } from '../core/types';
-import { CATEGORIES, GAMES, findCategory, findGame, searchGames } from '../games/registry';
+import {
+  CATEGORIES,
+  GAMES,
+  featuredGames,
+  findCategory,
+  findGame,
+  searchGames,
+} from '../games/registry';
 import { gameArt } from './art';
 import { icon } from './icons';
 
@@ -32,9 +39,10 @@ export function gameTile(game: GameDefinition, size: 'md' | 'sm' = 'md'): HTMLEl
       class: `tile tile--${size} accent-${game.accent}`,
       href: `#/play/${game.id}`,
       'data-game': game.id,
-      'aria-label': `${game.title}, ${categoryLabel(game.category)}`,
+      'aria-label': `${game.title}, ${categoryLabel(game.category)}${game.isNew ? ', new' : ''}`,
     },
     gameArt(game),
+    game.isNew && h('span', { class: 'tile__new' }, 'New'),
     best !== null &&
       size === 'md' &&
       h(
@@ -74,6 +82,7 @@ function carousel(games: readonly GameDefinition[]): HubView {
           h(
             'span',
             { class: 'carousel__meta' },
+            game.isNew && h('span', { class: 'carousel__new' }, 'New'),
             `${categoryLabel(game.category)} · ${game.minutes}`,
           ),
         ),
@@ -267,7 +276,9 @@ export function renderHub(opts: HubOptions = {}): HubView {
 
   // MSN Play style: the carousel features a few games and the grid beside it shows
   // the next few, so the top of the page shows as many different games as it can.
-  const featured = carousel(GAMES.slice(0, FEATURED));
+  // New games come first.
+  const order = featuredGames();
+  const featured = carousel(order.slice(0, FEATURED));
   const recent = recentGames()
     .map(findGame)
     .filter((g): g is GameDefinition => !!g);
@@ -288,7 +299,7 @@ export function renderHub(opts: HubOptions = {}): HubView {
       h(
         'div',
         { class: 'featured__grid' },
-        ...GAMES.slice(FEATURED, FEATURED + 3).map((g) => gameTile(g)),
+        ...order.slice(FEATURED, FEATURED + 3).map((g) => gameTile(g)),
         factTile(),
       ),
     ),

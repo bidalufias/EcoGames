@@ -1,0 +1,318 @@
+.choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 2vh, 16px);
+  width: 100%;
+  max-width: 860px;
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+}
+.choice-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.choice-streak {
+  background: var(--sun-soft);
+}
+.choice-streak svg {
+  color: var(--coral);
+}
+.choice-progress,
+.choice-timer {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.choice-progress__bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+
+.choice-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.choice-topic {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.choice-prompt {
+  font-size: clamp(1.125rem, 2.6vw, 1.5rem);
+  font-weight: 750;
+  line-height: 1.25;
+}
+.choice-prompt:focus {
+  outline: none;
+}
+.choice-timer {
+  width: min(320px, 70%);
+}
+.choice-timer[hidden] {
+  display: none;
+}
+.choice-timer__bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--leaf);
+  transform-origin: left;
+}
+.choice-timer.is-low .choice-timer__bar {
+  background: var(--coral);
+}
+
+/* ---------- The two choices ---------- */
+.choice-cards {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(8px, 2vw, 18px);
+  max-height: 420px;
+}
+.choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vh, 16px);
+  min-width: 0;
+  min-height: 0;
+  padding: 16px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  touch-action: manipulation;
+  container-type: size;
+  animation: choice-in 0.35s var(--ease) both;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    opacity 0.2s,
+    transform 0.15s var(--ease);
+}
+.choice-card[data-side='1'] {
+  animation-delay: 0.06s;
+}
+@keyframes choice-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.choice-card:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-2px);
+}
+.choice-card:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.choice-card:disabled {
+  cursor: default;
+}
+.choice-card__key {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.choice-card__art img {
+  display: block;
+  width: min(190px, 70cqw, 45cqh);
+  height: auto;
+  filter: drop-shadow(0 8px 10px rgb(16 24 40 / 0.14));
+}
+.choice-card__name {
+  font-size: clamp(0.9375rem, 2.2vw, 1.1875rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+.choice-or {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 750;
+}
+
+.choice-cards.is-answered .choice-card:not(.is-greener, .is-wrong) {
+  opacity: 0.5;
+}
+.choice-card.is-greener {
+  border-color: var(--good);
+  background: color-mix(in srgb, var(--good) 10%, var(--surface));
+}
+.choice-card.is-wrong {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 8%, var(--surface));
+  animation: choice-shake 0.35s;
+}
+@keyframes choice-shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.choice-card__tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--good);
+  color: var(--on-accent);
+  font-size: var(--text-xs);
+  font-weight: 750;
+  animation: choice-pop 0.3s var(--ease);
+}
+@keyframes choice-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* ---------- Why (after each answer) ---------- */
+.choice-feedback {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  animation: choice-in 0.3s var(--ease);
+}
+.choice-feedback[hidden] {
+  display: none;
+}
+.choice-feedback__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 750;
+}
+.choice-feedback__title svg {
+  flex: none;
+}
+.choice-feedback__text {
+  grid-column: 1;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.choice-feedback .btn {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+.choice-feedback.is-correct .choice-feedback__title svg {
+  color: var(--good);
+}
+.choice-feedback.is-wrong .choice-feedback__title svg {
+  color: var(--bad);
+}
+
+/* Phones and landscape phones: smaller cards without key hints. */
+@media (max-width: 640px), (max-height: 500px) {
+  .choice-card {
+    padding: 12px 8px;
+  }
+  .choice-card__key {
+    display: none;
+  }
+  .choice-card__tag {
+    top: 6px;
+    right: 6px;
+    padding: 2px 8px;
+  }
+  .choice-or {
+    width: 30px;
+    height: 30px;
+    font-size: var(--text-xs);
+  }
+}
+/* Phones: the explanation stacks above a full-width Next button within thumb reach.
+   The cards shrink to make room, so their names stay visible. */
+@media (max-width: 640px) {
+  .choice-feedback {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 12px 14px;
+  }
+  .choice-feedback .btn {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+/* Landscape phones: short on height, so the picture sits beside the name and the
+   topic label is left out. */
+@media (max-height: 500px) {
+  .choice {
+    gap: 8px;
+  }
+  .choice-topic {
+    display: none;
+  }
+  .choice-prompt {
+    font-size: var(--text-md);
+  }
+  .choice-card {
+    flex-direction: row;
+    gap: 12px;
+    text-align: left;
+  }
+  .choice-card__art img {
+    width: min(96px, 30cqw, 70cqh);
+  }
+  .choice-feedback {
+    padding: 10px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice-card,
+  .choice-card.is-wrong,
+  .choice-card__tag,
+  .choice-feedback {
+    animation: none;
+  }
+}
