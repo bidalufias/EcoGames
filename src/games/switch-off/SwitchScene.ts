@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { APPLIANCES, FAMILY, PLAYER, ROOMS, type RoomId } from '../../content/energy';
 import { seededRng } from '../../core/random';
 import { imageUrl } from '../../ui/images';
+import { DARK_HOUSE, HouseArt, LIGHT_HOUSE, type HousePalette } from './HouseArt';
 import {
   HouseDay,
   type Dir,
@@ -11,6 +12,7 @@ import {
   type Tile,
   type Walker,
 } from './logic';
+import { FRAME_H, FRAME_W, LOOKS, drawSheet, frameName, sheetFrames, type Facing } from './sprites';
 
 export interface SwitchHooks {
   onChange: (day: HouseDay) => void;
@@ -19,15 +21,14 @@ export interface SwitchHooks {
 }
 
 interface Palette {
-  floors: Record<RoomId, number>;
-  wall: number;
+  house: HousePalette;
   shade: number;
   shadeAlpha: number;
   glow: number;
   waste: number;
   player: number;
-  /** Text on the room nameplates, which sit on the wall. */
-  plate: string;
+  /** Room names written on the floor. */
+  label: string;
   good: string;
   bad: string;
   bubble: string;
@@ -36,14 +37,13 @@ interface Palette {
 }
 
 const LIGHT: Palette = {
-  floors: { bedroom: 0xe6f0fb, living: 0xfbf1de, kitchen: 0xe9f5e4, bathroom: 0xdff3f4 },
-  wall: 0x3a4350,
+  house: LIGHT_HOUSE,
   shade: 0x0b1530,
-  shadeAlpha: 0.1,
+  shadeAlpha: 0.12,
   glow: 0xffd24a,
   waste: 0xe0573f,
   player: 0x0079c2,
-  plate: '#ffffff',
+  label: '#8a7458',
   good: '#1f8a4c',
   bad: '#cf3e2a',
   bubble: '#ffffff',
@@ -52,20 +52,29 @@ const LIGHT: Palette = {
 };
 
 const DARK: Palette = {
-  floors: { bedroom: 0x1c2835, living: 0x2c261c, kitchen: 0x1d2a1f, bathroom: 0x192b2d },
-  wall: 0x8793a0,
+  house: DARK_HOUSE,
   shade: 0x000000,
-  shadeAlpha: 0.25,
+  shadeAlpha: 0.28,
   glow: 0xf2bf4f,
   waste: 0xf07f69,
   player: 0x4aa8ea,
-  plate: '#111417',
+  label: '#b3a48f',
   good: '#4cc184',
   bad: '#f07f69',
   bubble: '#f3f1e8',
   bubbleInk: '#16191d',
   textStroke: '#0d1117',
 };
+
+/** Sprite sheets are drawn at this many pixels per sprite unit (see sprites.ts). */
+const SPRITE_PIXELS = 5;
+/** Appliance pictures, in tiles. */
+const ICON = 0.9;
+/** Where feet stand, below the middle of a tile, in tiles. */
+const FEET = 0.3;
+
+/** Screen directions for plan directions when the plan is on its side (x and y swap). */
+const SWAP: Record<Dir, Dir> = { up: 'left', down: 'right', left: 'up', right: 'down' };
 
 const FONT = '"Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif';
 
@@ -93,10 +102,13 @@ interface ApplianceView {
 interface WalkerView {
   walker: Walker;
   box: Phaser.GameObjects.Container;
-  img: Phaser.GameObjects.Image;
+  sprite: Phaser.GameObjects.Image;
+  /** Height compared with a grown-up. */
+  scale: number;
   shadow: Phaser.GameObjects.Ellipse;
   label: Phaser.GameObjects.Text;
   marker?: Phaser.GameObjects.Ellipse;
+  frame: string;
   phase: number;
 }
 
@@ -117,8 +129,12 @@ export class SwitchScene extends Phaser.Scene {
   private floor!: Phaser.GameObjects.Graphics;
   private shade!: Phaser.GameObjects.Graphics;
   private walls!: Phaser.GameObjects.Graphics;
-  private labels: Phaser.GameObjects.Text[] = [];
-  private furniture: { room: RoomId; img: Phaser.GameObjects.Image }[] = [];
+  private art!: HouseArt;
+  private labels: {
+    room: RoomId;
+    name: Phaser.GameObjects.Text;
+    malay: Phaser.GameObjects.Text;
+  }[] = [];
   private appliances: ApplianceView[] = [];
   private walkers: WalkerView[] = [];
   private shadedRooms = '';
@@ -176,41 +192,48 @@ export class SwitchScene extends Phaser.Scene {
   }
 
   preload(): void {
-    const images = new Set([
-      ...APPLIANCES.map((a) => a.image),
-      ...ROOMS.map((r) => r.image),
-      ...FAMILY.map((f) => f.image),
-      PLAYER.image,
-    ]);
-    for (const name of images) this.load.image(`img-${name}`, imageUrl(name));
+    for (const name of new Set(APPLIANCES.map((a) => a.image))) {
+      this.load.image(`img-${name}`, imageUrl(name));
+    }
+  }
+
+  /** Draws each character's walking sprite sheet into a texture. */
+  private makeSprites(): void {
+    for (const member of [...FAMILY, PLAYER]) {
+      const key = `walker-${member.name}`;
+      if (this.textures.exists(key)) continue;
+      const look = LOOKS[member.name] ?? LOOKS.You!;
+      const texture = this.textures.addCanvas(key, drawSheet(look, SPRITE_PIXELS));
+      for (const f of sheetFrames(SPRITE_PIXELS)) texture?.add(f.name, 0, f.x, f.y, f.w, f.h);
+    }
   }
 
   create(): void {
     const p = this.palette;
-    this.floor = this.add.graphics();
-    this.shade = this.add.graphics();
-    this.walls = this.add.graphics();
+    this.makeSprites();
+    this.floor = this.add.graphics().setDepth(0);
+    this.shade = this.add.graphics().setDepth(1);
+    this.walls = this.add.graphics().setDepth(2);
+    this.art = new HouseArt(this.floor, this.walls, this.day.plan, p.house, this.planView());
     for (const room of ROOMS) {
-      this.labels.push(
-        this.add
-          .text(0, 0, room.name, {
-            fontFamily: FONT,
-            fontStyle: '700',
-            color: p.plate,
-            backgroundColor: `#${p.wall.toString(16).padStart(6, '0')}`,
-          })
-          .setOrigin(0.5),
-      );
-      this.furniture.push({
+      const style = { fontFamily: FONT, color: p.label };
+      this.labels.push({
         room: room.id,
-        img: this.add.image(0, 0, `img-${room.image}`).setAlpha(0.95),
+        name: this.add
+          .text(0, 0, room.name.toUpperCase(), { ...style, fontStyle: '800' })
+          .setOrigin(0.5, 1)
+          .setDepth(3),
+        malay: this.add
+          .text(0, 0, room.malay, { ...style, fontStyle: 'italic 600' })
+          .setOrigin(0.5, 0)
+          .setDepth(3),
       });
     }
     for (const a of APPLIANCES) {
-      const glow = this.add.ellipse(0, 0, 10, 10, p.glow, 0.45);
-      const ring = this.add.ellipse(0, 0, 10, 10).setStrokeStyle(3, p.waste, 1);
-      const reach = this.add.ellipse(0, 0, 10, 10).setStrokeStyle(3, p.player, 1);
-      const img = this.add.image(0, 0, `img-${a.image}`);
+      const glow = this.add.ellipse(0, 0, 10, 10, p.glow, 0.5).setDepth(4);
+      const ring = this.add.ellipse(0, 0, 10, 10).setStrokeStyle(3, p.waste, 1).setDepth(4);
+      const reach = this.add.ellipse(0, 0, 10, 10).setStrokeStyle(3, p.player, 1).setDepth(4);
+      const img = this.add.image(0, 0, `img-${a.image}`).setDepth(4);
       this.appliances.push({ id: a.id, room: a.room, glow, ring, reach, img, state: '' });
       if (!this.opts.reducedMotion) {
         this.tweens.add({
@@ -286,16 +309,25 @@ export class SwitchScene extends Phaser.Scene {
 
   // ---------- Drawing ----------
 
+  private planView() {
+    return {
+      point: (x: number, y: number) => this.toScreen(x, y),
+      t: this.t,
+      portrait: this.portrait,
+    };
+  }
+
   private buildWalkers(): void {
     for (const w of this.walkers) w.box.destroy();
     const p = this.palette;
     const all: Walker[] = [...this.day.people, this.day.player];
     this.walkers = all.map((walker, i) => {
       const isPlayer = walker === this.day.player;
-      const shadow = this.add.ellipse(0, 0, 10, 4, 0x000000, 0.18);
-      const marker = isPlayer ? this.add.ellipse(0, 0, 10, 5, p.player, 0.35) : undefined;
+      const shadow = this.add.ellipse(0, 0, 10, 4, 0x000000, 0.2);
+      const marker = isPlayer ? this.add.ellipse(0, 0, 10, 5, p.player, 0.3) : undefined;
       if (marker) marker.setStrokeStyle(2, p.player, 1);
-      const img = this.add.image(0, 0, `img-${walker.member.image}`);
+      const frame = frameName('down', 0);
+      const sprite = this.add.image(0, 0, `walker-${walker.name}`, frame).setOrigin(0.5, 1);
       const label = this.add
         .text(0, 0, walker.name, {
           fontFamily: FONT,
@@ -305,17 +337,18 @@ export class SwitchScene extends Phaser.Scene {
           padding: { x: 4, y: 1 },
         })
         .setOrigin(0.5, 0);
-      const parts = [shadow, ...(marker ? [marker] : []), img, label];
+      const parts = [shadow, ...(marker ? [marker] : []), sprite, label];
       const box = this.add.container(0, 0, parts);
-      return { walker, box, img, shadow, label, marker, phase: i * 1.7 };
+      const scale = (LOOKS[walker.name] ?? LOOKS.You!).scale;
+      return { walker, box, sprite, scale, shadow, label, marker, frame, phase: i * 170 };
     });
   }
 
-  /** A room's box on screen, out to the middle of its walls. */
+  /** A room's floor on screen, out to the middle of its walls. */
   private roomRect(room: RoomId): Phaser.Geom.Rectangle {
-    const b = this.day.plan.roomBounds(room);
-    const a = this.toScreen(b.x0 - 1, b.y0 - 1);
-    const c = this.toScreen(b.x1 + 1, b.y1 + 1);
+    const b = this.art.areaBox(room);
+    const a = this.toScreen(b.x0, b.y0);
+    const c = this.toScreen(b.x1, b.y1);
     return new Phaser.Geom.Rectangle(
       Math.min(a.x, c.x),
       Math.min(a.y, c.y),
@@ -327,96 +360,73 @@ export class SwitchScene extends Phaser.Scene {
   private layout(): void {
     const { t, palette: p, day } = this;
     const plan = day.plan;
-    const g = this.floor;
-    g.clear();
+    this.art = new HouseArt(this.floor, this.walls, plan, p.house, this.planView());
+    this.art.draw();
 
-    for (const room of ROOMS) {
-      const r = this.roomRect(room.id);
-      g.fillStyle(p.floors[room.id], 1);
-      g.fillRect(r.x, r.y, r.width, r.height);
-    }
-    // Walls: thin lines through the middle of the wall tiles.
-    const wall = Math.max(3, t * 0.22);
-    const wg = this.walls;
-    wg.clear();
-    wg.fillStyle(p.wall, 1);
-    for (let y = 0; y < plan.height; y++)
-      for (let x = 0; x < plan.width; x++) {
-        if (!plan.isWall({ x, y })) continue;
-        const c = this.toScreen(x, y);
-        wg.fillRect(c.x - wall / 2, c.y - wall / 2, wall, wall);
-        for (const [dx, dy] of [
-          [1, 0],
-          [0, 1],
-        ] as const) {
-          const n = { x: x + dx, y: y + dy };
-          if (!plan.inBounds(n) || !plan.isWall(n)) continue;
-          const e = this.toScreen(n.x, n.y);
-          wg.fillRect(
-            Math.min(c.x, e.x) - wall / 2,
-            Math.min(c.y, e.y) - wall / 2,
-            Math.abs(e.x - c.x) + wall,
-            Math.abs(e.y - c.y) + wall,
-          );
-        }
-      }
-
-    // Room names on nameplates on the outside walls, where they never cover anything.
-    const houseTop = this.toScreen(0, 0).y;
-    ROOMS.forEach((room, i) => {
-      const r = this.roomRect(room.id);
-      const onTop = Math.abs(r.y - houseTop) < 1;
-      const size = this.font(0.34, 10);
-      this.labels[i]!.setText(r.width < t * 5 ? room.shortName : room.name)
-        .setFontSize(size)
-        .setPadding(Math.round(size * 0.5), Math.round(size * 0.15))
-        .setPosition(r.centerX, onTop ? r.y : r.bottom);
-    });
-    for (const f of this.furniture) {
-      const at = plan.furnitureTiles[f.room];
+    // Room names written on the floor, like an architect's plan, with the Malay name
+    // underneath when there is room.
+    const size = this.font(0.3, 9);
+    const showMalay = t >= 40 * this.opts.pixelRatio;
+    for (const l of this.labels) {
+      const room = ROOMS.find((r) => r.id === l.room)!;
+      const at = plan.layout.labels[l.room];
       const c = this.toScreen(at.x, at.y);
-      f.img.setPosition(c.x, c.y).setDisplaySize(t * 1.35, t * 1.35);
+      const width = this.roomRect(l.room).width;
+      l.name
+        .setFontSize(size)
+        .setLetterSpacing(Math.round(size * 0.12))
+        .setText(room.name.toUpperCase());
+      if (l.name.width > width * 0.9) l.name.setText(room.shortName.toUpperCase());
+      l.name.setPosition(c.x, showMalay ? c.y : c.y + size / 2);
+      l.malay
+        .setFontSize(Math.round(size * 0.8))
+        .setPosition(c.x, c.y + size * 0.1)
+        .setVisible(showMalay);
     }
     for (const v of this.appliances) {
       const at = plan.applianceTiles[v.id]!;
       const c = this.toScreen(at.x, at.y);
-      const size = t * 1.05;
-      v.img.setPosition(c.x, c.y).setDisplaySize(size, size);
-      v.glow.setPosition(c.x, c.y).setSize(t * 1.5, t * 1.5);
-      v.ring.setPosition(c.x, c.y).setSize(t * 1.35, t * 1.35);
+      v.img.setPosition(c.x, c.y).setDisplaySize(t * ICON, t * ICON);
+      v.glow.setPosition(c.x, c.y).setSize(t * 1.25, t * 1.25);
+      v.ring.setPosition(c.x, c.y).setSize(t * 1.15, t * 1.15);
       v.ring.setStrokeStyle(Math.max(2, t * 0.08), p.waste, 1);
-      v.reach.setPosition(c.x, c.y).setSize(t * 1.55, t * 1.55);
+      v.reach.setPosition(c.x, c.y).setSize(t * 1.35, t * 1.35);
       v.reach.setStrokeStyle(Math.max(2, t * 0.07), p.player, 1);
       v.state = '';
     }
     for (const w of this.walkers) {
       const isPlayer = w.walker === day.player;
-      w.img.setDisplaySize(t * 1.15, t * 1.15);
-      w.shadow.setSize(t * 0.8, t * 0.26).setPosition(0, t * 0.5);
-      w.marker?.setSize(t * 1.1, t * 0.42).setPosition(0, t * 0.5);
+      const h = t * 1.5 * w.scale;
+      w.sprite.setDisplaySize((h * FRAME_W) / FRAME_H, h).setPosition(0, t * FEET);
+      w.shadow.setSize(t * 0.62 * w.scale, t * 0.22).setPosition(0, t * FEET);
+      w.marker?.setSize(t * 0.95, t * 0.36).setPosition(0, t * FEET);
       // Names only when there is room for them; the player always gets a "You" tag.
       const showName = isPlayer || t >= 30 * this.opts.pixelRatio;
       w.label
         .setVisible(showName)
         .setFontSize(this.font(0.27, 9))
-        .setPosition(0, t * 0.55);
+        .setPosition(0, t * (FEET + 0.08));
     }
     this.shadedRooms = '';
   }
 
   private syncWalkers(time: number): void {
-    const t = this.t;
     for (const w of this.walkers) {
       const c = this.toScreen(w.walker.x, w.walker.y);
       w.box.setPosition(c.x, c.y);
-      w.box.setDepth(10 + c.y / 1000);
-      const bob =
-        w.walker.moving && !this.opts.reducedMotion
-          ? Math.abs(Math.sin(time / 90 + w.phase)) * t * 0.14
-          : 0;
-      w.img.setPosition(0, -t * 0.1 - bob);
-      w.img.setFlipX(w.walker.facing < 0);
-      w.img.setAngle(w.walker.moving && !this.opts.reducedMotion ? Math.sin(time / 90) * 4 : 0);
+      w.box.setDepth(10 + c.y / 10000);
+      // Walk cycle: stand, left foot, stand, right foot; quicker for quicker walkers.
+      const dir = this.portrait ? SWAP[w.walker.dir] : w.walker.dir;
+      const facing: Facing = dir === 'left' || dir === 'right' ? 'side' : dir;
+      const frameMs = 400 / w.walker.speed;
+      const walking = w.walker.moving && !this.opts.reducedMotion;
+      const step = walking ? ([1, 0, 2, 0][Math.floor((time + w.phase) / frameMs) % 4] ?? 0) : 0;
+      const frame = frameName(facing, step);
+      if (frame !== w.frame) {
+        w.frame = frame;
+        w.sprite.setFrame(frame, false, false);
+      }
+      w.sprite.setFlipX(dir === 'left');
     }
   }
 
@@ -521,7 +531,7 @@ export class SwitchScene extends Phaser.Scene {
   private pop(id: string): void {
     const v = this.appliances.find((a) => a.id === id);
     if (!v || this.opts.reducedMotion) return;
-    const size = this.t * 1.05;
+    const size = this.t * ICON;
     this.tweens.add({
       targets: v.img,
       displayWidth: size * 1.25,

@@ -107,8 +107,14 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
   (`gameArt()` composes a game's `image` and `art` images), and anything the player
   looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
-  appliances, furniture and characters, and Solar Link's farm and homes. Keep to this one set so everything shares a style; see the README in
-  `src/assets/3d` to add one.
+  appliances, and Solar Link's farm and homes. Keep to this one set so everything shares a
+  style; see the README in `src/assets/3d` to add one.
+- **Drawn art** is the one exception: Switch Off!'s house is drawn in code as an
+  architect's floor plan (`HouseArt.ts`: wood and tile floors, solid walls, windows, doors
+  with their swing, and furniture from above), and its people are top-down walking sprites
+  drawn on a canvas (`sprites.ts`: facing down, up and sideways, with a step for each foot).
+  Both take their colours from a light and a dark palette. The appliances on the plan stay
+  3D images, so the things you tap match the rest of the site.
 
 ## Motion
 

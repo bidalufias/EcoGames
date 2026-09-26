@@ -49,7 +49,8 @@ docs/                    # DESIGN.md (visual system), CONTENT.md (fact-checking 
 - **Icons and images:** UI chrome (buttons, stats, bins, categories) uses Lucide icons,
   registered by name in `src/ui/icons.ts`. Game art (cover art, waste items, memory
   cards) uses the 3D images in `src/assets/3d`, registered in `src/ui/images.ts`. Don't
-  mix in other image styles. For Phaser, load icons with `iconDataUrl()` (base64; the
+  mix in other image styles. The one exception is Switch Off!'s house and people, which are
+  drawn in code (see `docs/DESIGN.md`). For Phaser, load icons with `iconDataUrl()` (base64; the
   loader rejects other data URLs) and images with `load.image(key, imageUrl(name))`.
 - **Accessibility is required.** Every game must be playable by keyboard as well as
   touch/mouse. Announce outcomes with `ctx.announce`, respect `prefers-reduced-motion`,

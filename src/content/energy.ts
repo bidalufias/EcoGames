@@ -10,9 +10,8 @@ export interface Room {
   name: string;
   /** Label used on narrow phone screens. */
   shortName: string;
-  /** The Malay name for the room. */
+  /** The Malay name for the room, written under its name on the floor plan. */
   malay: string;
-  image: ImageName;
 }
 
 export interface Appliance {
@@ -27,10 +26,10 @@ export interface Appliance {
 }
 
 export const ROOMS: readonly Room[] = [
-  { id: 'bedroom', name: 'Bedroom', shortName: 'Bedroom', malay: 'bilik tidur', image: 'bed' },
-  { id: 'living', name: 'Living room', shortName: 'Living', malay: 'ruang tamu', image: 'couch' },
-  { id: 'kitchen', name: 'Kitchen', shortName: 'Kitchen', malay: 'dapur', image: 'frying-pan' },
-  { id: 'bathroom', name: 'Bathroom', shortName: 'Bath', malay: 'bilik air', image: 'bathtub' },
+  { id: 'bedroom', name: 'Bedroom', shortName: 'Bedroom', malay: 'bilik tidur' },
+  { id: 'living', name: 'Living room', shortName: 'Living', malay: 'ruang tamu' },
+  { id: 'kitchen', name: 'Kitchen', shortName: 'Kitchen', malay: 'dapur' },
+  { id: 'bathroom', name: 'Bathroom', shortName: 'Bath', malay: 'bilik air' },
 ];
 
 const LIGHT_TIP =
@@ -122,21 +121,20 @@ export const APPLIANCES: readonly Appliance[] = [
 ];
 
 export interface FamilyMember {
-  /** What the family calls them: Malay family titles. */
+  /** What the family calls them: Malay family titles. Their sprites are in games/switch-off/sprites.ts. */
   name: string;
-  image: ImageName;
 }
 
 /** The family who walk around the house switching things on, in the order levels add them. */
 export const FAMILY: readonly FamilyMember[] = [
-  { name: 'Adik', image: 'child' },
-  { name: 'Ibu', image: 'woman-headscarf' },
-  { name: 'Abang', image: 'boy' },
-  { name: 'Atuk', image: 'grandpa' },
+  { name: 'Adik' },
+  { name: 'Ibu' },
+  { name: 'Abang' },
+  { name: 'Atuk' },
 ];
 
 /** The player's character. */
-export const PLAYER: FamilyMember = { name: 'You', image: 'superhero' };
+export const PLAYER: FamilyMember = { name: 'You' };
 
 /** General energy tips, used when the player met no appliance tips. */
 export const ENERGY_TIPS: readonly { term: string; detail: string }[] = [
