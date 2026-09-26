@@ -51,9 +51,19 @@ function parkEveryone(d: HouseDay): void {
 }
 
 describe('floor plan', () => {
-  it('has four rooms joined by doorways', () => {
+  it('has four rooms and a hallway joined by doorways', () => {
     expect(plan.doors).toHaveLength(4);
-    for (const r of ROOMS) expect(plan.roomTiles(r.id).length, r.id).toBeGreaterThan(20);
+    for (const r of ROOMS) expect(plan.roomTiles(r.id).length, r.id).toBeGreaterThanOrEqual(8);
+    expect(plan.areaAt(plan.start)).toBe('hall');
+    expect(plan.roomAt(plan.start)).toBeNull();
+  });
+
+  it('lets you walk from the start to every bit of floor', () => {
+    for (let y = 0; y < plan.height; y++)
+      for (let x = 0; x < plan.width; x++) {
+        const t = { x, y };
+        if (plan.isWalkable(t)) expect(plan.path(plan.start, t), key(t)).not.toBeNull();
+      }
   });
 
   it('puts every appliance and piece of furniture inside its own room', () => {
@@ -66,7 +76,10 @@ describe('floor plan', () => {
       expect(plan.roomAt(spot), a.id).toBe(a.room);
       expect(Math.abs(spot.x - at.x) + Math.abs(spot.y - at.y), a.id).toBe(1);
     }
-    for (const r of ROOMS) expect(plan.roomAt(plan.furnitureTiles[r.id])).toBe(r.id);
+    for (const f of plan.furniture) {
+      const corner = { x: Math.round(f.x), y: Math.round(f.y) };
+      expect(plan.areaAt(corner), `${f.kind} at ${key(f)}`).not.toBeNull();
+    }
   });
 
   it('keeps the tiles either side of every doorway free', () => {
@@ -76,7 +89,7 @@ describe('floor plan', () => {
         { x: d.x + 1, y: d.y },
         { x: d.x, y: d.y - 1 },
         { x: d.x, y: d.y + 1 },
-      ].filter((t) => plan.roomAt(t) !== null);
+      ].filter((t) => !plan.isWall(t));
       expect(sides).toHaveLength(2);
       for (const t of sides) expect(plan.isWalkable(t), key(t)).toBe(true);
     }
@@ -101,9 +114,9 @@ describe('floor plan', () => {
   });
 
   it('cannot walk into walls or furniture', () => {
-    expect(plan.path({ x: 1, y: 1 }, { x: 0, y: 0 })).toBeNull();
-    expect(plan.path({ x: 1, y: 1 }, plan.furnitureTiles.bedroom)).toBeNull();
-    expect(plan.path({ x: 1, y: 1 }, { x: 1, y: 1 })).toEqual([]);
+    expect(plan.path({ x: 1, y: 2 }, { x: 0, y: 2 })).toBeNull();
+    expect(plan.path({ x: 1, y: 2 }, { x: 2, y: 1 })).toBeNull(); // the bed
+    expect(plan.path({ x: 1, y: 2 }, { x: 1, y: 2 })).toEqual([]);
   });
 
   it('snaps taps on walls to the nearest floor', () => {
@@ -125,7 +138,7 @@ describe('Walker', () => {
     expect(w.advance(1000)).toBe(true);
     expect({ x: w.x, y: w.y }).toEqual({ x: 3, y: 1 });
     expect(w.moving).toBe(false);
-    expect(w.facing).toBe(1);
+    expect(w.dir).toBe('right');
   });
 
   it('goes back to the middle of its tile before turning, so it never cuts a corner', () => {
@@ -139,7 +152,7 @@ describe('Walker', () => {
     expect(w.y).toBe(2);
     w.advance(1000);
     expect({ x: w.x, y: w.y }).toEqual({ x: 2, y: 3 });
-    expect(w.facing).toBe(-1);
+    expect(w.dir).toBe('down');
   });
 });
 
@@ -153,7 +166,7 @@ describe('HouseDay setup', () => {
     if (d.people.length < ROOMS.length) {
       expect(d.appliances.some((a) => d.isWasted(a))).toBe(true);
     }
-    expect(d.player.tile).toEqual(plan.doors[0]);
+    expect(d.player.tile).toEqual(plan.start);
   });
 
   it('is deterministic for a seed', () => {
@@ -200,14 +213,16 @@ describe('the family', () => {
 describe('the player', () => {
   it('steps one tile at a time and not through walls', () => {
     const d = new HouseDay('easy', seededRng(1));
-    place(d.player, { x: 1, y: 3 });
-    expect(d.step('up')).toBe(false); // the bed
-    expect(d.step('left')).toBe(false); // the wall
-    expect(d.player.facing).toBe(-1);
+    place(d.player, { x: 4, y: 2 });
+    expect(d.step('up')).toBe(false); // the bedside table
+    expect(d.step('left')).toBe(false); // the bed
+    expect(d.player.dir).toBe('left');
     expect(d.step('down')).toBe(true);
     expect(d.step('down')).toBe(false); // still walking
     run(d, 1000 / PLAYER_SPEED + 50);
-    expect(d.player.tile).toEqual({ x: 1, y: 4 });
+    expect(d.player.tile).toEqual({ x: 4, y: 3 });
+    place(d.player, { x: 1, y: 3 });
+    expect(d.step('left')).toBe(false); // the wall
   });
 
   it('walks to a tapped spot', () => {
@@ -242,17 +257,21 @@ describe('the player', () => {
     expect(d.inReach('tv')).toBe(true);
     expect(d.reachable()?.id).toBe('tv');
     expect(d.goSwitch('tv')).toMatchObject({ kind: 'off', points: 20 });
-    expect(d.interact()).toMatchObject({ kind: 'ignored' }); // console is out of reach
-    expect(d.inReach('console')).toBe(false);
+    expect(d.player.dir).toBe('left');
+    expect(d.inReach('console')).toBe(true); // on the same TV unit
+    expect(d.interact()).toMatchObject({ kind: 'off', appliance: { id: 'console' } });
+    expect(d.interact()).toMatchObject({ kind: 'ignored' });
+    expect(d.inReach('living-light')).toBe(false);
   });
 
-  it('cannot reach through a wall', () => {
+  it('only reaches things in the room it is standing in', () => {
     const d = new HouseDay('easy', seededRng(2));
-    // (8, 1) is the bedroom light; (10, 1) is in the living room, two tiles away.
     place(d.player, { x: 10, y: 2 });
-    expect(d.inReach('bedroom-light')).toBe(false);
-    place(d.player, plan.doors[0]!);
-    expect(d.inReach('bedroom-light')).toBe(false);
+    expect(d.inReach('bathroom-light')).toBe(true);
+    for (const t of [...plan.doors, plan.start]) {
+      place(d.player, t);
+      for (const a of APPLIANCES) expect(d.inReach(a.id), `${a.id} from ${key(t)}`).toBe(false);
+    }
   });
 
   it('loses points and the streak for switching off something in use', () => {

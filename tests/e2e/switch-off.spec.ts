@@ -82,7 +82,7 @@ test('Switch Off!: the arrow keys walk the player around', async ({ page, isMobi
   test.skip(isMobile, 'Keyboard controls are for desktop');
   await start(page, 60);
   const before = (await snapshot(page)).player;
-  // The player starts in the doorway between the bedroom and the living room.
+  // The player starts in the hallway, with room to walk right.
   await page.keyboard.down('ArrowRight');
   await expect
     .poll(async () => (await snapshot(page)).player.x, { timeout: 5000 })

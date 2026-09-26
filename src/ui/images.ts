@@ -3,10 +3,7 @@
 
 export const IMAGE_NAMES = [
   'banana',
-  'bathtub',
   'battery',
-  'bed',
-  'boy',
   'brain',
   'bucket',
   'butterfly',
@@ -14,13 +11,11 @@ export const IMAGE_NAMES = [
   'canoe',
   'car',
   'carrot',
-  'child',
   'cigarette',
   'city',
   'coconut',
   'coffee',
   'computer',
-  'couch',
   'crab',
   'cup',
   'droplet',
@@ -33,11 +28,8 @@ export const IMAGE_NAMES = [
   'fish',
   'fog',
   'footprints',
-  'frying-pan',
   'game-controller',
-  'girl',
   'globe',
-  'grandpa',
   'high-voltage',
   'house',
   'houses',
@@ -81,7 +73,6 @@ export const IMAGE_NAMES = [
   'turtle',
   'umbrella',
   'wave',
-  'woman-headscarf',
 ] as const;
 
 export type ImageName = (typeof IMAGE_NAMES)[number];

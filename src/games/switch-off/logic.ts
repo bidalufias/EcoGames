@@ -8,6 +8,7 @@ import {
   type RoomId,
 } from '../../content/energy';
 import { shuffle, type Rng } from '../../core/random';
+import { HOUSE, WALK_OVER, type Dir, type Furniture, type HouseLayout, type Tile } from './house';
 
 export type Level = 'easy' | 'normal' | 'hard';
 
@@ -25,9 +26,9 @@ export interface LevelConfig {
 }
 
 export const LEVELS: Record<Level, LevelConfig> = {
-  easy: { people: 2, walkSpeed: 1.8, use: [4500, 7500], roam: 0.6, meterRate: 0.26 },
-  normal: { people: 3, walkSpeed: 2.2, use: [3500, 6500], roam: 0.65, meterRate: 0.33 },
-  hard: { people: 4, walkSpeed: 2.6, use: [2800, 5000], roam: 0.7, meterRate: 0.4 },
+  easy: { people: 2, walkSpeed: 1.8, use: [4500, 7500], roam: 0.6, meterRate: 0.24 },
+  normal: { people: 3, walkSpeed: 2.2, use: [3500, 6500], roam: 0.65, meterRate: 0.3 },
+  hard: { people: 4, walkSpeed: 2.6, use: [2800, 5000], roam: 0.7, meterRate: 0.35 },
 };
 
 /** The player walks faster than the family, so there is time to tidy up after them. */
@@ -58,12 +59,7 @@ export function switchStars(survived: boolean, meter: number, switchedOff: numbe
 
 // ---------- The floor plan ----------
 
-export interface Tile {
-  x: number;
-  y: number;
-}
-
-export type Dir = 'up' | 'down' | 'left' | 'right';
+export type { Dir, Tile } from './house';
 
 const STEP: Record<Dir, Tile> = {
   up: { x: 0, y: -1 },
@@ -72,26 +68,13 @@ const STEP: Record<Dir, Tile> = {
   right: { x: 1, y: 0 },
 };
 
-/**
- * The house seen from above, one character per floor tile. Letters are rooms
- * (b bedroom, l living room, k kitchen, w bathroom), d is a doorway and # is wall.
- * The doorways join the rooms in a ring.
- */
-const HOUSE_MAP = [
-  '###################',
-  '#bbbbbbbb#llllllll#',
-  '#bbbbbbbb#llllllll#',
-  '#bbbbbbbbdllllllll#',
-  '#bbbbbbbb#llllllll#',
-  '#bbbbbbbb#llllllll#',
-  '####d#########d####',
-  '#kkkkkkkk#wwwwwwww#',
-  '#kkkkkkkk#wwwwwwww#',
-  '#kkkkkkkkdwwwwwwww#',
-  '#kkkkkkkk#wwwwwwww#',
-  '#kkkkkkkk#wwwwwwww#',
-  '###################',
-];
+/** The way to face to look from one tile at the next. */
+export function dirTowards(from: Tile, to: Tile): Dir {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+  return dy < 0 ? 'up' : 'down';
+}
 
 const ROOM_CODES: Record<string, RoomId> = {
   b: 'bedroom',
@@ -100,61 +83,49 @@ const ROOM_CODES: Record<string, RoomId> = {
   w: 'bathroom',
 };
 
-/** Where each appliance stands. Appliances block walking; people use them from next to them. */
-const APPLIANCE_TILES: Record<string, Tile> = {
-  'bedroom-light': { x: 8, y: 1 },
-  aircon: { x: 4, y: 1 },
-  computer: { x: 7, y: 5 },
-  'living-light': { x: 17, y: 1 },
-  tv: { x: 13, y: 1 },
-  console: { x: 11, y: 1 },
-  'kitchen-light': { x: 1, y: 7 },
-  kettle: { x: 3, y: 11 },
-  'rice-cooker': { x: 6, y: 11 },
-  'bathroom-light': { x: 10, y: 11 },
-  'water-heater': { x: 17, y: 8 },
-};
+/** Rooms, plus the hallway that joins them. */
+export type Area = RoomId | 'hall';
 
-/** One big piece of furniture per room (the room's picture), which also blocks walking. */
-const FURNITURE_TILES: Record<RoomId, Tile> = {
-  bedroom: { x: 1, y: 2 },
-  living: { x: 17, y: 4 },
-  kitchen: { x: 1, y: 11 },
-  bathroom: { x: 17, y: 11 },
-};
-
-type Cell = RoomId | 'door' | 'wall';
+type Cell = Area | 'door' | 'wall';
 
 /** The walkable grid of the house, with path finding. */
 export class FloorPlan {
+  readonly layout: HouseLayout;
   readonly width: number;
   readonly height: number;
   readonly applianceTiles: Readonly<Record<string, Tile>>;
-  readonly furnitureTiles: Readonly<Record<RoomId, Tile>>;
+  readonly furniture: readonly Furniture[];
   readonly doors: Tile[] = [];
+  /** Where the player starts the day. */
+  readonly start: Tile;
   private cells: Cell[] = [];
   private blocked = new Set<number>();
 
-  constructor(
-    map: readonly string[],
-    applianceTiles: Record<string, Tile>,
-    furnitureTiles: Record<RoomId, Tile>,
-  ) {
+  constructor(layout: HouseLayout) {
+    const { map } = layout;
+    this.layout = layout;
     this.height = map.length;
     this.width = map[0]?.length ?? 0;
-    this.applianceTiles = applianceTiles;
-    this.furnitureTiles = furnitureTiles;
+    this.applianceTiles = layout.appliances;
+    this.furniture = layout.furniture;
+    let start: Tile | null = null;
     map.forEach((row, y) => {
       for (let x = 0; x < this.width; x++) {
         const ch = row[x] ?? '#';
-        const cell: Cell = ch === 'd' ? 'door' : (ROOM_CODES[ch] ?? 'wall');
+        const cell: Cell =
+          ch === 'd' ? 'door' : ch === 'h' || ch === 's' ? 'hall' : (ROOM_CODES[ch] ?? 'wall');
         this.cells.push(cell);
         if (cell === 'door') this.doors.push({ x, y });
+        if (ch === 's') start = { x, y };
       }
     });
-    for (const t of [...Object.values(applianceTiles), ...Object.values(furnitureTiles)]) {
-      this.blocked.add(this.index(t));
+    for (const t of Object.values(layout.appliances)) this.blocked.add(this.index(t));
+    for (const f of layout.furniture) {
+      if (WALK_OVER.has(f.kind)) continue;
+      for (let y = f.y; y < f.y + (f.h ?? 1); y++)
+        for (let x = f.x; x < f.x + (f.w ?? 1); x++) this.blocked.add(this.index({ x, y }));
     }
+    this.start = start ?? this.doors[0] ?? { x: 1, y: 1 };
   }
 
   inBounds(t: Tile): boolean {
@@ -169,8 +140,14 @@ export class FloorPlan {
     return this.inBounds(t) ? (this.cells[this.index(t)] ?? 'wall') : 'wall';
   }
 
-  /** The room a tile is in; null for walls and doorways. */
+  /** The room a tile is in; null for walls, doorways and the hallway. */
   roomAt(t: Tile): RoomId | null {
+    const c = this.cell(t);
+    return c === 'wall' || c === 'door' || c === 'hall' ? null : c;
+  }
+
+  /** The room or hallway a tile is in; null for walls and doorways. */
+  areaAt(t: Tile): Area | null {
     const c = this.cell(t);
     return c === 'wall' || c === 'door' ? null : c;
   }
@@ -198,11 +175,11 @@ export class FloorPlan {
     return out;
   }
 
-  /** The smallest box of tiles covering a room. */
-  roomBounds(room: RoomId): { x0: number; y0: number; x1: number; y1: number } {
+  /** The smallest box of tiles covering a room or the hallway. */
+  roomBounds(area: Area): { x0: number; y0: number; x1: number; y1: number } {
     const tiles: Tile[] = [];
     for (let y = 0; y < this.height; y++)
-      for (let x = 0; x < this.width; x++) if (this.roomAt({ x, y }) === room) tiles.push({ x, y });
+      for (let x = 0; x < this.width; x++) if (this.areaAt({ x, y }) === area) tiles.push({ x, y });
     return {
       x0: Math.min(...tiles.map((t) => t.x)),
       y0: Math.min(...tiles.map((t) => t.y)),
@@ -267,7 +244,7 @@ export class FloorPlan {
   }
 }
 
-export const FLOOR_PLAN = new FloorPlan(HOUSE_MAP, APPLIANCE_TILES, FURNITURE_TILES);
+export const FLOOR_PLAN = new FloorPlan(HOUSE);
 
 // ---------- People ----------
 
@@ -278,8 +255,8 @@ export class Walker {
   y: number;
   speed: number;
   path: Tile[] = [];
-  /** Which way they last walked sideways, so the view can turn them around. */
-  facing: -1 | 1 = 1;
+  /** Which way they face: the way they last walked, or towards what they are using. */
+  dir: Dir = 'down';
 
   constructor(member: FamilyMember, start: Tile, speed: number) {
     this.member = member;
@@ -316,7 +293,7 @@ export class Walker {
       const dx = next.x - this.x;
       const dy = next.y - this.y;
       const dist = Math.hypot(dx, dy);
-      if (dx !== 0) this.facing = dx > 0 ? 1 : -1;
+      if (dist > 0) this.dir = dirTowards({ x: 0, y: 0 }, { x: dx, y: dy });
       if (dist <= budget) {
         this.x = next.x;
         this.y = next.y;
@@ -396,7 +373,7 @@ export class HouseDay {
     this.plan = opts.plan ?? FLOOR_PLAN;
     this.appliances = opts.appliances ?? APPLIANCES;
     this.dayMs = opts.dayMs ?? DAY_MS;
-    this.player = new Walker(PLAYER, this.plan.doors[0] ?? { x: 1, y: 1 }, PLAYER_SPEED);
+    this.player = new Walker(PLAYER, this.plan.start, PLAYER_SPEED);
 
     // Everyone starts in a different room and heads for something there.
     const rooms = shuffle(ROOMS, rng);
@@ -530,8 +507,7 @@ export class HouseDay {
     if (this.ended || this.player.moving) return false;
     const t = this.player.tile;
     const next = { x: t.x + STEP[dir].x, y: t.y + STEP[dir].y };
-    if (dir === 'left') this.player.facing = -1;
-    if (dir === 'right') this.player.facing = 1;
+    this.player.dir = dir;
     if (!this.plan.isWalkable(next)) return false;
     this.heading = null;
     this.player.setPath([next]);
@@ -576,6 +552,10 @@ export class HouseDay {
     if (this.ended || !appliance || !this.on.has(id) || !this.inReach(id)) {
       return { kind: 'ignored' };
     }
+    this.player.dir = dirTowards(
+      this.player.tile,
+      this.plan.applianceTiles[id] ?? this.player.tile,
+    );
     const by = this.peopleIn(appliance.room)[0];
     if (by && arriving) return { kind: 'busy', appliance, by };
     if (by) {
@@ -615,6 +595,7 @@ export class HouseDay {
     if (!a) return;
     const [min, max] = this.config.use;
     p.useLeft = min + this.rng() * (max - min);
+    p.dir = dirTowards(p.tile, this.plan.applianceTiles[a.id] ?? p.tile);
     if (!this.on.has(a.id)) {
       this.on.add(a.id);
       events.push({ kind: 'on', person: p, appliance: a });
