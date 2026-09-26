@@ -26,7 +26,8 @@ src/
   ui/                    # shared UI: hub (MSN Play-style), art, intro (start screen), icons, images, result dialog, toast
   assets/3d/             # 3D object images (Fluent Emoji, MIT) for game art; README says how to add one
   styles/                # tokens.css (all colours), base, components, shell
-  content/               # ALL educational text: concepts, quiz, waste, river, energy, solar
+  content/               # ALL educational text: concepts, quiz, waste, river, energy, solar,
+                         # forest, words, turtles
   games/
     registry.ts          # the list of games shown on the hub
     <game>/index.ts      # mount(host, ctx) -> { destroy }

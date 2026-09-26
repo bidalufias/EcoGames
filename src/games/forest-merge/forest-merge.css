@@ -1,0 +1,255 @@
+.forest {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+.forest-stats {
+  display: flex;
+  gap: inherit;
+}
+.forest-hud__actions {
+  display: flex;
+  gap: 2px;
+}
+.forest-best__img {
+  display: inline-grid;
+}
+.forest-best__img img {
+  display: block;
+}
+
+/* The stage takes the remaining height; JS sizes the square board to fit it. */
+.forest-stage {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+}
+
+.forest-board {
+  --n: 4;
+  --gap: 10px;
+  --cell: 90px;
+  position: relative;
+  width: calc(var(--n) * var(--cell) + (var(--n) + 1) * var(--gap));
+  height: calc(var(--n) * var(--cell) + (var(--n) + 1) * var(--gap));
+  border-radius: calc(var(--cell) * 0.16 + var(--gap));
+  background: color-mix(in srgb, var(--leaf) 22%, var(--surface-3));
+}
+.forest-cells {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+  padding: var(--gap);
+}
+.forest-cell {
+  border-radius: calc(var(--cell) * 0.16);
+  background: color-mix(in srgb, var(--leaf) 8%, var(--surface-2));
+}
+.forest-tiles {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each tile sits in its cell by transform, so sliding is one transition. */
+.forest-tile {
+  --stage-bg: var(--surface);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  width: var(--cell);
+  height: var(--cell);
+  padding: calc(var(--cell) * 0.06) 4px calc(var(--cell) * 0.07);
+  border-radius: calc(var(--cell) * 0.16);
+  background: var(--stage-bg);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  transform: translate(
+    calc(var(--gap) + var(--col) * (var(--cell) + var(--gap))),
+    calc(var(--gap) + var(--row) * (var(--cell) + var(--gap)))
+  );
+  transition: transform 110ms var(--ease);
+}
+.forest-tile.is-leaving {
+  z-index: 0;
+}
+.forest-tile.is-new {
+  animation: forest-appear 180ms var(--ease) backwards;
+}
+.forest-tile.is-grown {
+  z-index: 1;
+  animation: forest-grow 240ms var(--ease) backwards;
+}
+.forest-tile__img {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.forest-tile__img img {
+  width: auto;
+  height: 100%;
+  max-height: calc(var(--cell) * 0.62);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.16));
+}
+.forest-tile__name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(0.625rem, calc(var(--cell) * 0.13), 0.875rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.forest-board.is-small .forest-tile__name {
+  display: none;
+}
+.forest-board.is-small .forest-tile__img img {
+  max-height: calc(var(--cell) * 0.72);
+}
+
+/* Colours grow with the forest: sand for seeds, greens for plants, bright for animals. */
+.forest-tile--s1 {
+  --stage-bg: color-mix(in srgb, var(--sun) 16%, var(--surface));
+}
+.forest-tile--s2 {
+  --stage-bg: color-mix(in srgb, var(--leaf) 14%, var(--surface));
+}
+.forest-tile--s3 {
+  --stage-bg: color-mix(in srgb, var(--leaf) 26%, var(--surface));
+}
+.forest-tile--s4 {
+  --stage-bg: color-mix(in srgb, var(--leaf) 40%, var(--surface));
+}
+.forest-tile--s5 {
+  --stage-bg: color-mix(in srgb, var(--coral) 24%, var(--surface));
+}
+.forest-tile--s6 {
+  --stage-bg: color-mix(in srgb, var(--sky) 28%, var(--surface));
+}
+.forest-tile--s7 {
+  --stage-bg: color-mix(in srgb, var(--leaf) 58%, var(--surface));
+}
+.forest-tile--s8 {
+  --stage-bg: color-mix(in srgb, var(--berry) 32%, var(--surface));
+}
+.forest-tile--s9 {
+  --stage-bg: color-mix(in srgb, var(--coral) 46%, var(--surface));
+}
+.forest-tile--s10 {
+  --stage-bg: color-mix(in srgb, var(--sky) 50%, var(--surface));
+}
+.forest-tile--s11 {
+  --stage-bg: color-mix(in srgb, var(--sun) 64%, var(--surface));
+  box-shadow:
+    0 0 0 3px var(--sun),
+    var(--shadow);
+}
+
+.forest-board.is-bump {
+  animation: forest-bump 180ms var(--ease);
+}
+.forest-board.is-over .forest-tile {
+  filter: saturate(0.5);
+  opacity: 0.8;
+}
+.forest-board.is-won .forest-tile--s11 {
+  animation: forest-grow 400ms var(--ease) 2;
+}
+
+/* What grows next: every stage in order, greyed until grown. */
+.forest-chain {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 6px 10px;
+  list-style: none;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.forest-chain__step {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.forest-chain__step img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: grayscale(1) opacity(0.35);
+}
+.forest-chain__step.is-reached img {
+  filter: none;
+}
+.forest-chain__step.is-next {
+  box-shadow: inset 0 0 0 2px var(--leaf);
+}
+.forest-chain__step.is-next img {
+  filter: grayscale(1) opacity(0.6);
+}
+@media (max-width: 400px) {
+  .forest-chain {
+    gap: 1px;
+    padding: 4px 6px;
+  }
+  .forest-chain__step {
+    width: 26px;
+    height: 26px;
+  }
+  .forest-chain__step img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@keyframes forest-appear {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+@keyframes forest-grow {
+  0% {
+    scale: 0.6;
+  }
+  60% {
+    scale: 1.14;
+  }
+}
+@keyframes forest-bump {
+  30% {
+    translate: 0 -3px;
+  }
+  60% {
+    translate: 0 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forest-tile {
+    transition: none;
+  }
+  .forest-tile.is-new,
+  .forest-tile.is-grown,
+  .forest-board.is-bump,
+  .forest-board.is-won .forest-tile--s11 {
+    animation: none;
+  }
+}

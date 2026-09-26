@@ -91,6 +91,12 @@ example:
   gives appliances a bigger tap area, and hides family name tags when the tiles get small.
 - Solar Link keeps 6×6 on Hard (tiles stay 44px+ at 320px), shows only homes and turns in
   the game bar, and one "New puzzle" button.
+- Grow the Forest is played by swiping, hides the tile names when tiles are small, and keeps
+  the "what grows next" strip under the board.
+- Eco Word keeps its on-screen keyboard at 44px+ keys, and puts the keyboard beside the
+  guesses on landscape phones.
+- Turtle Trek is played by touching and holding where the hatchling should crawl, and by
+  tapping a light to switch it off. Tall screens show more dunes and sea around the beach.
 
 Use `howToMobile` in the registry when the controls differ on touch screens.
 
@@ -107,7 +113,8 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
   (`gameArt()` composes a game's `image` and `art` images), and anything the player
   looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
-  appliances, and Solar Link's farm and homes. Keep to this one set so everything shares a
+  appliances, Solar Link's farm and homes, Grow the Forest's tiles, and Turtle Trek's
+  hatchlings, crabs and rubbish. Keep to this one set so everything shares a
   style; see the README in `src/assets/3d` to add one.
 - **Drawn art** is the one exception: Switch Off!'s house is drawn in code as an
   architect's floor plan (`HouseArt.ts`: wood and tile floors, solid walls, windows, doors

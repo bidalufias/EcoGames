@@ -14,6 +14,11 @@ All educational text lives in `src/content/`:
 - `energy.ts`: Switch Off! rooms (with Malay names), appliances, energy-saving tips and the
   family characters
 - `solar.ts`: Solar Link's solar power facts
+- `forest.ts`: Grow the Forest's stages, from a seed to a Malayan tiger, each with a fact
+- `words.ts`: Eco Word's five-letter answers, each with a clue that doesn't give the word
+  away and a fact shown once it is solved. Guesses are checked against a general word list
+  in `games/eco-word/dictionary.ts`, which is not content.
+- `turtles.ts`: Turtle Trek's beach rubbish, ghost crab, beach light and sea turtle facts
 
 Each of these has its own checks in `src/content/<file>.test.ts`.
 
