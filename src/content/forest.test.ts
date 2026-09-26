@@ -12,12 +12,17 @@ describe('forest stages', () => {
   });
 
   it('only references images that exist', () => {
-    for (const s of FOREST_STAGES) expect(imageUrl(s.image), s.id).toBeTruthy();
+    for (const s of FOREST_STAGES) {
+      for (const name of [s.image, ...(s.extras ?? []).map((x) => x.image)]) {
+        expect(imageUrl(name), `${s.id}: ${name}`).toBeTruthy();
+      }
+    }
   });
 
   it('keeps text short enough for tiles, toasts and the results', () => {
     for (const s of FOREST_STAGES) {
       expect(s.name.length, s.id).toBeLessThanOrEqual(18);
+      expect((s.short ?? s.name).length, s.id).toBeLessThanOrEqual(12);
       expect(s.fact.length, s.id).toBeLessThanOrEqual(110);
       expect(s.fact.endsWith('.'), s.id).toBe(true);
     }

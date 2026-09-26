@@ -13,7 +13,7 @@ They work on phones, tablets and computers, with touch, mouse or keyboard.
 | **River Rescue**    | How rubbish travels from drains to rivers and the sea     | Phaser 4   |
 | **Switch Off!**     | Saving electricity at home                                | Phaser 4   |
 | **Solar Link**      | Solar power and the electricity grid                      | DOM + SVG  |
-| **Grow the Forest** | How a rainforest grows, and the wildlife that lives in it | DOM + CSS  |
+| **Grow the Forest** | How a seed grows into a tree, and trees into a rainforest | DOM + CSS  |
 | **Eco Word**        | Climate and nature words, with what each one means        | DOM + CSS  |
 | **Turtle Trek**     | Sea turtle hatchlings, beach lights and beach rubbish     | Phaser 4   |
 | **Greener Choice**  | Everyday choices with a smaller footprint, and why        | DOM + CSS  |

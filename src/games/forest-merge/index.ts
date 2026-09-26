@@ -36,6 +36,24 @@ const SWIPE = 24;
 const stageOf = (stage: number): ForestStage =>
   FOREST_STAGES[Math.min(stage, FOREST_STAGES.length) - 1]!;
 
+/**
+ * A stage's picture: its main image in front, with any extra images around it, so a
+ * grove or a forest shows several trees. Scales to whatever box it is put in.
+ */
+function stageArt(s: ForestStage): HTMLElement {
+  const extra = (spots: string[]) =>
+    (s.extras ?? [])
+      .filter((x) => spots.includes(x.at))
+      .map((x) => h('span', { class: `forest-art__x forest-art__x--${x.at}` }, image(x.image)));
+  return h(
+    'span',
+    { class: `forest-art${s.extras?.some((x) => x.at !== 'corner') ? ' forest-art--group' : ''}` },
+    ...extra(['back', 'left', 'right']),
+    h('span', { class: 'forest-art__main' }, image(s.image)),
+    ...extra(['corner']),
+  );
+}
+
 function levelPicker(selected: Level, onChange: (level: Level) => void): HTMLElement {
   const group = h('fieldset', { class: 'segmented' }, h('legend', {}, 'Board'));
   for (const level of LEVELS) {
@@ -63,11 +81,13 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   let level: Level = LEVELS.includes(saved as Level) ? (saved as Level) : 'normal';
   let game: ForestBoard | null = null;
   let endTimer: number | undefined;
-  const timers = new Set<number>();
+  /** Finishes the last move's merges: removes the old tiles and shows the grown ones. */
+  let pending: (() => void)[] = [];
+  let pendingTimer: number | undefined;
   const els = new Map<number, HTMLElement>();
   const compact = isCompact();
   const reduced = prefersReducedMotion();
-  const slideMs = reduced ? 0 : 110;
+  const slideMs = reduced ? 0 : 120;
   // End-to-end tests can start from a set board: ?e2e&board=1,2,0,...
   const params = new URLSearchParams(window.location.search);
   const e2eBoard = params.has('e2e') ? params.get('board') : null;
@@ -115,35 +135,44 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     h('div', { class: 'forest-hud__actions' }, ...(compact ? [restart] : [settings, restart])),
   );
 
-  function later(fn: () => void, ms: number): void {
-    const id = window.setTimeout(() => {
-      timers.delete(id);
-      fn();
-    }, ms);
-    timers.add(id);
+  function clearTimers(): void {
+    window.clearTimeout(endTimer);
+    window.clearTimeout(pendingTimer);
+    pending = [];
   }
 
-  function clearTimers(): void {
-    for (const id of timers) window.clearTimeout(id);
-    timers.clear();
-    window.clearTimeout(endTimer);
+  /** Runs the last move's finishing touches now (a new move can't wait for them). */
+  function flushPending(): void {
+    window.clearTimeout(pendingTimer);
+    const run = pending;
+    pending = [];
+    for (const fn of run) fn();
   }
 
   // ---------- Drawing ----------
 
-  function tileEl(tile: Tile, appear: 'new' | 'grown' | null): HTMLElement {
+  function tileEl(tile: Tile): HTMLElement {
     const s = stageOf(tile.stage);
     const el = h(
       'div',
       { class: `forest-tile forest-tile--s${tile.stage}` },
-      h('span', { class: 'forest-tile__img' }, image(s.image)),
-      h('span', { class: 'forest-tile__name' }, s.name),
+      h('span', { class: 'forest-tile__img' }, stageArt(s)),
+      h('span', { class: 'forest-tile__name', title: s.name }, s.short ?? s.name),
     );
     place(el, tile);
-    if (appear) {
+    return el;
+  }
+
+  /** Adds a tile that pops in once the slide is over ('new' fades in, 'grown' bounces). */
+  function addLater(tile: Tile, appear: 'new' | 'grown'): HTMLElement {
+    const el = tileEl(tile);
+    el.classList.add('is-waiting');
+    els.set(tile.id, el);
+    layer.appendChild(el);
+    pending.push(() => {
+      el.classList.remove('is-waiting');
       el.classList.add(appear === 'new' ? 'is-new' : 'is-grown');
-      el.style.animationDelay = `${slideMs}ms`;
-    }
+    });
     return el;
   }
 
@@ -161,7 +190,8 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     layer.replaceChildren();
     els.clear();
     for (const t of game.tiles) {
-      const el = tileEl(t, 'new');
+      const el = tileEl(t);
+      el.classList.add('is-new');
       els.set(t.id, el);
       layer.appendChild(el);
     }
@@ -171,29 +201,27 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   function applyMove(r: MoveResult): void {
+    flushPending();
     for (const t of r.slid) {
       const el = els.get(t.id);
       if (el) place(el, t);
     }
     for (const g of r.grown) {
-      // Both old tiles slide into the cell, then give way to the grown one.
+      // Both old tiles slide into the cell. Only when they get there do they give way
+      // to the grown tile, in the same frame, so nothing jumps or flickers.
       for (const id of g.from) {
         const el = els.get(id);
         if (!el) continue;
         els.delete(id);
         place(el, g.tile);
         el.classList.add('is-leaving');
-        later(() => el.remove(), slideMs);
+        pending.push(() => el.remove());
       }
-      const el = tileEl(g.tile, 'grown');
-      els.set(g.tile.id, el);
-      layer.appendChild(el);
+      addLater(g.tile, 'grown');
     }
-    if (r.spawned) {
-      const el = tileEl(r.spawned, 'new');
-      els.set(r.spawned.id, el);
-      layer.appendChild(el);
-    }
+    if (r.spawned) addLater(r.spawned, 'new');
+    if (slideMs === 0) flushPending();
+    else pendingTimer = window.setTimeout(flushPending, slideMs);
   }
 
   function renderStats(): void {
@@ -211,7 +239,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
       h(
         'span',
         { class: 'stat forest-best', title: 'Best so far' },
-        h('span', { class: 'forest-best__img' }, image(best.image, { size: 18 })),
+        h('span', { class: 'forest-best__img' }, stageArt(best)),
         compact ? null : best.name,
       ),
     );
@@ -225,16 +253,18 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     if (!game) return;
     const highest = game.highest;
     chain.replaceChildren(
-      ...FOREST_STAGES.map((s) =>
-        h(
+      ...FOREST_STAGES.map((s) => {
+        const label = s.stage <= highest + 1 ? s.name : 'Not grown yet';
+        return h(
           'li',
           {
             class: `forest-chain__step${s.stage <= highest ? ' is-reached' : ''}${s.stage === highest + 1 ? ' is-next' : ''}`,
-            title: s.stage <= highest + 1 ? s.name : 'Not grown yet',
+            title: label,
           },
-          image(s.image, { alt: s.stage <= highest + 1 ? s.name : 'Not grown yet' }),
-        ),
-      ),
+          h('span', { class: 'sr-only' }, label),
+          stageArt(s),
+        );
+      }),
     );
   }
 
@@ -292,7 +322,7 @@ export function mount(host: HTMLElement, ctx: GameContext): GameInstance {
     const best = stageOf(g.highest);
     ctx.announce(
       won
-        ? 'You grew a Malayan tiger! The forest is complete.'
+        ? 'You grew the Amazon rainforest! The forest is complete.'
         : `No more moves. You grew up to ${best.name}.`,
     );
     board.classList.add(won ? 'is-won' : 'is-over');

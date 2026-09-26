@@ -14,7 +14,8 @@ All educational text lives in `src/content/`:
 - `energy.ts`: Switch Off! rooms (with Malay names), appliances, energy-saving tips and the
   family characters
 - `solar.ts`: Solar Link's solar power facts
-- `forest.ts`: Grow the Forest's stages, from a seed to a Malayan tiger, each with a fact
+- `forest.ts`: Grow the Forest's stages, from a seed to a tree, then from a grove to the great
+  rainforests (Taman Negara, the Heart of Borneo and the Amazon), each with a fact
 - `words.ts`: Eco Word's five-letter answers, each with a clue that doesn't give the word
   away and a fact shown once it is solved. Guesses are checked against a general word list
   in `games/eco-word/dictionary.ts`, which is not content.

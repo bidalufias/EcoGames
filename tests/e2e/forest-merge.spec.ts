@@ -31,15 +31,17 @@ async function swipe(page: Page, dx: number, dy: number) {
   await page.mouse.up();
 }
 
-test('Grow the Forest: merging two elephants grows a tiger and wins', async ({ page }) => {
-  // Two elephants side by side; nothing else can merge.
+test('Grow the Forest: merging two Heart of Borneo tiles grows the Amazon and wins', async ({
+  page,
+}) => {
+  // Two stage-10 tiles side by side; nothing else can merge.
   await open(page, [10, 10, 0, 0, 1, 2, 3, 4, 2, 1, 4, 3, 1, 2, 3, 4]);
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('.forest-tile--s11')).toHaveCount(1);
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('You grew a whole rainforest!');
-  await expect(dialog).toContainText('Best: Malayan tiger');
+  await expect(dialog).toContainText('Best: Amazon rainforest');
   await expect(dialog.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
   await dialog.getByRole('button', { name: 'Play again' }).click();
   await expect(page.locator('.gamebar__hud')).toContainText(/^0/);
