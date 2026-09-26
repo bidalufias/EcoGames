@@ -5,14 +5,17 @@ They work on phones, tablets and computers, with touch, mouse or keyboard.
 
 ## Games
 
-| Game             | What you learn                                          | Built with |
-| ---------------- | ------------------------------------------------------- | ---------- |
-| **Waste Sorter** | Recycling, food waste, general waste, special drop-offs | Phaser 4   |
-| **Eco Memory**   | Core climate vocabulary (1 or 2 players)                | DOM + CSS  |
-| **Eco Quiz**     | Climate science, energy, nature, everyday actions       | DOM + CSS  |
-| **River Rescue** | How rubbish travels from drains to rivers and the sea   | Phaser 4   |
-| **Switch Off!**  | Saving electricity at home                              | Phaser 4   |
-| **Solar Link**   | Solar power and the electricity grid                    | DOM + SVG  |
+| Game                | What you learn                                            | Built with |
+| ------------------- | --------------------------------------------------------- | ---------- |
+| **Waste Sorter**    | Recycling, food waste, general waste, special drop-offs   | Phaser 4   |
+| **Eco Memory**      | Core climate vocabulary (1 or 2 players)                  | DOM + CSS  |
+| **Eco Quiz**        | Climate science, energy, nature, everyday actions         | DOM + CSS  |
+| **River Rescue**    | How rubbish travels from drains to rivers and the sea     | Phaser 4   |
+| **Switch Off!**     | Saving electricity at home                                | Phaser 4   |
+| **Solar Link**      | Solar power and the electricity grid                      | DOM + SVG  |
+| **Grow the Forest** | How a rainforest grows, and the wildlife that lives in it | DOM + CSS  |
+| **Eco Word**        | Climate and nature words, with what each one means        | DOM + CSS  |
+| **Turtle Trek**     | Sea turtle hatchlings, beach lights and beach rubbish     | Phaser 4   |
 
 ## Getting started
 

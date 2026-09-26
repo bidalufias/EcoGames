@@ -59,6 +59,10 @@ import {
   ChevronDown,
   Power,
   RotateCw,
+  Delete,
+  BookOpen,
+  WholeWord,
+  Turtle,
 } from 'lucide';
 
 // One consistent icon family (Lucide, ISC licence) for UI chrome and game art.
@@ -123,6 +127,10 @@ const ICONS = {
   chevronDown: ChevronDown,
   power: Power,
   rotateCw: RotateCw,
+  backspace: Delete,
+  book: BookOpen,
+  wholeWord: WholeWord,
+  turtle: Turtle,
 } satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;
