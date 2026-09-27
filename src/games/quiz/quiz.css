@@ -30,6 +30,7 @@
 }
 
 .quiz-card {
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -609,9 +609,20 @@
   container-type: size;
   color: #fff;
   background:
-    radial-gradient(circle at 16% 20%, rgb(255 255 255 / 0.22) 0 14%, transparent 14.5%),
-    radial-gradient(circle at 90% 88%, rgb(255 255 255 / 0.16) 0 24%, transparent 24.5%),
-    linear-gradient(150deg, color-mix(in srgb, var(--accent) 78%, #fff), var(--accent));
+    linear-gradient(0deg, rgb(20 53 42 / 0.22) 0 45%, transparent 85%),
+    radial-gradient(ellipse at 72% 20%, rgb(255 255 255 / 0.24), transparent 60%),
+    repeating-radial-gradient(
+      ellipse at 100% 0%,
+      transparent 0 30px,
+      rgb(255 255 255 / 0.055) 31px 32px,
+      transparent 33px 62px
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--art-accent) 76%, var(--art-shade)),
+      var(--art-accent) 58%,
+      color-mix(in srgb, var(--art-accent) 72%, var(--art-shade))
+    );
 }
 .art__main {
   position: absolute;
@@ -622,7 +633,7 @@
   width: 42%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%) rotate(-6deg);
-  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.18));
+  filter: drop-shadow(0 8px 9px rgb(0 0 0 / 0.16));
 }
 .art__main img,
 .art__sticker img {
@@ -636,7 +647,7 @@
   place-items: center;
   width: 20%;
   aspect-ratio: 1;
-  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.16));
+  filter: drop-shadow(0 5px 5px rgb(0 0 0 / 0.12));
   transition: transform 0.3s var(--ease);
 }
 .art__sticker--0 {

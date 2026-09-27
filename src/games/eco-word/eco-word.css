@@ -89,6 +89,7 @@
   animation: word-shake 0.4s var(--ease);
 }
 .word-tile {
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--ink) 6%, transparent);
   display: grid;
   place-items: center;
   width: var(--tile);
@@ -118,7 +119,8 @@
   background: var(--leaf);
 }
 .word-tile.is-present {
-  background: var(--sun);
+  background: var(--sun-marker);
+  color: var(--on-sun-marker);
 }
 .word-tile.is-absent {
   background: var(--muted);
@@ -188,6 +190,7 @@
   gap: 5px;
 }
 .word-key {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--ink) 8%, transparent);
   display: grid;
   flex: 1 1 0;
   place-items: center;
@@ -220,8 +223,8 @@
   color: var(--on-accent);
 }
 .word-key.is-present {
-  background: var(--sun);
-  color: var(--on-accent);
+  background: var(--sun-marker);
+  color: var(--on-sun-marker);
 }
 .word-key.is-absent {
   background: var(--muted);

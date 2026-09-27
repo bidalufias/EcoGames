@@ -27,6 +27,9 @@
   gap: var(--gap, 4px);
 }
 .solar-board {
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--shadow);
   flex-direction: column;
   padding: var(--gap, 4px);
   border-radius: calc(var(--tile, 80px) * 0.14 + var(--gap, 4px));
@@ -37,6 +40,7 @@
 }
 
 .solar-tile {
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--ink) 7%, transparent);
   position: relative;
   display: grid;
   place-items: center;

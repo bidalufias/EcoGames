@@ -3,8 +3,9 @@
 ## Personality
 
 Clean, refined and playful. It's for all ages, so it's fun without being babyish. The look
-is a white page, compact type, rounded tiles and colourful "cover art" built from 3D
-object images on each game's accent colour. The hub layout is modelled on MSN Play (msn.com/play).
+is a warm mineral page, compact type, rounded tiles and colourful "cover art" built from
+crafted miniature 3D objects. Forest green, lagoon teal, cream, honey and terracotta
+connect the games. The hub layout is modelled on MSN Play (msn.com/play).
 
 ## Brand
 
@@ -19,7 +20,7 @@ Use the official logo file only; never redraw it.
 
 | Token                                        | Use                                     |
 | -------------------------------------------- | --------------------------------------- |
-| `--paper`                                    | page background (white)                 |
+| `--paper`                                    | page background (warm off-white)        |
 | `--surface`, `--surface-2`, `--surface-3`    | cards, and progressively quieter wells  |
 | `--ink`, `--muted`                           | text, and secondary text                |
 | `--line`                                     | borders                                 |
@@ -32,7 +33,11 @@ Use the official logo file only; never redraw it.
 Set `.accent-<name>` on a container to get `--accent` / `--accent-soft` for its children.
 Each game and category has one accent (see `registry.ts`).
 
-The site is light (white) by default. Dark is opt-in through the header toggle and saved in
+Cover illustrations use the richer `--art-*` palette with a shaded text area for
+readable white titles in both themes. Word-game yellow feedback uses `--sun-marker`
+and `--on-sun-marker` to keep its letter contrast independent of the category accent.
+
+The site is light (warm off-white) by default. Dark is opt-in through the header toggle and saved in
 `ecogames:theme`; every token has a dark value.
 
 ## Type
@@ -119,7 +124,7 @@ pills, `.chip`, `.search`, `.dialog` and `.toast`. Reuse these before inventing 
 
 - **Icons** (Lucide, `src/ui/icons.ts`) are for UI chrome: buttons, stats, bins,
   categories and the carousel caption chip.
-- **Images** are 3D object renders from Microsoft's Fluent Emoji set (MIT), stored in
+- **Images** are generated miniature 3D objects in the crafted nature style, stored in
   `src/assets/3d` and registered in `src/ui/images.ts`. They are the game art: cover art
   (`gameArt()` composes a game's `image` and `art` images), and anything the player
   looks at in a game: Waste Sorter and River Rescue items, Eco Memory cards, Switch Off!
