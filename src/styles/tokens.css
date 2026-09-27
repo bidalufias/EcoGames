@@ -25,36 +25,46 @@
   --brand-green: #8dc63f;
   --brand-green-ink: #4d8a17;
 
-  --paper: #ffffff;
+  --paper: #fbfcf8;
   --surface: #ffffff;
-  --surface-2: #f4f6f8;
-  --surface-3: #eaeef2;
-  --ink: #16191d;
-  --muted: #5f6b76;
-  --line: #e5e9ee;
+  --surface-2: #f0f4ee;
+  --surface-3: #e3eae0;
+  --ink: #20372e;
+  --muted: #5b6c63;
+  --line: #dce5da;
   --focus: #0079c2;
 
-  --leaf: #2f9b5b;
-  --leaf-soft: #e3f4ea;
+  --leaf: #287a52;
+  --leaf-soft: #e5f1e5;
   --sky: #0079c2;
   --sky-soft: #e1f0fa;
-  --sun: #e7a21c;
-  --sun-soft: #fdf2d9;
-  --coral: #e0573f;
-  --coral-soft: #fce6e1;
-  --berry: #6e56d8;
-  --berry-soft: #ece8fb;
+  --sun: #9b6512;
+  --sun-soft: #f7efda;
+  --sun-marker: #e5b44a;
+  --on-sun-marker: #20372e;
+  --coral: #b95740;
+  --coral-soft: #f8e8de;
+  --berry: #75608f;
+  --berry-soft: #eee8f3;
 
-  --good: #1f8a4c;
+  --good: #20834b;
   --bad: #cf3e2a;
   --on-accent: #ffffff;
 
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 18px;
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
-  --shadow: 0 1px 3px rgb(16 24 40 / 0.06), 0 6px 16px rgb(16 24 40 / 0.06);
-  --shadow-lg: 0 4px 10px rgb(16 24 40 / 0.08), 0 20px 40px rgb(16 24 40 / 0.14);
+  /* Cover colors stay rich in both themes so white game titles remain legible. */
+  --art-leaf: #287a52;
+  --art-sky: #0079c2;
+  --art-sun: #9b6512;
+  --art-coral: #b95740;
+  --art-berry: #75608f;
+  --art-shade: #14352a;
+
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgb(32 55 46 / 0.08);
+  --shadow: 0 2px 4px rgb(32 55 46 / 0.04), 0 8px 20px rgb(32 55 46 / 0.08);
+  --shadow-lg: 0 4px 12px rgb(32 55 46 / 0.08), 0 24px 48px rgb(32 55 46 / 0.14);
 
   --header-h: 56px;
   --rail-w: 220px;
@@ -67,13 +77,13 @@
   color-scheme: dark;
   --brand-navy: #8db4ee;
   --brand-green-ink: #9fd45a;
-  --paper: #111417;
-  --surface: #181c20;
-  --surface-2: #1f2429;
-  --surface-3: #293037;
-  --ink: #eef1f4;
-  --muted: #9aa5b0;
-  --line: #2a3036;
+  --paper: #11221d;
+  --surface: #192d26;
+  --surface-2: #21382f;
+  --surface-3: #2c453a;
+  --ink: #f0f4e9;
+  --muted: #adbbb0;
+  --line: #344c40;
   --focus: #5aaef0;
   --leaf: #4cc184;
   --leaf-soft: #173a29;
@@ -95,22 +105,27 @@
 
 /* Per-accent helpers: set --accent / --accent-soft on any element. */
 .accent-leaf {
+  --art-accent: var(--art-leaf);
   --accent: var(--leaf);
   --accent-soft: var(--leaf-soft);
 }
 .accent-sky {
+  --art-accent: var(--art-sky);
   --accent: var(--sky);
   --accent-soft: var(--sky-soft);
 }
 .accent-sun {
+  --art-accent: var(--art-sun);
   --accent: var(--sun);
   --accent-soft: var(--sun-soft);
 }
 .accent-coral {
+  --art-accent: var(--art-coral);
   --accent: var(--coral);
   --accent-soft: var(--coral-soft);
 }
 .accent-berry {
+  --art-accent: var(--art-berry);
   --accent: var(--berry);
   --accent-soft: var(--berry-soft);
 }

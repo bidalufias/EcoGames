@@ -1,0 +1,738 @@
+{
+  "assetCount": 104,
+  "replaced": 104,
+  "invalidAssets": [],
+  "protectedFilesChecked": 104,
+  "changedProtectedFiles": [],
+  "totalImageBytes": 1459860,
+  "assets": [
+    {
+      "name": "airplane",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14674
+    },
+    {
+      "name": "backpack",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14326
+    },
+    {
+      "name": "banana",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12402
+    },
+    {
+      "name": "bathtub",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13436
+    },
+    {
+      "name": "battery",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 6948
+    },
+    {
+      "name": "beans",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13178
+    },
+    {
+      "name": "bee",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16862
+    },
+    {
+      "name": "bicycle",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 24618
+    },
+    {
+      "name": "books",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14926
+    },
+    {
+      "name": "brain",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14596
+    },
+    {
+      "name": "bucket",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11348
+    },
+    {
+      "name": "bus",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15146
+    },
+    {
+      "name": "butterfly",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19412
+    },
+    {
+      "name": "candy",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11994
+    },
+    {
+      "name": "canoe",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11780
+    },
+    {
+      "name": "car",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13316
+    },
+    {
+      "name": "carrot",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12546
+    },
+    {
+      "name": "chicken",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12682
+    },
+    {
+      "name": "cigarette",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11168
+    },
+    {
+      "name": "city",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 18780
+    },
+    {
+      "name": "coat",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11384
+    },
+    {
+      "name": "coconut",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16668
+    },
+    {
+      "name": "coffee",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11454
+    },
+    {
+      "name": "computer",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14780
+    },
+    {
+      "name": "crab",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 20712
+    },
+    {
+      "name": "cup",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9596
+    },
+    {
+      "name": "dress",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14592
+    },
+    {
+      "name": "droplet",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 8788
+    },
+    {
+      "name": "duck",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14152
+    },
+    {
+      "name": "egg",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 6968
+    },
+    {
+      "name": "envelope",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 7954
+    },
+    {
+      "name": "factory",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15732
+    },
+    {
+      "name": "fallen-leaves",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16322
+    },
+    {
+      "name": "fire",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11442
+    },
+    {
+      "name": "fish",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13800
+    },
+    {
+      "name": "fog",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15602
+    },
+    {
+      "name": "footprints",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16588
+    },
+    {
+      "name": "game-controller",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12946
+    },
+    {
+      "name": "globe-americas",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16596
+    },
+    {
+      "name": "globe-asia",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19080
+    },
+    {
+      "name": "globe",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 21874
+    },
+    {
+      "name": "hamburger",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15524
+    },
+    {
+      "name": "high-voltage",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 8298
+    },
+    {
+      "name": "house",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16540
+    },
+    {
+      "name": "houses",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19558
+    },
+    {
+      "name": "jar",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11666
+    },
+    {
+      "name": "juice-box",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11342
+    },
+    {
+      "name": "laptop",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15530
+    },
+    {
+      "name": "letters",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12580
+    },
+    {
+      "name": "lightbulb",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 8918
+    },
+    {
+      "name": "low-battery",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 7546
+    },
+    {
+      "name": "mango",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12554
+    },
+    {
+      "name": "meat",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13754
+    },
+    {
+      "name": "metro",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16508
+    },
+    {
+      "name": "milk",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13800
+    },
+    {
+      "name": "national-park",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 23330
+    },
+    {
+      "name": "newspaper",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13050
+    },
+    {
+      "name": "office",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 17454
+    },
+    {
+      "name": "orangutan",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 18406
+    },
+    {
+      "name": "otter",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12438
+    },
+    {
+      "name": "palm-tree",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19036
+    },
+    {
+      "name": "paper",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9720
+    },
+    {
+      "name": "parcel",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9934
+    },
+    {
+      "name": "phone",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12916
+    },
+    {
+      "name": "pill",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9472
+    },
+    {
+      "name": "plaster",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 10944
+    },
+    {
+      "name": "plastic-bottle",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9338
+    },
+    {
+      "name": "plug",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 4968
+    },
+    {
+      "name": "potted-plant",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12094
+    },
+    {
+      "name": "printer",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13948
+    },
+    {
+      "name": "puzzle",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11622
+    },
+    {
+      "name": "radio",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15166
+    },
+    {
+      "name": "rain-cloud",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12020
+    },
+    {
+      "name": "recycle",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16252
+    },
+    {
+      "name": "rice",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12724
+    },
+    {
+      "name": "scales",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 20746
+    },
+    {
+      "name": "school",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19222
+    },
+    {
+      "name": "seed",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13100
+    },
+    {
+      "name": "seedling",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14246
+    },
+    {
+      "name": "shop",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15784
+    },
+    {
+      "name": "shopping-bags",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 18144
+    },
+    {
+      "name": "shower",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14226
+    },
+    {
+      "name": "shrimp",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 21738
+    },
+    {
+      "name": "snowflake",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 19862
+    },
+    {
+      "name": "strawberry",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 12804
+    },
+    {
+      "name": "sun",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15204
+    },
+    {
+      "name": "superhero",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15692
+    },
+    {
+      "name": "t-shirt",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 8574
+    },
+    {
+      "name": "takeaway-box",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9594
+    },
+    {
+      "name": "teapot",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 10496
+    },
+    {
+      "name": "television",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14104
+    },
+    {
+      "name": "thermometer",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 6866
+    },
+    {
+      "name": "tiger",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16736
+    },
+    {
+      "name": "tin",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15414
+    },
+    {
+      "name": "tissue",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11594
+    },
+    {
+      "name": "toolbox",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 13188
+    },
+    {
+      "name": "toothbrush",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 9732
+    },
+    {
+      "name": "train",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11668
+    },
+    {
+      "name": "tree",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 15790
+    },
+    {
+      "name": "turtle",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 11814
+    },
+    {
+      "name": "umbrella",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 14510
+    },
+    {
+      "name": "wastebasket",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 23332
+    },
+    {
+      "name": "wave",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 18708
+    },
+    {
+      "name": "wind",
+      "size": [256, 256],
+      "alpha": true,
+      "changed": true,
+      "bytes": 16854
+    }
+  ]
+}

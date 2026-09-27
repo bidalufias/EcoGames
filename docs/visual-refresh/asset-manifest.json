@@ -1,0 +1,938 @@
+[
+  {
+    "name": "airplane",
+    "file": "src/assets/3d/airplane.webp",
+    "dimensions": [256, 256],
+    "bytes": 14674,
+    "sha256": "a3d5dce76f9cc2e21df5a1f9f80bf808e810b014863f8d5ce187911cc18f4a9f",
+    "prompt": "NEW EcoGames game sprite: one white passenger airplane with lagoon teal wings, angled nose toward upper right, all wings visible. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "backpack",
+    "file": "src/assets/3d/backpack.webp",
+    "dimensions": [256, 256],
+    "bytes": 14326,
+    "sha256": "004f42179c56ce2b31056fda8b7740c79eb8b39aab1fd7867ec82eb6c538d40e",
+    "prompt": "NEW EcoGames game sprite: one forest-green fabric school backpack with warm honey trim and two visible straps. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "banana",
+    "file": "src/assets/3d/banana.webp",
+    "dimensions": [256, 256],
+    "bytes": 12402,
+    "sha256": "7fa72af45e31782d08b8dbee0be6469d4573aca2d0d1d0fe76ff47466469fce7",
+    "prompt": "NEW EcoGames game sprite: one recognizable yellow banana with three partly opened peel flaps. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "bathtub",
+    "file": "src/assets/3d/bathtub.webp",
+    "dimensions": [256, 256],
+    "bytes": 13436,
+    "sha256": "9c3efe774d0b8e9d79dfe1356f1c79659a7149a02e42ec06d6181246a7e5ef97",
+    "prompt": "NEW EcoGames game sprite: one cream freestanding bathtub, silver curved tap and pale blue water. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "battery",
+    "file": "src/assets/3d/battery.webp",
+    "dimensions": [256, 256],
+    "bytes": 6948,
+    "sha256": "759bb233ac4827c6a72b3d34f97639a7c90d4de6afe842408ab86b7c23dada67",
+    "prompt": "NEW EcoGames game sprite: one upright green cylindrical household battery, silver ends and simple raised plus symbol. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "beans",
+    "file": "src/assets/3d/beans.webp",
+    "dimensions": [256, 256],
+    "bytes": 13178,
+    "sha256": "2c2043a0f0a9426c5a28c0eda8c0b83bbba0b99f35ba768ab11d36fc317a2862",
+    "prompt": "NEW EcoGames game sprite: three warm russet kidney beans in a compact balanced group. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "bee",
+    "file": "src/assets/3d/bee.webp",
+    "dimensions": [256, 256],
+    "bytes": 16862,
+    "sha256": "bbd4f9c5ef07906259a684565e2fd549d161ae6123e4cab1212e5658e0b2c8e4",
+    "prompt": "NEW EcoGames game sprite: one honeybee with honey yellow and dark brown stripes, two pale wings, facing right. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "bicycle",
+    "file": "src/assets/3d/bicycle.webp",
+    "dimensions": [256, 256],
+    "bytes": 24618,
+    "sha256": "46ffe47b47ec5afa1070f23c15510e038a3cc33fb7fd4989d83e1de181a43767",
+    "prompt": "NEW EcoGames game sprite: one complete teal city bicycle, two wheels, tan saddle, side view. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "books",
+    "file": "src/assets/3d/books.webp",
+    "dimensions": [256, 256],
+    "bytes": 14926,
+    "sha256": "758c0224ceddb6d7450fbec7bb3574b3dd4310d8e64b4a6ef061a89192c7a60e",
+    "prompt": "NEW EcoGames game sprite: three closed books stacked with green, teal and terracotta covers, no titles. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "brain",
+    "file": "src/assets/3d/brain.webp",
+    "dimensions": [256, 256],
+    "bytes": 14596,
+    "sha256": "febf6775f08eeaf2e48a258012e7cfa82f2b1df3a0dddcd4db64b2b41140c44d",
+    "prompt": "Create a NEW individual EcoGames sprite: one coral-pink sculpted human brain, simplified rounded folds, no face. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "bucket",
+    "file": "src/assets/3d/bucket.webp",
+    "dimensions": [256, 256],
+    "bytes": 11348,
+    "sha256": "89e4ff80aecb17c35d8b688d8d3b6809b02042a9d79ee9d344c43fa674bd7f6d",
+    "prompt": "NEW EcoGames game sprite: one teal paint bucket with cream metal handle. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "bus",
+    "file": "src/assets/3d/bus.webp",
+    "dimensions": [256, 256],
+    "bytes": 15146,
+    "sha256": "98a7f887d32b4fb05d6331857f02c569ada1c45fc6f32bb5de35d089485ea8b3",
+    "prompt": "NEW EcoGames game sprite: one honey-yellow city bus with teal lower body, clear windows and two black wheels. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "butterfly",
+    "file": "src/assets/3d/butterfly.webp",
+    "dimensions": [256, 256],
+    "bytes": 19412,
+    "sha256": "705d01741457732e74e389abf821a944340221fb31bd81d394ef42aa6862bc0b",
+    "prompt": "NEW EcoGames game sprite: one butterfly with terracotta orange and honey wings edged dark brown, wings fully open symmetrically. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "candy",
+    "file": "src/assets/3d/candy.webp",
+    "dimensions": [256, 256],
+    "bytes": 11994,
+    "sha256": "a9bfab4655b9d7125502b4f1a843eb93a3d533209f6eaace3efd88527e7c060f",
+    "prompt": "NEW EcoGames game sprite: one wrapped sweet in terracotta and honey wrapper, twisted ends. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "canoe",
+    "file": "src/assets/3d/canoe.webp",
+    "dimensions": [256, 256],
+    "bytes": 11780,
+    "sha256": "ca515461a399b981d15680b0907ea5a2ec1404864bf71d3558d0c8c26850e951",
+    "prompt": "Create a NEW individual EcoGames sprite: one horizontal wooden canoe with honey-colored paddle laid diagonally across it, teal trim, no water or background. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "car",
+    "file": "src/assets/3d/car.webp",
+    "dimensions": [256, 256],
+    "bytes": 13316,
+    "sha256": "8f38f8e3eab640592373ab2abd58a08fd880e7a1c8c11b08fd5bec41e02261a0",
+    "prompt": "NEW EcoGames game sprite: one compact lagoon-teal car with cream roof, side three-quarter view, all wheels visible. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "carrot",
+    "file": "src/assets/3d/carrot.webp",
+    "dimensions": [256, 256],
+    "bytes": 12546,
+    "sha256": "2ba034fbbcf0f5a705d4bb43a68b244f21585c3e8ef48cd99cce96c252f7b254",
+    "prompt": "NEW EcoGames game sprite: one orange carrot with green leafy top, diagonally positioned. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "chicken",
+    "file": "src/assets/3d/chicken.webp",
+    "dimensions": [256, 256],
+    "bytes": 12682,
+    "sha256": "3bb0ae1624e7a9adcbf03dee25c05736e511561b1adf1c924f38901847953ccd",
+    "prompt": "NEW EcoGames game sprite: one cooked golden-brown chicken drumstick with cream bone end. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "cigarette",
+    "file": "src/assets/3d/cigarette.webp",
+    "dimensions": [256, 256],
+    "bytes": 11168,
+    "sha256": "296b536f7802dbad7d8e20d3d2f30b98a18c09d8186fa0ca35a6ba72b1fc8bff",
+    "prompt": "NEW EcoGames game sprite: one discarded cigarette butt with tan filter and short white stub, no flame, no smoke, no branding. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "city",
+    "file": "src/assets/3d/city.webp",
+    "dimensions": [256, 256],
+    "bytes": 18780,
+    "sha256": "40002bb343fd53ba89878e8e5703465683d3c4a3df1b9d8ce09a97f1be6476f9",
+    "prompt": "NEW EcoGames game sprite: one compact group of three modern teal and cream city buildings, distinct heights, no square backing tile. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "coat",
+    "file": "src/assets/3d/coat.webp",
+    "dimensions": [256, 256],
+    "bytes": 11384,
+    "sha256": "7636f6511d0f01422db33b21ab5fdc105a44f4157ad1f68e8190162ad47785d6",
+    "prompt": "NEW EcoGames game sprite: one camel-colored coat with collar and dark buttons, empty garment, no person. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "coconut",
+    "file": "src/assets/3d/coconut.webp",
+    "dimensions": [256, 256],
+    "bytes": 16668,
+    "sha256": "b267b0711fab41ffa0b28726e9bb45068d6028fa3f0a1c740340344b725231bc",
+    "prompt": "NEW EcoGames game sprite: one halved coconut shell, rich brown exterior and white inner rim. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "coffee",
+    "file": "src/assets/3d/coffee.webp",
+    "dimensions": [256, 256],
+    "bytes": 11454,
+    "sha256": "e21e37b57cf4227826f292cd56af666da2341a916df5c5ffff3b4fc5f95ea959",
+    "prompt": "NEW EcoGames game sprite: one cream coffee cup with dark coffee visible, teal handle, gentle overhead three-quarter view. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "computer",
+    "file": "src/assets/3d/computer.webp",
+    "dimensions": [256, 256],
+    "bytes": 14780,
+    "sha256": "da73221e978339fa2966d5300f156354d16712bff7b4a803a44da34e1adc1566",
+    "prompt": "NEW EcoGames game sprite: one desktop monitor with teal screen, cream frame and keyboard. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "crab",
+    "file": "src/assets/3d/crab.webp",
+    "dimensions": [256, 256],
+    "bytes": 20712,
+    "sha256": "96aa1ba5b5e1c0bd893c20368701aaa1548928a227aa2ec7096c66704e8eef26",
+    "prompt": "NEW EcoGames game sprite: one sand-colored ghost crab with two raised claws, clear legs and eyes, softly terracotta shading. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "cup",
+    "file": "src/assets/3d/cup.webp",
+    "dimensions": [256, 256],
+    "bytes": 9596,
+    "sha256": "79e23e7587f01e39fde99f12259930bf1b3f06e81291466db95aab2818df0550",
+    "prompt": "NEW EcoGames game sprite: one cream takeaway drink cup with terracotta stripe, lid and bent straw, no text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "dress",
+    "file": "src/assets/3d/dress.webp",
+    "dimensions": [256, 256],
+    "bytes": 14592,
+    "sha256": "223fb625c0b8e8e199d9cef2704a9e3d896032ad93f96388cb443f255b50940b",
+    "prompt": "NEW EcoGames game sprite: one teal dress with short sleeves and gently flared skirt, empty garment. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "droplet",
+    "file": "src/assets/3d/droplet.webp",
+    "dimensions": [256, 256],
+    "bytes": 8788,
+    "sha256": "45006efcc6b71622542e401492c1af30e6b17e3db54e3df90e0cca2f22e584c8",
+    "prompt": "NEW EcoGames game sprite: one lagoon blue water droplet with softly modeled volume, no face. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "duck",
+    "file": "src/assets/3d/duck.webp",
+    "dimensions": [256, 256],
+    "bytes": 14152,
+    "sha256": "e57623f963efc7794d2811788e09e7fc4a8aa5dae4ae1479370ab7b7092a02d2",
+    "prompt": "NEW EcoGames game sprite: one mallard duck facing left, green head, honey bill, cream body, no water base. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "egg",
+    "file": "src/assets/3d/egg.webp",
+    "dimensions": [256, 256],
+    "bytes": 6968,
+    "sha256": "91fec134901f7c6ecf402fbf8edd700bd4ca8f95f7486a295f24e99761c4663e",
+    "prompt": "NEW EcoGames game sprite: one simple warm cream egg, upright. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "envelope",
+    "file": "src/assets/3d/envelope.webp",
+    "dimensions": [256, 256],
+    "bytes": 7954,
+    "sha256": "dd12ad1f9ea06b3a5168e715cbfd5fc3330c47e74622973b96ae8abe7626f8ea",
+    "prompt": "NEW EcoGames game sprite: one cream paper envelope with visible folded flap. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "factory",
+    "file": "src/assets/3d/factory.webp",
+    "dimensions": [256, 256],
+    "bytes": 15732,
+    "sha256": "246c9ad0dab67e8c2640453812539835b8a46f3103e960af60228cc02fa58a64",
+    "prompt": "NEW EcoGames game sprite: one industrial factory miniature, grey-cream walls and two terracotta chimneys, no emitted smoke. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "fallen-leaves",
+    "file": "src/assets/3d/fallen-leaves.webp",
+    "dimensions": [256, 256],
+    "bytes": 16322,
+    "sha256": "cf67c6a8db081a72b665d6df24c54b2f16254b5b21b22f8ee8b3008e323d71c2",
+    "prompt": "NEW EcoGames game sprite: three dried autumn leaves in terracotta, ochre and brown, compact scattered arrangement. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "fire",
+    "file": "src/assets/3d/fire.webp",
+    "dimensions": [256, 256],
+    "bytes": 11442,
+    "sha256": "44948b50c54510e1129fd0321fbdffb852c104a7bed03d90704e3aa7a69e865f",
+    "prompt": "NEW EcoGames game sprite: one sculpted flame with terracotta outer edge and honey center, no logs. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "fish",
+    "file": "src/assets/3d/fish.webp",
+    "dimensions": [256, 256],
+    "bytes": 13800,
+    "sha256": "5cdbf13b77bc959a2559e5ca1a8df54bf6dd2fc1da84735cf5713e3c61d983b9",
+    "prompt": "NEW EcoGames game sprite: one small lagoon blue river fish facing left, clearly visible tail and fin. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "fog",
+    "file": "src/assets/3d/fog.webp",
+    "dimensions": [256, 256],
+    "bytes": 15602,
+    "sha256": "3a70331e033b2703ae6e470697276869f239e9d3b044d071129103e2b2e3ee3b",
+    "prompt": "NEW EcoGames game sprite: three soft pale grey-blue horizontal fog banks with rounded tapered ends, no scenery. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "footprints",
+    "file": "src/assets/3d/footprints.webp",
+    "dimensions": [256, 256],
+    "bytes": 16588,
+    "sha256": "b7583d1c4c832b5eeaca7b77b0add8172a18c7b574807d1182b5eb0f61310a00",
+    "prompt": "Edit this EcoGames footprint sprite. Change only the footprint material color from very dark teal to a medium lagoon teal (#479b90), with softly lit mint-teal edges, so both complete footprint silhouettes remain clearly visible against deep forest-green backgrounds at 32px. Preserve the exact paired footprint shapes, five toes on each foot, proportions, placement, matte modeled texture, and transparent background. No border, glow, cast shadow, text, or extra objects.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "game-controller",
+    "file": "src/assets/3d/game-controller.webp",
+    "dimensions": [256, 256],
+    "bytes": 12946,
+    "sha256": "cff41bd25a628ba255b63fd697b7c8d23f5f967b25a7ddfa310a4a202e513f65",
+    "prompt": "NEW EcoGames game sprite: one dark teal game controller with honey and terracotta buttons, cream thumbsticks. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "globe",
+    "file": "src/assets/3d/globe.webp",
+    "dimensions": [256, 256],
+    "bytes": 21874,
+    "sha256": "1254824b9f7652fb3c3dd5f3a0cdd41aecf558b26146720fdb5282449950275a",
+    "prompt": "NEW EcoGames game sprite: one blue-green Earth globe with Asia and Southeast Asia facing the viewer, no stand, approximate recognizable continents. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "globe-americas",
+    "file": "src/assets/3d/globe-americas.webp",
+    "dimensions": [256, 256],
+    "bytes": 16596,
+    "sha256": "a0bb733cdd884f64a25d8b52038fb29f9ef48e127c54ac6ed304d7eb086d6089",
+    "prompt": "NEW EcoGames game sprite: one blue-green Earth globe with North and South America facing the viewer, no stand, recognizable continental silhouettes. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "globe-asia",
+    "file": "src/assets/3d/globe-asia.webp",
+    "dimensions": [256, 256],
+    "bytes": 19080,
+    "sha256": "25288f7afc39f5aebcaa73f7d67b855fc94dcecf2dcb844c0a910cde9ae0cb13",
+    "prompt": "NEW EcoGames game sprite: one blue-green Earth globe with Asia, Southeast Asia and Australia facing viewer, no stand, recognizable continental silhouettes. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "hamburger",
+    "file": "src/assets/3d/hamburger.webp",
+    "dimensions": [256, 256],
+    "bytes": 15524,
+    "sha256": "8c00339ff08488ac2a624a0d170b90f204d22ffe5dd4d0574a8f008a5e209e14",
+    "prompt": "NEW EcoGames game sprite: one hamburger with sesame bun, lettuce, cheese and brown patty. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "high-voltage",
+    "file": "src/assets/3d/high-voltage.webp",
+    "dimensions": [256, 256],
+    "bytes": 8298,
+    "sha256": "506289282fff07affdc9c148d79bb9ac40b5a257e735fdf8d85b3734c726069b",
+    "prompt": "NEW EcoGames game sprite: one bold honey-yellow sculpted lightning bolt, simple recognizable zigzag. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "house",
+    "file": "src/assets/3d/house.webp",
+    "dimensions": [256, 256],
+    "bytes": 16540,
+    "sha256": "ca324a62a019b3e0aa11da11d0f1914335a9e23b311e37944ac9098d2e63a892",
+    "prompt": "NEW EcoGames game sprite: one compact cream house with terracotta gabled roof, teal door and window, no lawn platform. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "houses",
+    "file": "src/assets/3d/houses.webp",
+    "dimensions": [256, 256],
+    "bytes": 19558,
+    "sha256": "21284d42e0fe0f09e027b377f4a7484129c5debd1db5c8460c1fcdf5e6f7e892",
+    "prompt": "NEW EcoGames game sprite: three compact cream houses with terracotta roofs and teal doors clustered together. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "jar",
+    "file": "src/assets/3d/jar.webp",
+    "dimensions": [256, 256],
+    "bytes": 11666,
+    "sha256": "6b646f176bcee1759d23d2ea43316bbc036941532a622747c50af6e509226f04",
+    "prompt": "NEW EcoGames game sprite: one clear pale-blue empty glass jar with cream metal lid and small plain label, no text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "juice-box",
+    "file": "src/assets/3d/juice-box.webp",
+    "dimensions": [256, 256],
+    "bytes": 11342,
+    "sha256": "d1cfaf69b4816f8a66a1cc26fa9705bf0cb05e3ff0fd5ca0030d43ce0d61484b",
+    "prompt": "NEW EcoGames game sprite: one small cream and green drink carton with bent straw and a simple orange fruit symbol, no text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "laptop",
+    "file": "src/assets/3d/laptop.webp",
+    "dimensions": [256, 256],
+    "bytes": 15530,
+    "sha256": "5dbefe01a2024a5739142f9eb40a5d518bc39e207be17a60102a2c2ba858dcac",
+    "prompt": "NEW EcoGames game sprite: one open cream laptop with teal screen, keyboard clearly visible. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "letters",
+    "file": "src/assets/3d/letters.webp",
+    "dimensions": [256, 256],
+    "bytes": 12580,
+    "sha256": "6a4761db3c9db418cca335b5c11983aa6362a05238ea1a4b302811fb8af24566",
+    "prompt": "NEW EcoGames game sprite: three dimensional lowercase letters abc in cream on a rounded teal square keycap, exact text abc only. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "lightbulb",
+    "file": "src/assets/3d/lightbulb.webp",
+    "dimensions": [256, 256],
+    "bytes": 8918,
+    "sha256": "7a3a6e679502956f286aa6144ef7ede5688d464e00b4798542dc0f5dc8545600",
+    "prompt": "NEW EcoGames game sprite: one warm honey-yellow LED lightbulb with cream diffuser and silver screw base, no external glow. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "low-battery",
+    "file": "src/assets/3d/low-battery.webp",
+    "dimensions": [256, 256],
+    "bytes": 7546,
+    "sha256": "260bbe136d78d8ac58a0b34142a00593e94a1ccc3ec17fb4728c267cb9a3e35e",
+    "prompt": "NEW EcoGames game sprite: one grey portable power bank with a small nearly-empty red battery indicator, no text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "mango",
+    "file": "src/assets/3d/mango.webp",
+    "dimensions": [256, 256],
+    "bytes": 12554,
+    "sha256": "b245b93f1e13ac7b816d9d14dfea719beaff78e700d35b507ee938517f05b62e",
+    "prompt": "NEW EcoGames game sprite: one ripe orange-yellow mango with single green leaf, simple recognizable mango silhouette. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "meat",
+    "file": "src/assets/3d/meat.webp",
+    "dimensions": [256, 256],
+    "bytes": 13754,
+    "sha256": "5d6a8d8d891c472900f9adc59b2468957237e5e00a2ced7e33b7ebddcc6b267e",
+    "prompt": "NEW EcoGames game sprite: one red steak with cream fat edge and simple bone cross-section. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "metro",
+    "file": "src/assets/3d/metro.webp",
+    "dimensions": [256, 256],
+    "bytes": 16508,
+    "sha256": "2fe9d8ef0f6c5918d0b3b003fc2ad54a8e80f32c1c54e82f10712918cbeb664b",
+    "prompt": "NEW EcoGames game sprite: one teal-and-cream metro train front with dark window and two honey headlights, no circle background. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "milk",
+    "file": "src/assets/3d/milk.webp",
+    "dimensions": [256, 256],
+    "bytes": 13800,
+    "sha256": "89509739772cc3efa15619a78826895bf4a26b349de786a4e0af757555a7d26b",
+    "prompt": "NEW EcoGames game sprite: one clear glass filled with cream-white milk. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "national-park",
+    "file": "src/assets/3d/national-park.webp",
+    "dimensions": [256, 256],
+    "bytes": 23330,
+    "sha256": "88d5ddf4df67baf42279402ea01aa45a19d04048c8dbb0469186b5365a27d1d3",
+    "prompt": "NEW EcoGames game sprite: one compact miniature tropical national park vignette with forest green trees, gentle mountain and blue water, organic silhouette, no rectangle tile or text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "newspaper",
+    "file": "src/assets/3d/newspaper.webp",
+    "dimensions": [256, 256],
+    "bytes": 13050,
+    "sha256": "ecc8d174b659131677b8b5f99b2856ad7f1055d65abdde51ebf7cf07d2a1e1b4",
+    "prompt": "NEW EcoGames game sprite: one folded cream newspaper with dark grey abstract column rules, no readable words. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "office",
+    "file": "src/assets/3d/office.webp",
+    "dimensions": [256, 256],
+    "bytes": 17454,
+    "sha256": "661e1b139dc41c5378b1e604a8fecfcb7da20f9eea8f45c8c9a2aa5473568366",
+    "prompt": "NEW EcoGames game sprite: one mid-rise cream office building with teal windows, front three-quarter view. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "orangutan",
+    "file": "src/assets/3d/orangutan.webp",
+    "dimensions": [256, 256],
+    "bytes": 18406,
+    "sha256": "a26f0d10a20755677dbdbac50d20c6b272a61d9b95a81a0a3f8d3ee02c8bf5dc",
+    "prompt": "NEW EcoGames game sprite: one seated Bornean orangutan with warm orange fur, dark face and long arms, friendly natural animal proportions. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "otter",
+    "file": "src/assets/3d/otter.webp",
+    "dimensions": [256, 256],
+    "bytes": 12438,
+    "sha256": "f8596c1a575473d7a97f8a98978806f770ef9d3802a6909a4594671a392e6e45",
+    "prompt": "NEW EcoGames game sprite: one brown river otter lying on its back with gently curved tail, face at left, cream muzzle. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "palm-tree",
+    "file": "src/assets/3d/palm-tree.webp",
+    "dimensions": [256, 256],
+    "bytes": 19036,
+    "sha256": "e2644c8cdc73e85e9b2a1fab20444b2c223666c4690b03bd2244315462d8f38f",
+    "prompt": "NEW EcoGames game sprite: one tropical coconut palm with curved brown trunk and sculpted arching green fronds. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "paper",
+    "file": "src/assets/3d/paper.webp",
+    "dimensions": [256, 256],
+    "bytes": 9720,
+    "sha256": "73b400404842ba7bb60ac096e4d7043cc492c6730929e7fb7b989e77be71a9bb",
+    "prompt": "NEW EcoGames game sprite: one cream sheet of paper with folded upper corner and three simple dark teal lines. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "parcel",
+    "file": "src/assets/3d/parcel.webp",
+    "dimensions": [256, 256],
+    "bytes": 9934,
+    "sha256": "08ada8668032cf153f18b7e09ed9349622327175d5ed308cfb64706cc9dab0d8",
+    "prompt": "NEW EcoGames game sprite: one closed kraft cardboard parcel box with cream tape. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "phone",
+    "file": "src/assets/3d/phone.webp",
+    "dimensions": [256, 256],
+    "bytes": 12916,
+    "sha256": "93e5a6afc32263c02b03968a9afe5cc1b13d82147f9658d147c561b90cf6a389",
+    "prompt": "NEW EcoGames game sprite: one upright modern smartphone with rounded dark teal frame and softly colored simple app shapes on screen. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "pill",
+    "file": "src/assets/3d/pill.webp",
+    "dimensions": [256, 256],
+    "bytes": 9472,
+    "sha256": "f83f60f25788f346e86efc28295927a063d7766c308d84bf5fc85c516fa2b5a9",
+    "prompt": "NEW EcoGames game sprite: one medicine capsule with cream and terracotta halves, no markings. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "plaster",
+    "file": "src/assets/3d/plaster.webp",
+    "dimensions": [256, 256],
+    "bytes": 10944,
+    "sha256": "196be9054caf099738210ddc8e618bfd66770381f2a7e16347895597da5be760",
+    "prompt": "NEW EcoGames game sprite: one tan adhesive bandage with central pad and subtle tiny perforations, diagonal. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "plastic-bottle",
+    "file": "src/assets/3d/plastic-bottle.webp",
+    "dimensions": [256, 256],
+    "bytes": 9338,
+    "sha256": "ab2169d46a465f67631fb8a0920de5f35ebdfb353da5ad6020ca6fa36127a453",
+    "prompt": "NEW EcoGames game sprite: one pale teal shampoo bottle with pump top and simple raised water-drop emblem, no words. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "plug",
+    "file": "src/assets/3d/plug.webp",
+    "dimensions": [256, 256],
+    "bytes": 4968,
+    "sha256": "fa206fdc6cf2eef4a0e1acfa87f9ab31b1e726dfaa5ae1d053bfcf5ea04c0859",
+    "prompt": "NEW EcoGames game sprite: one black electrical charging plug with visible metal prongs and short cable. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "potted-plant",
+    "file": "src/assets/3d/potted-plant.webp",
+    "dimensions": [256, 256],
+    "bytes": 12094,
+    "sha256": "9c3651d731c7d143c9192249dbc10b8a8c78a13ae7c1e67e2fb43966a8498c79",
+    "prompt": "NEW EcoGames game sprite: one young leafy green sapling with several leaves in a terracotta nursery pot. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "printer",
+    "file": "src/assets/3d/printer.webp",
+    "dimensions": [256, 256],
+    "bytes": 13948,
+    "sha256": "20a06a6fa6089b549c760d6dc96b63aaf41e9a641f13137db384655cc1d6d5e8",
+    "prompt": "NEW EcoGames game sprite: one cream desktop printer with dark teal top and a single white sheet coming out. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "puzzle",
+    "file": "src/assets/3d/puzzle.webp",
+    "dimensions": [256, 256],
+    "bytes": 11622,
+    "sha256": "132f2abeff9718008f3df60d6c0450865e9188d8e42498359cb45001be444730",
+    "prompt": "Create a NEW individual EcoGames sprite: one rounded green jigsaw puzzle piece with clear tabs and sockets. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "radio",
+    "file": "src/assets/3d/radio.webp",
+    "dimensions": [256, 256],
+    "bytes": 15166,
+    "sha256": "3150a3f3331d48f224586f79123a73ad810f5b0f3538b49410038b20ccb9e619",
+    "prompt": "NEW EcoGames game sprite: one cream radio with teal speaker grille, honey tuning dial and small extended metal antenna. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "rain-cloud",
+    "file": "src/assets/3d/rain-cloud.webp",
+    "dimensions": [256, 256],
+    "bytes": 12020,
+    "sha256": "124bb5348fa74f29f34fafa3243f35dc53cb7a058d727c0fd4bb25093c0ba997",
+    "prompt": "NEW EcoGames game sprite: one soft grey-blue cloud with three distinct blue falling raindrops. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "recycle",
+    "file": "src/assets/3d/recycle.webp",
+    "dimensions": [256, 256],
+    "bytes": 16252,
+    "sha256": "032760710d6ff4afe3f88aff287f2f93eee7cda00e08c54d110a39000ab2b83f",
+    "prompt": "Create a NEW individual EcoGames sprite: one bold forest-green recycling symbol made of exactly three arrows chasing clockwise in a triangular loop, sculpted rounded volume. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "rice",
+    "file": "src/assets/3d/rice.webp",
+    "dimensions": [256, 256],
+    "bytes": 12724,
+    "sha256": "24be6778e24c6884aaf065b19e3414cb77a027efb3b97d8339393f0bdc5e5b20",
+    "prompt": "NEW EcoGames game sprite: one terracotta bowl filled with white rice, simple grain texture. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "scales",
+    "file": "src/assets/3d/scales.webp",
+    "dimensions": [256, 256],
+    "bytes": 20746,
+    "sha256": "c6e398cc8dbbc52b958c4d8ba08fefdb5631243cb2919cefbaeca3f5d5078906",
+    "prompt": "NEW EcoGames game sprite: one balanced two-pan weighing scale in honey metal with teal base, both pans level. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "school",
+    "file": "src/assets/3d/school.webp",
+    "dimensions": [256, 256],
+    "bytes": 19222,
+    "sha256": "734b2325d52949d5ebb2c27114faadd5ec70fd0fe05ebe167bb5b141ffb5e091",
+    "prompt": "NEW EcoGames game sprite: one cream school building with terracotta roof, central clock face and teal windows, no words. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "seed",
+    "file": "src/assets/3d/seed.webp",
+    "dimensions": [256, 256],
+    "bytes": 13100,
+    "sha256": "f9053fc57a1a3d7d00868b72e2e53b19400d28bfc477995b8e4b78cc6ebf9a65",
+    "prompt": "NEW EcoGames game sprite: one brown chestnut-like seed with lighter tan lower half, rounded top. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "seedling",
+    "file": "src/assets/3d/seedling.webp",
+    "dimensions": [256, 256],
+    "bytes": 14246,
+    "sha256": "079e66221da446db38a133c62825a3e2d9649135e66f166ea1caf7c94932c750",
+    "prompt": "NEW EcoGames game sprite: one small sprout with two green leaves, short stem and small rounded brown soil mound. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "shop",
+    "file": "src/assets/3d/shop.webp",
+    "dimensions": [256, 256],
+    "bytes": 15784,
+    "sha256": "bfc7745cc5cf9c6b28747fa6cc469b1e56ba3abecf13d9b0863fc7564693cf70",
+    "prompt": "NEW EcoGames game sprite: one cream neighborhood shop with teal-and-cream striped awning, terracotta door, no signs or words. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "shopping-bags",
+    "file": "src/assets/3d/shopping-bags.webp",
+    "dimensions": [256, 256],
+    "bytes": 18144,
+    "sha256": "4274b149bc6b042864f647d423dc7d283251e389e3d5c4009902af342c4f7c98",
+    "prompt": "NEW EcoGames game sprite: two thin plastic shopping carrier bags with handles, one teal and one warm cream, distinct silhouettes, recognizable disposable bags. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "shower",
+    "file": "src/assets/3d/shower.webp",
+    "dimensions": [256, 256],
+    "bytes": 14226,
+    "sha256": "9d974950fe4147ffcb54de4f54f2804937cbdf6bd4a61fd29f3fde94316550f0",
+    "prompt": "NEW EcoGames game sprite: one silver and teal shower head angled diagonally downward with three separate blue water drops. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "shrimp",
+    "file": "src/assets/3d/shrimp.webp",
+    "dimensions": [256, 256],
+    "bytes": 21738,
+    "sha256": "85919f4cd658505b515de3b2efd815c3121219305e2e3d9aded18e5d522efa5f",
+    "prompt": "NEW EcoGames game sprite: one curved warm coral shrimp with simple legs and antennae, all visible. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "snowflake",
+    "file": "src/assets/3d/snowflake.webp",
+    "dimensions": [256, 256],
+    "bytes": 19862,
+    "sha256": "fa41be12f611baca4f4125773eabe565cf056cdff42ded1d5b03fedd74aa74a4",
+    "prompt": "NEW EcoGames game sprite: one symmetrical six-armed pale lagoon blue sculpted snowflake. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "strawberry",
+    "file": "src/assets/3d/strawberry.webp",
+    "dimensions": [256, 256],
+    "bytes": 12804,
+    "sha256": "f5a2fe1ecbfdebede2c08beaf96c35ed893b289e0a311a9abbef857a1480a91e",
+    "prompt": "NEW EcoGames game sprite: one ripe red strawberry with green leafy crown and small honey seeds. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "sun",
+    "file": "src/assets/3d/sun.webp",
+    "dimensions": [256, 256],
+    "bytes": 15204,
+    "sha256": "8546b451364daed3a0a10973ec8cd83d903a688ce1ea3b449e44a10d810aba41",
+    "prompt": "Create a NEW individual EcoGames sprite: one honey-yellow sun disc with rounded short triangular rays evenly spaced, no face. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "superhero",
+    "file": "src/assets/3d/superhero.webp",
+    "dimensions": [256, 256],
+    "bytes": 15692,
+    "sha256": "611fb616e2a7d23041ecfed2441bc8d60b9bd0e425530fbc6b2144fe16dd1906",
+    "prompt": "NEW EcoGames game sprite: one friendly Malaysian adult superhero bust with brown skin, green costume, terracotta cape and eye mask, complete shoulders and head. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "t-shirt",
+    "file": "src/assets/3d/t-shirt.webp",
+    "dimensions": [256, 256],
+    "bytes": 8574,
+    "sha256": "835e423f47cdd07088e8f04d082312bcae7609b38914e57dc1fee60e13bb447d",
+    "prompt": "NEW EcoGames game sprite: one forest-green short-sleeved t-shirt with cream neckline, empty garment. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "takeaway-box",
+    "file": "src/assets/3d/takeaway-box.webp",
+    "dimensions": [256, 256],
+    "bytes": 9594,
+    "sha256": "d841a97a53ab816da1e7a1c21190f09319a7eda3981181d0b6538b58302fef10",
+    "prompt": "NEW EcoGames game sprite: one cream polystyrene hinged takeaway clamshell box, lid closed, no text. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "teapot",
+    "file": "src/assets/3d/teapot.webp",
+    "dimensions": [256, 256],
+    "bytes": 10496,
+    "sha256": "10f528c39bc02416031a28f22f5f3d478b1c73c461130004471d710ddbb4db27",
+    "prompt": "NEW EcoGames game sprite: one terracotta teapot with cream lid, rounded handle and spout. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "television",
+    "file": "src/assets/3d/television.webp",
+    "dimensions": [256, 256],
+    "bytes": 14104,
+    "sha256": "7b1adb9cc74c7ab40b1f4a97900e1a16b642748c89ffabe1a8a439653f43914c",
+    "prompt": "NEW EcoGames game sprite: one cream retro television with teal screen, two short feet and simple antenna. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "thermometer",
+    "file": "src/assets/3d/thermometer.webp",
+    "dimensions": [256, 256],
+    "bytes": 6866,
+    "sha256": "ca97051003890bf370f33eb0ee5652e7a01b3d5c2ca9053f2809f6be59864953",
+    "prompt": "NEW EcoGames game sprite: one cream thermometer with red bulb and red inner column, dark tick marks, no digits. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "tiger",
+    "file": "src/assets/3d/tiger.webp",
+    "dimensions": [256, 256],
+    "bytes": 16736,
+    "sha256": "10d225f98d3fa08125f9d0bfb1464756a988a2bbead035828add573b998903ba",
+    "prompt": "NEW EcoGames game sprite: one standing Malayan tiger facing left, warm ochre fur, clear dark stripes and cream muzzle, all paws and tail visible. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "tin",
+    "file": "src/assets/3d/tin.webp",
+    "dimensions": [256, 256],
+    "bytes": 15414,
+    "sha256": "e26d0f56420d9abe507e92a23dce28ae318e9746d282e97b70a9323271889c75",
+    "prompt": "NEW EcoGames game sprite: one silver food tin with a teal paper label and small tomato illustration, no words. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "tissue",
+    "file": "src/assets/3d/tissue.webp",
+    "dimensions": [256, 256],
+    "bytes": 11594,
+    "sha256": "9bd2558a2b7696a46fe6ab61f5c54e214b86badca44bc4f70eaaeccd63b89f26",
+    "prompt": "NEW EcoGames game sprite: one cream tissue roll with short loose sheet and brown center tube. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "toolbox",
+    "file": "src/assets/3d/toolbox.webp",
+    "dimensions": [256, 256],
+    "bytes": 13188,
+    "sha256": "63712bd08160eafb52d46072848aaa4fa160acbb54009ef6cfbc897b7b7f4be8",
+    "prompt": "NEW EcoGames game sprite: one terracotta toolbox with cream clasp and dark teal top handle. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "toothbrush",
+    "file": "src/assets/3d/toothbrush.webp",
+    "dimensions": [256, 256],
+    "bytes": 9732,
+    "sha256": "4137905cdb537885bb875791aed9b1bd1fd57cfc4c6e9797f4adced50217cc22",
+    "prompt": "NEW EcoGames game sprite: one teal toothbrush with cream bristles, diagonal. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "train",
+    "file": "src/assets/3d/train.webp",
+    "dimensions": [256, 256],
+    "bytes": 11668,
+    "sha256": "88c91f465bcdb015af988140f15630ea6479e680156bd0b430cb43cf887c1a97",
+    "prompt": "NEW EcoGames game sprite: one modern cream passenger train front with teal windscreen and honey headlights, short visible rail section. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "tree",
+    "file": "src/assets/3d/tree.webp",
+    "dimensions": [256, 256],
+    "bytes": 15790,
+    "sha256": "9e7b3a79f69cd9d1e8cd7ce41506ac4dddf712c3cc2272e2abfda9d5909a702a",
+    "prompt": "One isolated tropical broadleaf tree game sprite. Crafted matte 3D ceramic style, rounded forest green canopy, visible warm brown trunk, soft upper-left studio lighting, gentle three-quarter orthographic view. Clear silhouette readable at small sizes, full tree centered with 12% margin, transparent background, no scenery, no text, no border, no cast shadow. Production asset for EcoGames.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "turtle",
+    "file": "src/assets/3d/turtle.webp",
+    "dimensions": [256, 256],
+    "bytes": 11814,
+    "sha256": "69e69d2ed31f221c451076b3455bb92c5c467994e58decc8cd1fe13e5ae3b4d2",
+    "prompt": "Create a NEW individual EcoGames sprite: one baby green sea turtle facing left, distinct flippers rather than legs, olive shell with clear scute pattern, full silhouette visible. The reference tree is ONLY a visual style reference; do not include a tree. Match its crafted matte 3D look, rounded modeled forms, rich natural colors, soft upper-left light and refined surface detail. Single subject centered in a square canvas, complete silhouette with 12 percent clear margin on all sides, readable at 32 pixels, gentle orthographic three-quarter view unless subject specifies otherwise. Genuine transparent background. No scenery, cast shadow, pedestal, sticker outline, border, watermark or text except specifically requested subject markings. Output one object image.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "umbrella",
+    "file": "src/assets/3d/umbrella.webp",
+    "dimensions": [256, 256],
+    "bytes": 14510,
+    "sha256": "2edd9cdeb75659b95e9ee53e042772256dd08ed2b1caa915aef936c3d4135905",
+    "prompt": "NEW EcoGames game sprite: one open teal umbrella with curved wooden handle. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "wastebasket",
+    "file": "src/assets/3d/wastebasket.webp",
+    "dimensions": [256, 256],
+    "bytes": 23332,
+    "sha256": "a7ca61771ff9025ac2d5ac8c72208c38b7c2c5fc59c012646d9c82e22e182c0f",
+    "prompt": "NEW EcoGames game sprite: one cream wire-mesh wastebasket with dark teal upper rim. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "wave",
+    "file": "src/assets/3d/wave.webp",
+    "dimensions": [256, 256],
+    "bytes": 18708,
+    "sha256": "64ef5081cd5276d860cbd8b7cf92cfdfa3a1c084d535fc8808e7e8c87cb378c1",
+    "prompt": "NEW EcoGames game sprite: one sculpted lagoon-blue curling ocean wave with cream foam crest, compact readable silhouette. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  },
+  {
+    "name": "wind",
+    "file": "src/assets/3d/wind.webp",
+    "dimensions": [256, 256],
+    "bytes": 16854,
+    "sha256": "af05b3c57b250bdda267049f20dc3f7e0784379709b9463ec2247e0b84212173",
+    "prompt": "NEW EcoGames game sprite: three rounded teal air-current swooshes, curling tips, no face. Reference image is ONLY the established art style; do not copy its tree subject. Match crafted matte 3D, rounded forms, natural rich colors, subtle tactile details and soft upper-left studio light. Single complete subject centered on transparent square canvas, 12% margin, strong silhouette readable at 32px, orthographic three-quarter view. No scenery, pedestal, cast shadow, border or watermark; no text except specified subject markings.",
+    "generator": "Codex built-in image generator; model version not exposed"
+  }
+]
